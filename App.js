@@ -5,6 +5,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 
+import DrawerContent from './app/screens/DrawerContent';
 import HomeScreen from './app/screens/HomeScreen';
 import MilestoneScreen from './app/screens/MilestoneScreen';
 import OverdueScreen from './app/screens/OverdueScreen';
@@ -12,18 +13,25 @@ import ExpToDoScreen from './app/screens/ExpToDoScreen';
 import AssignmentScreen from './app/screens/AssignmentScreen';
 import MyToDoScreen from './app/screens/MyToDoScreen';
 import OpenProjectScreen from './app/screens/OpenProjectScreen';
+import AddScreen from './app/screens/AddScreen';
+import DetailScreen from './app/screens/DetailScreen';
 
 const Drawer = createDrawerNavigator();
 const HomeStack = createStackNavigator();
+const OpenProjectStack = createStackNavigator();
 
 const DrawerScreen = () => (
-  <Drawer.Navigator initialRouteName="Home">
-    <Drawer.Screen name="Home" component={HomeStackScreen} />
+  <Drawer.Navigator
+    initialRouteName="Dashboard"
+    drawerContent={props => <DrawerContent {...props} />}
+  >
+    <Drawer.Screen name="Dashboard" component={HomeStackScreen} options={{headerShown: false}}/>
+    <Drawer.Screen name="OpenProjectStack" component={OpenProjectStackScreen} options={{headerShown: false}}/>
   </Drawer.Navigator>
 );
 
 const HomeStackScreen = () => (
-  <HomeStack.Navigator>
+  <HomeStack.Navigator initialRouteName="Home">
     <HomeStack.Screen
       name="Home"
       component={HomeScreen}
@@ -67,13 +75,39 @@ const HomeStackScreen = () => (
       }}
     />
     <HomeStack.Screen
+      name="OpenProjectStack"
+      component={OpenProjectStackScreen}
+      options={{
+        headerShown: false,
+      }}
+    />
+  </HomeStack.Navigator>
+);
+
+const OpenProjectStackScreen = () => (
+  <OpenProjectStack.Navigator initialRouteName="OpenProject">
+    <OpenProjectStack.Screen
       name="OpenProject"
       component={OpenProjectScreen}
       options={{
         headerShown: false,
       }}
     />
-  </HomeStack.Navigator>
+    <OpenProjectStack.Screen
+      name="AddScreen"
+      component={AddScreen}
+      options={{
+        headerShown: false,
+      }}
+    />
+    <OpenProjectStack.Screen
+      name="DetailScreen"
+      component={DetailScreen}
+      options={{
+        headerShown: false,
+      }}
+    />
+  </OpenProjectStack.Navigator>
 );
 
 export default function App() {

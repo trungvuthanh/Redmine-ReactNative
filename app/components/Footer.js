@@ -49,8 +49,9 @@ const styles = StyleSheet.create({
     bottom: 0,
   },
   backButton: {
-    width: 50,
+    // width: 50,
     height: 50,
+    paddingHorizontal: 15,
     alignItems: "center",
     justifyContent: "center",
   },

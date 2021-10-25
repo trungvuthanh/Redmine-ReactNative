@@ -13,8 +13,6 @@ export default function MilestoneTiles(props) {
 
 const styles = StyleSheet.create({
   tiles: {
-    backgroundColor: myFont.white,
-    borderBottomColor: myFont.itemBorderColor,
     position: "relative",
     width: "100%",
     height: 92,

@@ -19,6 +19,22 @@ export default {
   redMarkColor: "#d30202",
   whiteMarkColor: "#f7f7f8",
 
+  // Status
+  statusColor: [
+    "#88e05f",
+    "#fdb826",
+    "#ffe100",
+    "#2098e2",
+    "#7a44a0",
+    "#c4bac4",
+    // statusNew: "#88e05f",
+    // statusProgress: "#fdb826",
+    // statusResolve: "#ffe100",
+    // statusFeedback: "#2098e2",
+    // statusClose: "#7a44a0",
+    // statusReject: "#c4bac4",
+  ],
+
   // Footer
   addButtonColor: "#009ef6",
   backButtonIconPressed: "#94cae3",
