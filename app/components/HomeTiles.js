@@ -54,8 +54,8 @@ const styles = StyleSheet.create({
     backgroundColor: myFont.white,
     paddingHorizontal: 25,
     flexDirection: "row",
-    borderStyle: "solid",
-    borderBottomWidth: 0.5,
+    borderStyle: "dotted",
+    borderBottomWidth: 1,
     borderBottomColor: myFont.homeTileColor,
   },
 })

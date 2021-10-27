@@ -21,10 +21,11 @@ export default function OpenProjectScreen({ route, navigation }) {
   const [isLoading, setLoading] = useState(true);
   // const [projects, setProjects] = useState([]);
   const [mylist, setMylist] = useState([]);
+  const [openProjectAmount, setOpenProjectAmount] = useState(0);
 
   // const getInformation = () => {
   //   return new Promise((resolve, reject) => {
-  //     fetch("http://192.168.1.13:80/redmine/projects.json")
+  //     fetch("http://192.168.137.1:80/redmine/projects.json")
   //       .then((response) => response.json())
   //       .then((json) => {
   //         // setProjects(json["projects"]);
@@ -49,16 +50,24 @@ export default function OpenProjectScreen({ route, navigation }) {
   // };
   
   useEffect(() => {
-    fetch("http://192.168.1.13:80/redmine/projects.json")
+    fetch("http://192.168.1.50:80/redmine/projects.json")
       .then((response) => response.json())
       .then((json) => {
         // setProjects(json["projects"]);
+        setOpenProjectAmount(json["total_count"]);
         setMylist([]);
         setMylist(
           json["projects"].map((project, index) =>
             <View key={index}>
               <Pressable
-                onPress={() => navigation.push("DetailScreen", project)}
+                onPress={() => navigation.push("DetailScreen", {project})}
+                style={({pressed}) => 
+                  [{
+                    backgroundColor: pressed
+                      ? myFont.buttonPressedColor
+                      : myFont.white
+                  }]
+                }
               >
                 <ItemTiles
                   name={project.name}
@@ -87,10 +96,13 @@ export default function OpenProjectScreen({ route, navigation }) {
               style={styles.menuContainer}
             >
               <View>
-                <Ionicons name="ios-menu" size={30} color="white" />
+                <Ionicons name="ios-menu" size={myFont.menuIconSize} color="white" />
               </View>
             </Pressable>
-            <Text style={styles.textHeader}>Redmine</Text>
+            <Text style={styles.textHeader}>
+              Open projects
+              <Text style={{fontSize: 18.6, letterSpacing: myFont.letterSpace}}> ({openProjectAmount}/{openProjectAmount})</Text>
+            </Text>
           </View>
           {/* <Header title="Open projects" amount={route.params.amount} /> */}
           <ScrollView>

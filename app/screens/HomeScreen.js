@@ -1,5 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { ActivityIndicator, StyleSheet, Text, View, SafeAreaView, ScrollView, Pressable } from 'react-native';
+import { 
+  ActivityIndicator, 
+  StyleSheet, 
+  Text, 
+  View, 
+  SafeAreaView, 
+  ScrollView, 
+  Pressable,
+} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 import Header from "../components/Header";
@@ -17,7 +25,7 @@ export default function HomeScreen({ navigation }) {
 
   const getInfo = async () => {
     try {
-      const response = await fetch('http://192.168.1.13:80/redmine/projects.json');
+      const response = await fetch('http://192.168.1.50:80/redmine/projects.json');
       const json = await response.json();
       setOpenProjectAmount(json["total_count"]);
     } catch (error) {
@@ -41,7 +49,7 @@ export default function HomeScreen({ navigation }) {
               style={styles.menuContainer}
             >
               <View>
-                <Ionicons name="ios-menu" size={30} color="white" />
+                <Ionicons name="ios-menu" size={myFont.menuIconSize} color="white" />
               </View>
             </Pressable>
             <Text style={styles.textHeader}>Redmine</Text>

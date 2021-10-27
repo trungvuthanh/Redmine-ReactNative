@@ -4,7 +4,8 @@ import { Ionicons } from '@expo/vector-icons';
 
 import myFont from '../config/myFont';
 
-export default function DetailScreen({ navigation }) {
+export default function DetailScreen({ route, navigation }) {
+  console.log(route.params.project);
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.footer}>
@@ -22,7 +23,7 @@ export default function DetailScreen({ navigation }) {
           <Ionicons name="chevron-back" size={30} color={myFont.blue} />
         </Pressable>
         <Pressable
-          onPress={() => navigation.push("AddScreen")}
+          onPress={() => {}}
           style={({pressed}) => [
             {
               backgroundColor: pressed
@@ -33,7 +34,7 @@ export default function DetailScreen({ navigation }) {
           ]}
         >
           {/* <Ionicons name="add" size={40} color={myFont.white} /> */}
-          <Text style={{fontSize: 10.4, color: myFont.white}}>EDIT</Text>
+          <Text style={styles.editText}>edit</Text>
         </Pressable>
       </View>
     </SafeAreaView>
@@ -51,6 +52,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: myFont.addButtonColor,
+  },
+  editText: {
+    fontSize: 16,
+    color: myFont.white,
+    fontWeight: "700",
+    textTransform: "uppercase",
   },
   backButton: {
     width: 50,

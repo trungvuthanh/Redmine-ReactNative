@@ -8,7 +8,7 @@ export default (props) => {
   return (
     <View style={styles.header}>
       <View style={styles.menuContainer}>
-        <Ionicons name="ios-menu" size={30} color="white" />
+        <Ionicons name="ios-menu" size={myFont.menuIconSize} color="white" />
       </View>
       <Text style={styles.textHeader}>
         {props.title}

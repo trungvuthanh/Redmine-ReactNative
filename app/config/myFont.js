@@ -8,13 +8,16 @@ export default {
   buttonPressedColor: "#ace7ff",
   
   // Header
-  fontHomeHeaderSize: 15.6,
+  fontHomeHeaderSize: 22.4,
+  menuIconSize: 36,
   letterSpace: 0.624,
   darkColor: "#1c222c",
 
   // Body
-  fontDashboardSize: 22,
-  homeTileColor: "#8b8b8b",
+  fontDashboardSize: 20,
+  fontAddScreenSize: 16,
+  fontAddScreenColor: "#797e88",
+  homeTileColor: "#a6a9af",
   itemBorderColor: "#d2d4d7",
   redMarkColor: "#d30202",
   whiteMarkColor: "#f7f7f8",
