@@ -3,32 +3,37 @@ import { Text, View, StyleSheet, TouchableOpacity, ScrollView, Pressable, Dimens
 
 import myFont from '../config/myFont';
 
-const OPTIONS = ['New'];
+const OPTIONS = [
+  {name: 'Low', id: 1}, 
+  {name: 'Normal', id: 2}, 
+  {name: 'High', id: 3}, 
+  {name: 'Urgent', id: 4}, 
+  {name: 'Immediate', id: 5}
+];
 
 const WIDTH = Dimensions.get('window').width;
 
-export default function StatusPicker(props) {
+export default function PriorityPicker(props) {
   const onPressOption = (option) => {
-    props.changeStatusVisibility(false);
-    props.setStatus(option);
+    props.changePriorityVisibility(false);
+    props.setPriority(option);
   }
 
   const options = OPTIONS.map((option, index) => {
     return (
       <Pressable
         key={index}
-        onPress={() => onPressOption(index + 1)}
+        onPress={() => onPressOption(option)}
         style={styles.option}
       >
-        <View style={[styles.icon, {backgroundColor: myFont.statusColor[index],}]}/>
-        <Text>{option}</Text>
+        <Text>{option.name}</Text>
       </Pressable>
     );
   });
 
   return (
     <TouchableOpacity
-      onPress={() => props.changeStatusVisibility(false)}
+      onPress={() => props.changePriorityVisibility(false)}
       style={styles.container}
     >
       <View style={styles.modal}>
@@ -45,15 +50,6 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-  },
-  icon: {
-    width: 25,
-    height: 25,
-    marginHorizontal: 5,
-    borderTopLeftRadius: 50,
-    borderTopRightRadius: 50,
-    borderBottomLeftRadius: 50,
-    borderBottomRightRadius: 50,
   },
   modal: {
     width: WIDTH * 0.4,

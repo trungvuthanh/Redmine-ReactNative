@@ -7,6 +7,7 @@ import {
   SafeAreaView, 
   ScrollView, 
   Pressable,
+  RefreshControl,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -23,11 +24,21 @@ export default function HomeScreen({ navigation }) {
   const [myToDoAmount, setMyToDoAmount] = useState(0);
   const [openProjectAmount, setOpenProjectAmount] = useState(0);
 
+  // pull to refresh function
+  const [refreshing, setRefreshing] = React.useState(false);
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    getInfo().then(() => {
+      setRefreshing(false);
+    });
+    // wait(2000).then(() => setRefreshing(false));
+  }, []);
+
   const getInfo = async () => {
     try {
       const response = await fetch('http://192.168.1.50:80/redmine/projects.json');
       const json = await response.json();
-      setOpenProjectAmount(json["total_count"]);
+      setOpenProjectAmount(json["total_count"] - 1);
     } catch (error) {
       console.error(error);
     } finally {
@@ -55,8 +66,12 @@ export default function HomeScreen({ navigation }) {
             <Text style={styles.textHeader}>Redmine</Text>
           </View>
           {/* <Header title="Redmine"/> */}
-          <ScrollView>
-            <Pressable
+          <ScrollView
+            refreshControl={
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            }
+          >
+            {/* <Pressable
               onPress={() => {
                 navigation.navigate("Milestone", { amount: milestoneAmount })
               }}
@@ -70,7 +85,7 @@ export default function HomeScreen({ navigation }) {
               ]}
             >
               <HomeTiles redMark="yes" title="Milestones overdue" amount={milestoneAmount} />
-            </Pressable>
+            </Pressable> */}
             <Pressable
               onPress={() => {
                 navigation.navigate("Overdue", { amount: overdueAmount })
@@ -86,7 +101,7 @@ export default function HomeScreen({ navigation }) {
             >
               <HomeTiles redMark="yes" title="Overdue project" amount={overdueAmount} />
             </Pressable>
-            <Pressable
+            {/* <Pressable
               onPress={() => {
                 navigation.navigate("Expired", { amount: expAmount })
               }}
@@ -100,7 +115,7 @@ export default function HomeScreen({ navigation }) {
               ]}
             >
               <HomeTiles redMark="yes" title="Expired ToDo" amount={expAmount} />
-            </Pressable>
+            </Pressable> */}
             <Pressable
               onPress={() => {
                 navigation.navigate("Assignment", { amount: assignmentAmount })
@@ -152,7 +167,7 @@ export default function HomeScreen({ navigation }) {
 
             <Pressable
               onPress={() => {
-                navigation.navigate("OpenProjectStack", { amount: openProjectAmount })
+                navigation.navigate("OpenProjectStack")
               }}
               style={({ pressed }) => [
                 styles.tiles,

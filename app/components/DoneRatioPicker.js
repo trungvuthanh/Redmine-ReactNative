@@ -3,32 +3,31 @@ import { Text, View, StyleSheet, TouchableOpacity, ScrollView, Pressable, Dimens
 
 import myFont from '../config/myFont';
 
-const OPTIONS = ['New'];
+const OPTIONS = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
 
 const WIDTH = Dimensions.get('window').width;
 
-export default function StatusPicker(props) {
+export default function DoneRatioPicker(props) {
   const onPressOption = (option) => {
-    props.changeStatusVisibility(false);
-    props.setStatus(option);
+    props.changeDoneRatioVisibility(false);
+    props.setDoneRatio(option);
   }
 
   const options = OPTIONS.map((option, index) => {
     return (
       <Pressable
         key={index}
-        onPress={() => onPressOption(index + 1)}
+        onPress={() => onPressOption(option)}
         style={styles.option}
       >
-        <View style={[styles.icon, {backgroundColor: myFont.statusColor[index],}]}/>
-        <Text>{option}</Text>
+        <Text>{option.toString()} %</Text>
       </Pressable>
     );
   });
 
   return (
     <TouchableOpacity
-      onPress={() => props.changeStatusVisibility(false)}
+      onPress={() => props.changeDoneRatioVisibility(false)}
       style={styles.container}
     >
       <View style={styles.modal}>
@@ -43,17 +42,8 @@ export default function StatusPicker(props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  icon: {
-    width: 25,
-    height: 25,
-    marginHorizontal: 5,
-    borderTopLeftRadius: 50,
-    borderTopRightRadius: 50,
-    borderBottomLeftRadius: 50,
-    borderBottomRightRadius: 50,
+    alignItems: "flex-start",
+    justifyContent: "flex-end",
   },
   modal: {
     width: WIDTH * 0.4,
@@ -62,8 +52,8 @@ const styles = StyleSheet.create({
     borderStyle: "solid",
     borderWidth: 1,
     borderColor: "#cccccc80",
-    marginLeft: "40%",
-    marginBottom: 10,
+    left: 10,
+    bottom: 144,
   },
   option: {
     paddingVertical: 10,

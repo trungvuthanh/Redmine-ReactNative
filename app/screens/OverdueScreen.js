@@ -10,7 +10,21 @@ import Footer from "../components/Footer";
 export default function OverdueScreen({ route, navigation }) {
 	return (
 		<SafeAreaView style={styles.container}>
-      <Header title="Overdue projects" amount={route.params.amount} />
+      <View style={styles.header}>
+        <Pressable
+          onPress={() => navigation.toggleDrawer()}
+          style={styles.menuContainer}
+        >
+          <View>
+            <Ionicons name="ios-menu" size={myFont.menuIconSize} color="white" />
+          </View>
+        </Pressable>
+        <Text style={styles.textHeader}>
+          Overdue projects
+          <Text style={{fontSize: 18.6, letterSpacing: myFont.letterSpace}}> ({route.params.amount}/{route.params.amount})</Text>
+        </Text>
+      </View>
+      {/* <Header title="Overdue projects" amount={route.params.amount} /> */}
       <ScrollView></ScrollView>
       {/* <Footer/> */}
       <View style={styles.footer}>
@@ -49,6 +63,29 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
+  },
+  header: {
+		width: "100%",
+		height: 50,
+		backgroundColor: myFont.darkColor,
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    alignItems: "center",
+	},
+  menuContainer: {
+    width: 50,
+    height: 50,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  textHeader: {
+    color: myFont.white,
+    fontSize: myFont.fontHomeHeaderSize,
+		fontWeight: myFont.fontWeight,
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    alignItems: "center",
+    letterSpacing: myFont.letterSpace,
   },
   footer: {
     backgroundColor: myFont.footerBackgroundColor,

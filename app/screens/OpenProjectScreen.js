@@ -7,6 +7,7 @@ import {
   SafeAreaView,
   ScrollView,
   Pressable,
+  RefreshControl
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -18,72 +19,71 @@ import myFont from '../config/myFont';
 import Footer from "../components/Footer";
 
 export default function OpenProjectScreen({ route, navigation }) {
+  const [amount, setAmount] = useState(0)
   const [isLoading, setLoading] = useState(true);
-  // const [projects, setProjects] = useState([]);
+  const [projectList, setProjectIdList] = useState([]);
   const [mylist, setMylist] = useState([]);
-  const [openProjectAmount, setOpenProjectAmount] = useState(0);
 
-  // const getInformation = () => {
-  //   return new Promise((resolve, reject) => {
-  //     fetch("http://192.168.137.1:80/redmine/projects.json")
-  //       .then((response) => response.json())
-  //       .then((json) => {
-  //         // setProjects(json["projects"]);
-  //         setMylist([]);
-  //         setMylist(
-  //           json["projects"].map((project, index) =>
-  //             <ItemTiles
-  //               key={index}
-  //               name={project.name}
-  //               id={project.id}
-  //               date={project.created_on.substring(0,10).split('-').reverse().join('-')}
-  //               status={project.status}
-  //             />
-  //           )
-  //         );
-  //         resolve();
-  //       })
-  //       .catch((error) => {
-  //         reject(error);
-  //       });
-  //   });
-  // };
+  // pull to refresh function
+  const [refreshing, setRefreshing] = React.useState(false);
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    getInfo().then(() => {
+      setRefreshing(false);
+    });
+    // wait(2000).then(() => setRefreshing(false));
+  }, []);
+
+  const getInfo = async () => {
+    fetch("http://192.168.1.50:80/redmine/projects.json")
+    .then((response) => response.json())
+    .then((json) => {
+      let numOfProjects = 0;
+      setProjectIdList(
+        json["projects"].map((project, index) => (
+          project.parent
+          ? {name: project.name, id: project.id, parent: project.parent}
+          : {name: project.name, id: project.id}
+        ))
+      );
+      setMylist(
+        json["projects"].map((project, index) => {
+          if (project.id != 1) {
+            numOfProjects += 1;
+            return (
+              <View key={index}>
+                <Pressable
+                  onPress={() => navigation.navigate("DetailScreen", { type: 'project' , project: project })}
+                  style={({pressed}) => 
+                    [{
+                      backgroundColor: pressed
+                        ? myFont.buttonPressedColor
+                        : myFont.white
+                    }]
+                  }
+                >
+                  <ItemTiles
+                    name={project.name}
+                    id={project.id}
+                    date={project.created_on.substring(0,10).split('-').reverse().join('/')}
+                    status={project.status - 1}
+                  />
+                </Pressable>
+              </View>  
+            );  
+          }
+        })
+      );
+      setAmount(json["total_count"] - 1);
+    })
+    .catch((error) => {
+      console.error(error);
+    })
+    .finally(() => setLoading(false));
+  }
   
   useEffect(() => {
-    fetch("http://192.168.1.50:80/redmine/projects.json")
-      .then((response) => response.json())
-      .then((json) => {
-        // setProjects(json["projects"]);
-        setOpenProjectAmount(json["total_count"]);
-        setMylist([]);
-        setMylist(
-          json["projects"].map((project, index) =>
-            <View key={index}>
-              <Pressable
-                onPress={() => navigation.push("DetailScreen", {project})}
-                style={({pressed}) => 
-                  [{
-                    backgroundColor: pressed
-                      ? myFont.buttonPressedColor
-                      : myFont.white
-                  }]
-                }
-              >
-                <ItemTiles
-                  name={project.name}
-                  id={project.id}
-                  date={project.created_on.substring(0,10).split('-').reverse().join('-')}
-                  status={project.status - 1}
-                />
-              </Pressable>
-            </View>
-          )
-        );
-      })
-      .catch((error) => {
-        console.error(error);
-      })
-      .finally(() => setLoading(false));
+    getInfo();
   }, []);
 
 	return (
@@ -101,11 +101,16 @@ export default function OpenProjectScreen({ route, navigation }) {
             </Pressable>
             <Text style={styles.textHeader}>
               Open projects
-              <Text style={{fontSize: 18.6, letterSpacing: myFont.letterSpace}}> ({openProjectAmount}/{openProjectAmount})</Text>
+              <Text style={{fontSize: 18.6, letterSpacing: myFont.letterSpace}}> ({amount}/{amount})</Text>
             </Text>
           </View>
           {/* <Header title="Open projects" amount={route.params.amount} /> */}
-          <ScrollView>
+          <ScrollView 
+            style={{marginBottom: 50}}
+            refreshControl={
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            }
+          >
             {mylist}
           </ScrollView>
           {/* <Footer/> */}
@@ -124,7 +129,7 @@ export default function OpenProjectScreen({ route, navigation }) {
               <Ionicons name="chevron-back" size={30} color={myFont.blue} />
             </Pressable>
             <Pressable
-              onPress={() => navigation.push("AddScreen")}
+              onPress={() => navigation.push("AddScreen", { projects: projectList, type: 'project' })}
               style={({pressed}) => [
                 {
                   backgroundColor: pressed
@@ -150,27 +155,6 @@ const styles = StyleSheet.create({
     // alignItems: "center",
     // justifyContent: "center",
   },
-  addButton: {
-    width: 50,
-    height: 50,
-    backgroundColor: myFont.addButtonColor,
-  },
-  backButton: {
-    width: 50,
-    height: 50,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  footer: {
-    backgroundColor: myFont.footerBackgroundColor,
-    borderTopColor: myFont.footerBorderColor,
-    width: "100%",
-    height: 50,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    position: "absolute",
-    bottom: 0,
-  },
   header: {
 		width: "100%",
 		height: 50,
@@ -193,5 +177,26 @@ const styles = StyleSheet.create({
     justifyContent: "flex-start",
     alignItems: "center",
     letterSpacing: myFont.letterSpace,
+  },
+  addButton: {
+    width: 50,
+    height: 50,
+    backgroundColor: myFont.addButtonColor,
+  },
+  backButton: {
+    width: 50,
+    height: 50,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  footer: {
+    backgroundColor: myFont.footerBackgroundColor,
+    borderTopColor: myFont.footerBorderColor,
+    width: "100%",
+    height: 50,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    position: "absolute",
+    bottom: 0,
   },
 });
