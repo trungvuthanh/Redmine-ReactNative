@@ -38,7 +38,11 @@ export default function HomeScreen({ navigation }) {
     try {
       const response = await fetch('http://192.168.1.50:80/redmine/projects.json');
       const json = await response.json();
-      setOpenProjectAmount(json["total_count"] - 1);
+      let count = 0;
+      for (let project of json.projects) {
+        if (project.id != 1 && project.parent == undefined) count += 1;
+      }
+      setOpenProjectAmount(count);
     } catch (error) {
       console.error(error);
     } finally {

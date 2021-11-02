@@ -12,10 +12,12 @@ import {
   Platform,
   Modal,
   Alert,
+  Button,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import CheckBox from '@react-native-community/checkbox';
+import DocumentPicker from 'react-native-document-picker'
 
 import myFont from '../config/myFont';
 import TrackerPicker from '../components/TrackerPicker';
@@ -60,6 +62,9 @@ export default function AddScreen({ route, navigation }) {
   let parent_id;
   if (type === 'project') {
     projects = route.params.projects
+    if (route.params.parent != undefined) {
+      parent_id = route.params.parent;
+    }
   } else if (type === 'issue') {
     issues = route.params.issues;
     parent_id = route.params.parent_id;
@@ -102,6 +107,7 @@ export default function AddScreen({ route, navigation }) {
   const [doneRatio, onChangeDoneRatio] = useState(0);
   const [isDoneRatioVisible, setIsDoneRatioVisible] = useState(false);
   const [isPrivate, setIsPrivate] = useState(false);
+  let attachment = {};
   const onChangeStart = (event, selectedDate) => {
     startDate.onChange(event, selectedDate);
     console.log(startDate.date.toLocaleDateString());
@@ -129,6 +135,28 @@ export default function AddScreen({ route, navigation }) {
     return date.join('-');
   }
 
+  const uploadFile = async () => {
+    try {
+      const results = await DocumentPicker.pickMultiple({
+        type: [DocumentPicker.types.images],
+      })
+      for (const res of results) {
+        console.log(
+          res.uri,
+          res.type, // mime type
+          res.name,
+          res.size,
+        )
+      }
+    } catch (err) {
+      if (DocumentPicker.isCancel(err)) {
+        // User cancelled the picker, exit any dialogs or menus and move on
+      } else {
+        throw err
+      }
+    }
+  }
+
   const saveData = () => {
     if (type === 'project') {
       name != ""
@@ -149,7 +177,7 @@ export default function AddScreen({ route, navigation }) {
         "",
         [{
           text: "OK",
-          style: "cancel"
+          style: "cancel",
         }]
       );
     }
@@ -159,26 +187,39 @@ export default function AddScreen({ route, navigation }) {
   const createData = async () => {
     if (type === 'project') {
       let body;
-      subproject.name == ""
-      ? body = JSON.stringify({
-        project: {
-          name: name,
-          identifier: identifier,
-          description: description,
-          is_public: isPublic,
-          inherit_members: isInherit,
-        }
-      })
-      : body = JSON.stringify({
-        project: {
-          name: name,
-          identifier: identifier,
-          description: description,
-          is_public: isPublic,
-          parent_id: subproject.id,
-          inherit_members: isInherit,
-        }
-      });
+      if (parent_id == undefined) {
+        subproject.name == ""
+        ? body = JSON.stringify({
+          project: {
+            name: name,
+            identifier: identifier,
+            description: description,
+            is_public: isPublic,
+            inherit_members: isInherit,
+          }
+        })
+        : body = JSON.stringify({
+          project: {
+            name: name,
+            identifier: identifier,
+            description: description,
+            is_public: isPublic,
+            parent_id: subproject.id,
+            inherit_members: isInherit,
+          }
+        });  
+      } else {
+        body = JSON.stringify({
+          project: {
+            name: name,
+            identifier: identifier,
+            description: description,
+            is_public: isPublic,
+            parent_id: parent_id.id,
+            inherit_members: isInherit,
+          }
+        });  
+      }
       fetch("http://192.168.1.50:80/redmine/projects.json", {
         method: 'POST',
         headers: {
@@ -189,18 +230,32 @@ export default function AddScreen({ route, navigation }) {
       })
       .then((response) => {
         console.log(response.status);
-        if (response.status == 201) Alert.alert(
-          "Project was created",
-          "",
-        );
+        if (response.status == 201) {
+          Alert.alert(
+            "Project was created",
+            "",
+            [{
+              text: 'OK',
+              style: 'cancel',
+              onPress: () => navigation.goBack(),
+            }]
+          );  
+        } else {
+          Alert.alert(
+            "Fail to create project",
+            "",
+          );
+        }
       })
-      .then(() => {
-        navigation.goBack();
-      })
+      // .then(() => {
+      //   navigation.goBack();
+      // })
       .catch((error) => {
         console.error(error);
       });
     } else if (type === 'issue') {
+      let estimated_hours;
+      duration == null ? estimated_hours = null : estimated_hours = parseInt(duration);
       let body;
       subproject.subject == ""
       ? body = JSON.stringify({
@@ -213,7 +268,7 @@ export default function AddScreen({ route, navigation }) {
           description: description,
           assigned_to_id: 1,
           is_private: isPrivate,
-          estimated_hours: duration,
+          estimated_hours: estimated_hours,
           start_date: standardDate(startDate.date),
           due_date: standardDate(endDate.date),
           done_ratio: doneRatio,
@@ -230,7 +285,7 @@ export default function AddScreen({ route, navigation }) {
           parent_issue_id: subproject.id,
           assigned_to_id: 1,
           is_private: isPrivate,
-          estimated_hours: duration,
+          estimated_hours: estimated_hours,
           start_date: standardDate(startDate.date),
           due_date: standardDate(endDate.date),
           done_ratio: doneRatio,
@@ -246,14 +301,26 @@ export default function AddScreen({ route, navigation }) {
       })
       .then((response) => {
         console.log(response.status);
-        if (response.status == 201) Alert.alert(
-          "Issue was added",
-          "",
-        );
+        if (response.status == 201) {
+          Alert.alert(
+            "Issue was added",
+            "",
+            [{
+              text: 'OK',
+              style: 'cancel',
+              onPress: () => navigation.goBack(),
+            }]
+          );  
+        } else {
+          Alert.alert(
+            "Fail to create issue",
+            "",
+          );
+        }
       })
-      .then(() => {
-        navigation.goBack();
-      })
+      // .then(() => {
+      //   navigation.goBack();
+      // })
       .catch((error) => {
         console.error(error);
       });
@@ -370,6 +437,7 @@ export default function AddScreen({ route, navigation }) {
                       <Text style={styles.text}>subproject of</Text>
                       <Pressable
                         onPress={() => onChangeSubProject({name: "", id: 0})}
+                        disabled={parent_id != undefined ? true : false}
                       >
                         <Text
                           style={{color: myFont.blue}}
@@ -378,8 +446,9 @@ export default function AddScreen({ route, navigation }) {
                     </View>
                     <Pressable
                       onPress={() => changeSubVisibility(true)}
+                      disabled={parent_id != undefined ? true : false}
                     >
-                      <Text style={styles.textInput}>{subproject.name}</Text>
+                      <Text style={styles.textInput}>{parent_id != undefined ? parent_id.name : subproject.name}</Text>
                     </Pressable>
                     <View>
                       <Modal
@@ -454,8 +523,7 @@ export default function AddScreen({ route, navigation }) {
                     backgroundColor: pressed
                       ? myFont.buttonPressedColor
                       : myFont.white
-                  }]
-                }
+                  }]}
                 >
                   <View style={styles.groupCell}>
                     <View style={styles.label}>
@@ -619,7 +687,7 @@ export default function AddScreen({ route, navigation }) {
                     style={styles.textInput}
                     textAlignVertical="center"
                     value={duration}
-                    onChangeText={(value) => onChangeDuration(parseInt(value))}
+                    onChangeText={(value) => onChangeDuration(value.toString())}
                   />
                 </Pressable>
                 <Pressable
@@ -784,6 +852,29 @@ export default function AddScreen({ route, navigation }) {
                   />
                 </Pressable>
               </View>
+              <View style={styles.groupRow}>
+                <Pressable
+                  style={({pressed}) => 
+                  [{
+                    backgroundColor: pressed
+                      ? myFont.buttonPressedColor
+                      : myFont.white
+                  }]
+                }
+                >
+                  <View style={styles.groupCell}>
+                    <View style={styles.label}>
+                      <Text style={styles.text}>Attach files</Text>
+                    </View>
+                  </View>
+                </Pressable>
+                <View style={{width: "50%", alignSelf: "center"}}>
+                  <Button
+                    title="Upload files"
+                    onPress={() => uploadFile()}
+                  ></Button>
+                </View>
+              </View>
             </>
           }
         </ScrollView>
@@ -906,7 +997,7 @@ const styles = StyleSheet.create({
   text: {
     fontSize: myFont.fontAddScreenSize,
     color: myFont.fontAddScreenColor,
-    fontWeight: "400",
+    fontWeight: "300",
     textTransform: "uppercase"
   },
   label: {
@@ -920,7 +1011,7 @@ const styles = StyleSheet.create({
     width: "100%",
     height: 40,
     fontSize: 20.8,
-    fontWeight: "400",
+    fontWeight: "300",
     paddingVertical: 1,
     paddingLeft: 10,
     paddingRight: 2,

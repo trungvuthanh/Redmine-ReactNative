@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: "flex-start",
-    justifyContent: "flex-end",
+    justifyContent: "center",
   },
   modal: {
     width: WIDTH * 0.4,
@@ -52,8 +52,8 @@ const styles = StyleSheet.create({
     borderStyle: "solid",
     borderWidth: 1,
     borderColor: "#cccccc80",
-    left: 10,
-    bottom: 147,
+    marginLeft: 10,
+    top: 30,
   },
   option: {
     paddingVertical: 10,

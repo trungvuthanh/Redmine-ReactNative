@@ -22,7 +22,7 @@ export default function OpenProjectScreen({ route, navigation }) {
   const [amount, setAmount] = useState(0)
   const [isLoading, setLoading] = useState(true);
   const [projectList, setProjectIdList] = useState([]);
-  const [mylist, setMylist] = useState([]);
+  const [mylist, setMylist] = useState([])
 
   // pull to refresh function
   const [refreshing, setRefreshing] = React.useState(false);
@@ -38,7 +38,6 @@ export default function OpenProjectScreen({ route, navigation }) {
     fetch("http://192.168.1.50:80/redmine/projects.json")
     .then((response) => response.json())
     .then((json) => {
-      let numOfProjects = 0;
       setProjectIdList(
         json["projects"].map((project, index) => (
           project.parent
@@ -46,10 +45,11 @@ export default function OpenProjectScreen({ route, navigation }) {
           : {name: project.name, id: project.id}
         ))
       );
+      let count = 0;
       setMylist(
         json["projects"].map((project, index) => {
-          if (project.id != 1) {
-            numOfProjects += 1;
+          if (project.id != 1 && project.parent == undefined) {
+            count += 1;
             return (
               <View key={index}>
                 <Pressable
@@ -74,7 +74,7 @@ export default function OpenProjectScreen({ route, navigation }) {
           }
         })
       );
-      setAmount(json["total_count"] - 1);
+      setAmount(count);
     })
     .catch((error) => {
       console.error(error);

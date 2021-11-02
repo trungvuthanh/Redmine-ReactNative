@@ -17,8 +17,8 @@ export default function ItemTiles(props) {
         </View>
         <View>
           <Text style={{fontSize: 17.6}}>{props.name}</Text>
-          <Text style={{fontSize: 12}}>({props.id})</Text>
-          <Text style={{fontSize: 16, marginTop: 2}}>START: {props.date}</Text>
+          <Text style={{fontSize: 12}}>(#{props.id})</Text>
+          <Text style={{fontSize: 16, marginTop: 2}}>Created on: {props.date}</Text>
         </View>
       </View>
     </View>

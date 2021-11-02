@@ -14,7 +14,10 @@ import { Ionicons, Entypo } from '@expo/vector-icons';
 // import Collapsible from 'react-native-collapsible';
 
 import Phase from '../components/Phase';
+import SubPhase from '../components/SubPhase';
+import SubProject from '../components/SubProject';
 import myFont from '../config/myFont';
+import CheckBox from '@react-native-community/checkbox';
 
 const WIDTH = Dimensions.get('window').width;
 
@@ -23,26 +26,49 @@ export default function DetailScreen({ route, navigation }) {
   let project, issue;
   if (type === 'project') {
     project = route.params.project;
+    // console.log(project);
   } else if (type === 'issue') {
     issue = route.params.issue;
+    // console.log(issue);
   }
 
+  // Sub issues
   const [issues, setIssues] = useState({issues: []});
-  const [isLoading, setLoading] = useState(false);
+  // Sub projects
+  const [projects, setProjects] = useState({projects: []});
+  const [showSub, setShowSub] = useState(true);
   const [showPhase, setShowPhase] = useState(true);
+  const [projectCount, setProjectCount] = useState(0);
   const [issueCount, setIssueCount] = useState(0);
+  const [isLoading, setLoading] = useState(false);
 
-  // Get issues of project
+  // type === 'project'
   const getIssues = async () => {
-    fetch('http://192.168.1.50:80/redmine/issues.json?project_id=' + project.id + '&status_id=*')
+    // Get subprojects of this project
+    fetch('http://192.168.1.50:80/redmine/projects.json')
     .then((response) => response.json())
     .then((json) => {
-      setIssues(json);
+      let projectList = [];
+      let count = 0;
+      for (let prj of json.projects) {
+        if (prj.parent != undefined && prj.parent.id == project.id) {
+          count += 1;
+          projectList.push(prj)
+        }
+      }
+      setProjectCount(count);
+      setProjects({projects: projectList});
+    })
+    // Get issues of this project
+    fetch('http://192.168.1.50:80/redmine/issues.json?project_id=' + project.id + '&status_id=*') 
+    .then((response) => response.json())
+    .then((json) => {
       let count = 0;
       for (let issue of json.issues) {
         if (issue.parent == undefined) count += 1;
       }
       // setIssueCount(json.total_count);
+      setIssues(json);
       setIssueCount(count);
     })
     .catch((error) => {
@@ -55,33 +81,95 @@ export default function DetailScreen({ route, navigation }) {
   const [refreshing, setRefreshing] = React.useState(false);
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
-    getIssues().then(() => {
-      setRefreshing(false);
-    });
+    if (type === 'project') {
+      getIssues().then(() => {
+        setRefreshing(false);
+      });
+    } else {
+      fetch('http://192.168.1.50:80/redmine/issues.json?project_id=' + issue.project.id + '&status_id=*')
+      .then((response) => response.json())
+      .then((json) => {
+        // setIssues(json);
+        let count = 0;
+        let issueList = [];
+        for (let iss of json.issues) {
+          if (iss.parent != undefined && iss.parent.id == issue.id) {
+            count += 1;
+            issueList.push(iss);
+          }
+        }
+        setIssues({issues: issueList});
+        setIssueCount(count);
+      })
+      .catch((error) => {
+        console.error(error);
+      })
+      .finally(() => setLoading(false));
+    }
   }, []);
 
   useEffect(() => {
-    getIssues();
+    if (type === 'project') {
+      getIssues();
+    } else {
+      fetch('http://192.168.1.50:80/redmine/issues.json?project_id=' + issue.project.id + '&status_id=*')
+      .then((response) => response.json())
+      .then((json) => {
+        // setIssues(json);
+        let count = 0;
+        let issueList = [];
+        for (let iss of json.issues) {
+          if (iss.parent != undefined && iss.parent.id == issue.id) {
+            count += 1;
+            issueList.push(iss);
+          }
+        }
+        setIssues({issues: issueList});
+        setIssueCount(count);
+      })
+      .catch((error) => {
+        console.error(error);
+      })
+      .finally(() => setLoading(false));
+    }
   }, []);
 
-  // const addSubProject = () => {
-  //   type === 'project' ?
-  //   navigation.push('AddScreen', { type: 'issue', issues: issues})
-  //   : navigation.push('AddScreen', { type: 'issue' });
-  // }
+  const addSubProject = () => {
+    navigation.push('AddScreen', { 
+      type: 'project', 
+      projects: projects.projects, 
+      parent: { 
+        name: project.name, 
+        id: project.id 
+      }
+    });
+  }
 
   const addNewPhase = () => {
     type === 'project' ?
-    navigation.push('AddScreen', { type: 'issue', issues: issues.issues, parent_id: project.id})
-    : navigation.push('AddScreen', { type: 'issue' });
+    navigation.push('AddScreen', { 
+      type: 'issue', 
+      issues: issues.issues, 
+      parent_id: project.id
+    })
+    : navigation.push('AddScreen', { 
+      type: 'issue', 
+      issues: issues 
+    });
   }
 
-  // const navigateToSubProject = () => {
-  //   navigation.navigate('DetailScreen', { type: 'project' })
-  // }
+  const navigateToSubProject = (project) => {
+    navigation.push('DetailScreen', { 
+      type: 'project', 
+      project: project 
+    });
+  }
 
   const navigateToSubIssue = (issue) => {
-    navigation.navigate('DetailScreen', { type: 'issue', issue: issue })
+    navigation.push('DetailScreen', { 
+      type: 'issue', 
+      issue: issue 
+    });
   }
 
   return (
@@ -132,7 +220,7 @@ export default function DetailScreen({ route, navigation }) {
                   >{project.name}</Text>
                   <Text
                     style={{fontSize: 16, color: "#898c91"}}
-                  >({project.id})</Text>
+                  >(#{project.id})</Text>
                 </View>
               </View>
               <View 
@@ -159,6 +247,24 @@ export default function DetailScreen({ route, navigation }) {
                 </View>
               </View>
               <Pressable
+                onPress={() => setShowSub(!showSub)}
+              >
+                <View
+                  style={styles.tile}
+                >
+                  <Text style={[
+                    styles.title,
+                    {fontWeight: showSub ? "300" : "700"}
+                  ]}
+                  >Subprojects ({projectCount})</Text>
+                  {showSub
+                    ? <Entypo name="chevron-down" size={myFont.menuIconSize} color="#d2d4d7" />
+                    : <Entypo name="chevron-up" size={myFont.menuIconSize} color="#d2d4d7" />
+                  }
+                </View>
+              </Pressable>
+              <SubProject showPhase={showSub} projects={projects.projects} addSubProject={addSubProject} navigateTo={navigateToSubProject}/>
+              <Pressable
                 onPress={() => setShowPhase(!showPhase)}
               >
                 <View
@@ -168,17 +274,258 @@ export default function DetailScreen({ route, navigation }) {
                     styles.title,
                     {fontWeight: showPhase ? "300" : "700"}
                   ]}
-                  >Phase of project ({issueCount})</Text>
+                  >Phase of issue ({issueCount})</Text>
                   {showPhase
                     ? <Entypo name="chevron-down" size={myFont.menuIconSize} color="#d2d4d7" />
                     : <Entypo name="chevron-up" size={myFont.menuIconSize} color="#d2d4d7" />
                   }
                 </View>
               </Pressable>
-              <Phase showPhase={showPhase} issues={issues.issues} addNewPhase={addNewPhase}/>
+              <Phase showPhase={showPhase} issues={issues.issues} addNewPhase={addNewPhase} navigateTo={navigateToSubIssue}/>
             </>
             : <>
-            
+              <View style={styles.nameHeader}>
+                <View style={styles.statusContainer}>
+                  <View
+                    style={[styles.status, {backgroundColor: myFont.statusColor[issue.status.id - 1]}]}
+                  />
+                </View>
+                <View
+                  style={{alignItems: "flex-start", paddingVertical: 10, paddingRight: 5, width: WIDTH - 50}}
+                >
+                  <Text 
+                    style={{
+                      fontSize: 20, 
+                      color: myFont.white,
+                      fontWeight: myFont.fontWeight,  
+                    }}
+                    ellipsizeMode="clip"
+                  >{issue.subject}</Text>
+                  <Text
+                    style={{fontSize: 16, color: "#898c91"}}
+                  >(#{issue.id})</Text>
+                </View>
+              </View>
+              <View 
+                style={[
+                  styles.groupRow,
+                  {flexDirection: "row"}
+                ]}
+              >
+                <View style={[styles.halfCell, {minWidth: 150, width: "35%"}]}>
+                  <View style={styles.label}>
+                    <Text style={styles.text}>start date:</Text>
+                  </View>
+                  <View style={[styles.textDate, {alignSelf: "center"}]}>
+                    <Text style={{fontSize: 20.8}}>{issue.start_date.substring(0,10).split('-').reverse().join('/')}</Text>
+                  </View>
+                </View>
+                <View style={[styles.halfCell, {minWidth: 150, width: "35%"}]}>
+                  <View style={styles.label}>
+                    <Text style={styles.text}>due date:</Text>
+                  </View>
+                  <View style={[styles.textDate, {alignSelf: "center"}]}>
+                    <Text style={{fontSize: 20.8}}>{issue.due_date.substring(0,10).split('-').reverse().join('/')}</Text>
+                  </View>
+                </View>
+                <View style={[styles.halfCell, {flex: 1}]}>
+                  <View style={styles.label}>
+                    <Text style={styles.text}>done</Text>
+                  </View>
+                  <View style={[styles.textDate, {alignSelf: "center"}]}>
+                    <Text style={{fontSize: 20.8}}>{issue.done_ratio} %</Text>
+                  </View>
+                </View>
+              </View>
+              <Pressable
+                onPress={() => setShowPhase(!showPhase)}
+              >
+                <View
+                  style={styles.tile}
+                >
+                  <Text style={[
+                    styles.title,
+                    {fontWeight: showPhase ? "300" : "700"}
+                  ]}
+                  >Phase of issue ({issueCount})</Text>
+                  {showPhase
+                    ? <Entypo name="chevron-down" size={myFont.menuIconSize} color="#d2d4d7" />
+                    : <Entypo name="chevron-up" size={myFont.menuIconSize} color="#d2d4d7" />
+                  }
+                </View>
+              </Pressable>
+              <SubPhase showPhase={showPhase} issues={issues.issues} addNewPhase={addNewPhase} navigateTo={navigateToSubIssue}/>
+              <View style={styles.groupRow}>
+                <Pressable
+                  style={({pressed}) => 
+                  [{
+                    backgroundColor: pressed
+                      ? myFont.buttonPressedColor
+                      : myFont.white
+                  }]
+                }
+                >
+                  <View style={styles.groupCell}>
+                    <View style={styles.label}>
+                      <Text style={styles.text}>Project</Text>
+                    </View>
+                    <View style={styles.textDate}>
+                      <Text style={{fontSize: 20.8}}>(#{issue.project.id}) {issue.project.name}</Text>
+                    </View>
+                  </View>
+                </Pressable>
+              </View>
+              <View
+                style={[
+                  styles.groupRow,
+                  {flexDirection: "row"}
+                ]}
+              >
+                <Pressable
+                  style={({pressed}) => [
+                    styles.halfCell,
+                    {
+                      backgroundColor: pressed
+                        ? myFont.buttonPressedColor
+                        : myFont.white,
+                      position: "relative",
+                    }
+                  ]}
+                >
+                  <View style={styles.label}>
+                    <Text style={styles.text}>tracker</Text>
+                  </View>
+                  <View style={styles.textDate}>
+                    <Text style={{fontSize: 20.8}}>{issue.tracker.name}</Text>
+                  </View>
+                </Pressable>
+                <Pressable
+                  style={({pressed}) => [
+                    styles.halfCell,
+                    {
+                      backgroundColor: pressed
+                        ? myFont.buttonPressedColor
+                        : myFont.white,
+                      position: "relative",
+                    }
+                  ]}
+                >
+                  <View style={styles.label}>
+                    <Text style={styles.text}>priority *</Text>
+                  </View>
+                  <View style={styles.textDate}>
+                    <Text style={{fontSize: 20.8}}>{issue.priority.name}</Text>
+                  </View>
+                </Pressable>
+              </View>
+              <View 
+                style={[
+                  styles.groupRow,
+                  {flexDirection: "row"}
+                ]}
+              >
+                <Pressable
+                  style={({pressed}) => [
+                    styles.halfCell,
+                    {
+                      backgroundColor: pressed
+                        ? myFont.buttonPressedColor
+                        : myFont.white
+                    },
+                  ]}
+                >
+                  <View style={styles.label}>
+                    <Text style={styles.text}>estimated time (h)</Text>
+                  </View>
+                  <View style={styles.textDate}>
+                    <Text style={{fontSize: 20.8}}>{issue.estimated_hours}</Text>
+                  </View>
+                </Pressable>
+                <Pressable
+                  style={({pressed}) => [
+                    styles.halfCell,
+                    {
+                      backgroundColor: pressed
+                        ? myFont.buttonPressedColor
+                        : myFont.white,
+                      position: "relative",
+                    }
+                  ]}
+                >
+                  <View style={styles.label}>
+                    <Text style={styles.text}>status</Text>
+                  </View>
+                  <View
+                    style={[styles.statusTouch, {backgroundColor: myFont.statusColor[issue.status.id - 1]}]}
+                  />
+                </Pressable>
+              </View>
+              <View style={[styles.groupRow, {height: 138}]}>
+                <Pressable
+                  style={({pressed}) => [
+                    {
+                      backgroundColor: pressed
+                        ? myFont.buttonPressedColor
+                        : myFont.white
+                    }
+                  ]}
+                >
+                  <View style={[styles.groupCell, {height: 137}]}>
+                    <View style={styles.label}>
+                      <Text style={styles.text}>description</Text>
+                    </View>
+                    <View style={styles.textDate}>
+                      <Text style={{fontSize: 20.8}}>{issue.description}</Text>
+                    </View>
+                  </View>
+                </Pressable>
+              </View>
+              <View style={styles.groupRow}>
+                <Pressable
+                  style={({pressed}) => 
+                  [{
+                    backgroundColor: pressed
+                      ? myFont.buttonPressedColor
+                      : myFont.white
+                  }]
+                }
+                >
+                  <View style={styles.groupCell}>
+                    <View style={styles.label}>
+                      <Text style={styles.text}>Assigned to</Text>
+                    </View>
+                    <View style={styles.textDate}>
+                      <Text style={{fontSize: 20.8}}>{issue.assigned_to.name}</Text>
+                    </View>
+                  </View>
+                </Pressable>
+              </View>
+              <View
+                style={[
+                  styles.groupRow,
+                  {flexDirection: "row"}
+                ]}
+              >
+                <Pressable
+                  style={({pressed}) => [
+                    styles.halfCell,
+                    {
+                      backgroundColor: pressed
+                        ? myFont.buttonPressedColor
+                        : myFont.white
+                    }
+                  ]}
+                >
+                  <View style={styles.label}>
+                    <Text style={styles.text}>private</Text>
+                  </View>
+                  <CheckBox
+                    disabled={true}
+                    value={issue.is_private}
+                    style={{marginLeft: 4}}
+                  />
+                </Pressable>
+              </View>
             </>
             }
           </ScrollView>
@@ -188,8 +535,8 @@ export default function DetailScreen({ route, navigation }) {
               style={({pressed}) => [
                 {
                   backgroundColor: pressed
-                    ? myFont.buttonPressedColor
-                    : myFont.footerBackgroundColor
+                  ? myFont.buttonPressedColor
+                  : myFont.footerBackgroundColor
                 },
                 styles.backButton
               ]}
@@ -274,6 +621,9 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: myFont.itemBorderColor,
   },
+  groupCell: {
+    width: "100%",
+  },
   halfCell: {
     width: "50%",
     height: 73,
@@ -285,12 +635,11 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     paddingHorizontal: 10,
     paddingBottom: 2,
-    alignItems: "center",
   },
   text: {
     fontSize: myFont.fontAddScreenSize,
     color: myFont.fontAddScreenColor,
-    fontWeight: "400",
+    fontWeight: "300",
     textTransform: "uppercase"
   },
   textDate: {
@@ -306,6 +655,16 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     paddingHorizontal: 15,
+  },
+  statusTouch: {
+    width: 25,
+    height: 25,
+    marginTop: 4,
+    marginLeft: 10,
+    borderTopLeftRadius: 50,
+    borderTopRightRadius: 50,
+    borderBottomLeftRadius: 50,
+    borderBottomRightRadius: 50,
   },
   title: {
     fontSize: 20,

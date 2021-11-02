@@ -9,46 +9,44 @@ import Collapsible from 'react-native-collapsible';
 
 import myFont from '../config/myFont';
 
-export default function Phase(props) {
+export default function SubPhase(props) {
   const issues = props.issues;
   
   const mylist = issues.map((issue, index) => {
     // console.log(issue);
-    if (issue.parent == undefined) {
-      return (
-        <Pressable
-          key={index}
-          onPress={() => props.navigateTo(issue)}
-          style={({pressed}) => [
-            {
-              width: "100%",
-              height: 74,
-              borderStyle: "solid",
-              borderBottomWidth: 1,
-              borderBottomColor: myFont.itemBorderColor,
-              alignItems: "center",
-              flexDirection: "row",
-            },
-            {
-              backgroundColor: pressed
-              ? myFont.buttonPressedColor
-              : myFont.white
-            }
-          ]}
-        >
-          <View style={styles.statusContainer}>
-            <View
-              style={[styles.status, {backgroundColor: myFont.statusColor[issue.status.id - 1]}]}
-            />
-          </View>
-          <View>
-            <Text>{issue.subject}</Text>
-            <Text>(#{issue.id})</Text>
-            {/* {issue.parent ? <Text>Parent id: ({issue.parent.id})</Text> : <></>} */}
-          </View>
-        </Pressable>
-      );
-    }
+    return (
+      <Pressable
+        key={index}
+        onPress={() => props.navigateTo(issue)}
+        style={({pressed}) => [
+          {
+            width: "100%",
+            height: 74,
+            borderStyle: "solid",
+            borderBottomWidth: 1,
+            borderBottomColor: myFont.itemBorderColor,
+            alignItems: "center",
+            flexDirection: "row",
+          },
+          {
+            backgroundColor: pressed
+            ? myFont.buttonPressedColor
+            : myFont.white
+          }
+        ]}
+      >
+        <View style={styles.statusContainer}>
+          <View
+            style={[styles.status, {backgroundColor: myFont.statusColor[issue.status.id - 1]}]}
+          />
+        </View>
+        <View>
+          <Text>{issue.subject}</Text>
+          <Text>(#{issue.id})</Text>
+          {/* {issue.parent ? <Text>Parent id: ({issue.parent.id})</Text> : <></>} */}
+        </View>
+      </Pressable>
+    );
   });
 
   return (

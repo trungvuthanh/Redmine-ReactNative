@@ -29,10 +29,10 @@ export default function ParentIssuePicker(props) {
       >
         <Text>
           {option.parent
-          ? <Text>({option.parent.id}) {'>'} </Text>
+          ? <Text>(#{option.parent.id}) {'>'} </Text>
           : ''
           }
-          ({option.id}) {option.subject} 
+          (#{option.id}) {option.subject} 
         </Text>
       </Pressable>
     );

@@ -29,10 +29,10 @@ export default function ParentProjectPicker(props) {
       >
         <Text>
           {option.parent
-          ? <Text>({option.parent.id}) {'>'} </Text>
+          ? <Text>(#{option.parent.id}) {'>'} </Text>
           : ''
           }
-          ({option.id}) {option.name} 
+          (#{option.id}) {option.name} 
         </Text>
       </Pressable>
     );
