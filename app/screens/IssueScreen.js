@@ -125,19 +125,6 @@ export default function IssueScreen({ route, navigation }) {
             >
               <Ionicons name="chevron-back" size={30} color={myFont.blue} />
             </Pressable>
-            <Pressable
-              onPress={({pressed}) => {}}
-              style={({pressed}) => [
-                {
-                  backgroundColor: pressed
-                    ? myFont.buttonPressedColor
-                    : myFont.addButtonColor
-                },
-                styles.backButton
-              ]}
-            >
-              <Ionicons name="add" size={40} color={myFont.white} />
-            </Pressable>
           </View>    
         </>
       }

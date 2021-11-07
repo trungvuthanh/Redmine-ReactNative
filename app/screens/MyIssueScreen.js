@@ -21,19 +21,11 @@ export default function MyIssueScreen({ route, navigation }) {
   const [myIssues, setMyIssues] = useState([]);
   
   const getIssues = async () => {
-    fetch('http://192.168.1.50:80/redmine/issues.json?status_id=*')
+    fetch('http://192.168.1.50:80/redmine/issues.json?assigned_to_id=1&status_id=*')
     .then((response) => response.json())
     .then((json) => {
-      let myIssueCount = 0;
-      let myIssuesArr = []
-      for (let issue of json.issues) {
-        if (issue.assigned_to) {
-          myIssueCount += 1;
-          myIssuesArr.push(issue);
-        }
-      }
-      setMyIssues(myIssuesArr);
-      setMyIssueAmount(myIssueCount);
+      setMyIssues(json.issues);
+      setMyIssueAmount(json.total_count);
     })
     .catch((error) => {
       console.error(error);
@@ -127,19 +119,6 @@ export default function MyIssueScreen({ route, navigation }) {
               ]}
             >
               <Ionicons name="chevron-back" size={30} color={myFont.blue} />
-            </Pressable>
-            <Pressable
-              onPress={({pressed}) => {}}
-              style={({pressed}) => [
-                {
-                  backgroundColor: pressed
-                    ? myFont.buttonPressedColor
-                    : myFont.addButtonColor
-                },
-                styles.backButton
-              ]}
-            >
-              <Ionicons name="add" size={40} color={myFont.white} />
             </Pressable>
           </View>
         </>
