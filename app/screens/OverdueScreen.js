@@ -20,8 +20,8 @@ export default function OverdueScreen({ route, navigation }) {
           </View>
         </Pressable>
         <Text style={styles.textHeader}>
-          Overdue projects
-          <Text style={{fontSize: 18.6, letterSpacing: myFont.letterSpace}}> ({route.params.amount}/{route.params.amount})</Text>
+          Overdue issues
+          <Text style={{fontSize: 18.6, letterSpacing: myFont.letterSpace}}> ({route.params.amount})</Text>
         </Text>
       </View>
       {/* <Header title="Overdue projects" amount={route.params.amount} /> */}

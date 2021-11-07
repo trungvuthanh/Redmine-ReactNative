@@ -1,93 +1,91 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  ActivityIndicator,
+import {
   StyleSheet,
   Text,
   View,
   SafeAreaView,
   ScrollView,
   Pressable,
-  RefreshControl
+  ActivityIndicator,
+  RefreshControl,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-import AddScreen from './AddScreen';
-import DetailScreen from './DetailScreen';
 import Header from "../components/Header";
-import ItemTiles from "../components/ItemTiles";
 import myFont from '../config/myFont';
 import Footer from "../components/Footer";
 
-export default function OpenProjectScreen({ route, navigation }) {
-  const [amount, setAmount] = useState(0)
+export default function IssueScreen({ route, navigation }) {
   const [isLoading, setLoading] = useState(true);
-  const [projectList, setProjectIdList] = useState([]);
-  const [mylist, setMylist] = useState([])
+  const [issueAmount, setIssueAmount] = useState(0);
+  const [issues, setIssues] = useState([]);
 
-  // pull to refresh function
-  const [refreshing, setRefreshing] = React.useState(false);
-  const onRefresh = React.useCallback(() => {
-    setRefreshing(true);
-    getInfo().then(() => {
-      setRefreshing(false);
-    });
-  }, []);
-
-  const getInfo = async () => {
-    fetch("http://192.168.1.50:80/redmine/projects.json")
+  const getIssues = async () => {
+    fetch('http://192.168.1.50:80/redmine/issues.json?status_id=*')
     .then((response) => response.json())
     .then((json) => {
-      setProjectIdList(
-        json["projects"].map((project, index) => (
-          project.parent
-          ? {name: project.name, id: project.id, parent: project.parent}
-          : {name: project.name, id: project.id}
-        ))
-      );
-      let count = 0;
-      setMylist(
-        json["projects"].map((project, index) => {
-          if (project.id != 1 && project.parent == undefined) {
-            count += 1;
-            return (
-              <View key={index}>
-                <Pressable
-                  onPress={() => navigation.navigate("DetailScreen", { type: 'project' , project: project })}
-                  style={({pressed}) => 
-                    [{
-                      backgroundColor: pressed
-                        ? myFont.buttonPressedColor
-                        : myFont.white
-                    }]
-                  }
-                >
-                  <ItemTiles
-                    name={project.name}
-                    id={project.id}
-                    date={project.created_on.substring(0,10).split('-').reverse().join('/')}
-                    status={project.status - 1}
-                  />
-                </Pressable>
-              </View>  
-            );  
-          }
-        })
-      );
-      setAmount(count);
+      setIssueAmount(json.total_count);
+      setIssues(json.issues);
     })
     .catch((error) => {
       console.error(error);
     })
     .finally(() => setLoading(false));
   }
-  
+
   useEffect(() => {
-    getInfo();
+    getIssues();
+  }, []);
+
+  const issueList = issues.map((issue, index) => {
+    return (
+      <View key={index}>
+        <Pressable
+          onPress={() => navigation.navigate("DetailScreen", { type: 'issue' , issue: issue })}
+          style={({pressed}) => [
+            {
+              width: "100%",
+              height: 74,
+              borderStyle: "solid",
+              borderBottomWidth: 1,
+              borderBottomColor: myFont.itemBorderColor,
+              alignItems: "center",
+              flexDirection: "row",
+            },
+            {
+              backgroundColor: pressed
+              ? myFont.buttonPressedColor
+              : myFont.white
+            }
+          ]}
+        >
+          <View style={styles.statusContainer}>
+            <View
+              style={[styles.status, {backgroundColor: myFont.statusColor[issue.status.id - 1]}]}
+            />
+          </View>
+          <View>
+            <Text>{issue.subject}</Text>
+            <Text>(#{issue.id})</Text>
+          </View>
+        </Pressable>
+      </View>  
+    );
+  });
+  
+  // pull to refresh function
+  const [refreshing, setRefreshing] = React.useState(false);
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    getIssues()
+    .then(() => {
+      setRefreshing(false);
+    });
   }, []);
 
 	return (
 		<SafeAreaView style={styles.container}>
-      {isLoading? <ActivityIndicator/> : 
+      {isLoading ? <ActivityIndicator/> :
         <>
           <View style={styles.header}>
             <Pressable
@@ -99,18 +97,18 @@ export default function OpenProjectScreen({ route, navigation }) {
               </View>
             </Pressable>
             <Text style={styles.textHeader}>
-              Open projects
-              <Text style={{fontSize: 18.6, letterSpacing: myFont.letterSpace}}> ({amount})</Text>
+              All Issues
+              <Text style={{fontSize: 18.6, letterSpacing: myFont.letterSpace}}> ({issueAmount})</Text>
             </Text>
           </View>
-          {/* <Header title="Open projects" amount={route.params.amount} /> */}
-          <ScrollView 
+          {/* <Header title="Issues" amount={issueAmount} /> */}
+          <ScrollView
             style={{marginBottom: 50}}
             refreshControl={
               <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
             }
           >
-            {mylist}
+            {issueList}
           </ScrollView>
           {/* <Footer/> */}
           <View style={styles.footer}>
@@ -128,7 +126,7 @@ export default function OpenProjectScreen({ route, navigation }) {
               <Ionicons name="chevron-back" size={30} color={myFont.blue} />
             </Pressable>
             <Pressable
-              onPress={() => navigation.push("AddScreen", { projects: projectList, type: 'project' })}
+              onPress={({pressed}) => {}}
               style={({pressed}) => [
                 {
                   backgroundColor: pressed
@@ -140,7 +138,7 @@ export default function OpenProjectScreen({ route, navigation }) {
             >
               <Ionicons name="add" size={40} color={myFont.white} />
             </Pressable>
-          </View>
+          </View>    
         </>
       }
     </SafeAreaView>
@@ -151,8 +149,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
-    // alignItems: "center",
-    // justifyContent: "center",
   },
   header: {
 		width: "100%",
@@ -177,17 +173,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     letterSpacing: myFont.letterSpace,
   },
-  addButton: {
-    width: 50,
-    height: 50,
-    backgroundColor: myFont.addButtonColor,
-  },
-  backButton: {
-    width: 50,
-    height: 50,
-    alignItems: "center",
-    justifyContent: "center",
-  },
   footer: {
     backgroundColor: myFont.footerBackgroundColor,
     borderTopColor: myFont.footerBorderColor,
@@ -197,5 +182,30 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     position: "absolute",
     bottom: 0,
+  },
+  backButton: {
+    width: 50,
+    height: 50,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  addButton: {
+    height: 50,
+    paddingHorizontal: 15,
+    backgroundColor: myFont.addButtonColor,
+  },
+  statusContainer: {
+    width: 50,
+    height: 50,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  status: {
+    width: 25,
+    height: 25,
+    borderTopLeftRadius: 50,
+    borderTopRightRadius: 50,
+    borderBottomLeftRadius: 50,
+    borderBottomRightRadius: 50,
   },
 });

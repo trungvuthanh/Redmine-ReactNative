@@ -43,7 +43,6 @@ export default function SubPhase(props) {
         <View>
           <Text>{issue.subject}</Text>
           <Text>(#{issue.id})</Text>
-          {/* {issue.parent ? <Text>Parent id: ({issue.parent.id})</Text> : <></>} */}
         </View>
       </Pressable>
     );

@@ -9,6 +9,7 @@ import Collapsible from 'react-native-collapsible';
 
 import myFont from '../config/myFont';
 
+// Phase is for root issues - issues have no parent issue
 export default function Phase(props) {
   const issues = props.issues;
   

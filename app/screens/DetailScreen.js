@@ -16,8 +16,9 @@ import { Ionicons, Entypo } from '@expo/vector-icons';
 import Phase from '../components/Phase';
 import SubPhase from '../components/SubPhase';
 import SubProject from '../components/SubProject';
+import IssueInformation from '../components/IssueInformation';
+import ProjectInformation from '../components/ProjectInformation';
 import myFont from '../config/myFont';
-import CheckBox from '@react-native-community/checkbox';
 
 const WIDTH = Dimensions.get('window').width;
 
@@ -38,6 +39,7 @@ export default function DetailScreen({ route, navigation }) {
   const [projects, setProjects] = useState({projects: []});
   const [showSub, setShowSub] = useState(true);
   const [showPhase, setShowPhase] = useState(true);
+  const [showInfo, setshowInfo] = useState(true);
   const [projectCount, setProjectCount] = useState(0);
   const [issueCount, setIssueCount] = useState(0);
   const [isLoading, setLoading] = useState(false);
@@ -146,15 +148,17 @@ export default function DetailScreen({ route, navigation }) {
   }
 
   const addNewPhase = () => {
-    type === 'project' ?
-    navigation.push('AddScreen', { 
+    type === 'project'
+    ? navigation.push('AddScreen', { 
       type: 'issue', 
       issues: issues.issues, 
       parent_id: project.id
     })
     : navigation.push('AddScreen', { 
       type: 'issue', 
-      issues: issues 
+      issues: issues.issues,
+      parent_id: issue.project.id,
+      parent_issue: issue
     });
   }
 
@@ -231,7 +235,7 @@ export default function DetailScreen({ route, navigation }) {
               >
                 <View style={styles.halfCell}>
                   <View style={styles.label}>
-                    <Text style={styles.text}>start:</Text>
+                    <Text style={styles.text}>create:</Text>
                   </View>
                   <View style={styles.textDate}>
                     <Text style={{fontSize: 20.8}}>{project.created_on.substring(0,10).split('-').reverse().join('/')}</Text>
@@ -263,7 +267,7 @@ export default function DetailScreen({ route, navigation }) {
                   }
                 </View>
               </Pressable>
-              <SubProject showPhase={showSub} projects={projects.projects} addSubProject={addSubProject} navigateTo={navigateToSubProject}/>
+              <SubProject showSub={showSub} projects={projects.projects} addSubProject={addSubProject} navigateTo={navigateToSubProject}/>
               <Pressable
                 onPress={() => setShowPhase(!showPhase)}
               >
@@ -282,6 +286,24 @@ export default function DetailScreen({ route, navigation }) {
                 </View>
               </Pressable>
               <Phase showPhase={showPhase} issues={issues.issues} addNewPhase={addNewPhase} navigateTo={navigateToSubIssue}/>
+              <Pressable
+                onPress={() => setshowInfo(!showInfo)}
+              >
+                <View
+                  style={styles.tile}
+                >
+                  <Text style={[
+                    styles.title,
+                    {fontWeight: showInfo ? "300" : "700"}
+                  ]}
+                  >Detail</Text>
+                  {showInfo
+                    ? <Entypo name="chevron-down" size={myFont.menuIconSize} color="#d2d4d7" />
+                    : <Entypo name="chevron-up" size={myFont.menuIconSize} color="#d2d4d7" />
+                  }
+                </View>
+              </Pressable>
+              <ProjectInformation showInfo={showInfo} project={project} />
             </>
             : <>
               <View style={styles.nameHeader}>
@@ -325,7 +347,9 @@ export default function DetailScreen({ route, navigation }) {
                     <Text style={styles.text}>due date:</Text>
                   </View>
                   <View style={[styles.textDate, {alignSelf: "center"}]}>
-                    <Text style={{fontSize: 20.8}}>{issue.due_date.substring(0,10).split('-').reverse().join('/')}</Text>
+                    <Text style={{fontSize: 20.8}}>
+                      {issue.due_date ? issue.due_date.substring(0,10).split('-').reverse().join('/') : ''}
+                    </Text>
                   </View>
                 </View>
                 <View style={[styles.halfCell, {flex: 1}]}>
@@ -355,177 +379,24 @@ export default function DetailScreen({ route, navigation }) {
                 </View>
               </Pressable>
               <SubPhase showPhase={showPhase} issues={issues.issues} addNewPhase={addNewPhase} navigateTo={navigateToSubIssue}/>
-              <View style={styles.groupRow}>
-                <Pressable
-                  style={({pressed}) => 
-                  [{
-                    backgroundColor: pressed
-                      ? myFont.buttonPressedColor
-                      : myFont.white
-                  }]
-                }
-                >
-                  <View style={styles.groupCell}>
-                    <View style={styles.label}>
-                      <Text style={styles.text}>Project</Text>
-                    </View>
-                    <View style={styles.textDate}>
-                      <Text style={{fontSize: 20.8}}>(#{issue.project.id}) {issue.project.name}</Text>
-                    </View>
-                  </View>
-                </Pressable>
-              </View>
-              <View
-                style={[
-                  styles.groupRow,
-                  {flexDirection: "row"}
-                ]}
+              <Pressable
+                onPress={() => setshowInfo(!showInfo)}
               >
-                <Pressable
-                  style={({pressed}) => [
-                    styles.halfCell,
-                    {
-                      backgroundColor: pressed
-                        ? myFont.buttonPressedColor
-                        : myFont.white,
-                      position: "relative",
-                    }
+                <View
+                  style={styles.tile}
+                >
+                  <Text style={[
+                    styles.title,
+                    {fontWeight: showInfo ? "300" : "700"}
                   ]}
-                >
-                  <View style={styles.label}>
-                    <Text style={styles.text}>tracker</Text>
-                  </View>
-                  <View style={styles.textDate}>
-                    <Text style={{fontSize: 20.8}}>{issue.tracker.name}</Text>
-                  </View>
-                </Pressable>
-                <Pressable
-                  style={({pressed}) => [
-                    styles.halfCell,
-                    {
-                      backgroundColor: pressed
-                        ? myFont.buttonPressedColor
-                        : myFont.white,
-                      position: "relative",
-                    }
-                  ]}
-                >
-                  <View style={styles.label}>
-                    <Text style={styles.text}>priority *</Text>
-                  </View>
-                  <View style={styles.textDate}>
-                    <Text style={{fontSize: 20.8}}>{issue.priority.name}</Text>
-                  </View>
-                </Pressable>
-              </View>
-              <View 
-                style={[
-                  styles.groupRow,
-                  {flexDirection: "row"}
-                ]}
-              >
-                <Pressable
-                  style={({pressed}) => [
-                    styles.halfCell,
-                    {
-                      backgroundColor: pressed
-                        ? myFont.buttonPressedColor
-                        : myFont.white
-                    },
-                  ]}
-                >
-                  <View style={styles.label}>
-                    <Text style={styles.text}>estimated time (h)</Text>
-                  </View>
-                  <View style={styles.textDate}>
-                    <Text style={{fontSize: 20.8}}>{issue.estimated_hours}</Text>
-                  </View>
-                </Pressable>
-                <Pressable
-                  style={({pressed}) => [
-                    styles.halfCell,
-                    {
-                      backgroundColor: pressed
-                        ? myFont.buttonPressedColor
-                        : myFont.white,
-                      position: "relative",
-                    }
-                  ]}
-                >
-                  <View style={styles.label}>
-                    <Text style={styles.text}>status</Text>
-                  </View>
-                  <View
-                    style={[styles.statusTouch, {backgroundColor: myFont.statusColor[issue.status.id - 1]}]}
-                  />
-                </Pressable>
-              </View>
-              <View style={[styles.groupRow, {height: 138}]}>
-                <Pressable
-                  style={({pressed}) => [
-                    {
-                      backgroundColor: pressed
-                        ? myFont.buttonPressedColor
-                        : myFont.white
-                    }
-                  ]}
-                >
-                  <View style={[styles.groupCell, {height: 137}]}>
-                    <View style={styles.label}>
-                      <Text style={styles.text}>description</Text>
-                    </View>
-                    <View style={styles.textDate}>
-                      <Text style={{fontSize: 20.8}}>{issue.description}</Text>
-                    </View>
-                  </View>
-                </Pressable>
-              </View>
-              <View style={styles.groupRow}>
-                <Pressable
-                  style={({pressed}) => 
-                  [{
-                    backgroundColor: pressed
-                      ? myFont.buttonPressedColor
-                      : myFont.white
-                  }]
-                }
-                >
-                  <View style={styles.groupCell}>
-                    <View style={styles.label}>
-                      <Text style={styles.text}>Assigned to</Text>
-                    </View>
-                    <View style={styles.textDate}>
-                      <Text style={{fontSize: 20.8}}>{issue.assigned_to.name}</Text>
-                    </View>
-                  </View>
-                </Pressable>
-              </View>
-              <View
-                style={[
-                  styles.groupRow,
-                  {flexDirection: "row"}
-                ]}
-              >
-                <Pressable
-                  style={({pressed}) => [
-                    styles.halfCell,
-                    {
-                      backgroundColor: pressed
-                        ? myFont.buttonPressedColor
-                        : myFont.white
-                    }
-                  ]}
-                >
-                  <View style={styles.label}>
-                    <Text style={styles.text}>private</Text>
-                  </View>
-                  <CheckBox
-                    disabled={true}
-                    value={issue.is_private}
-                    style={{marginLeft: 4}}
-                  />
-                </Pressable>
-              </View>
+                  >Detail</Text>
+                  {showInfo
+                    ? <Entypo name="chevron-down" size={myFont.menuIconSize} color="#d2d4d7" />
+                    : <Entypo name="chevron-up" size={myFont.menuIconSize} color="#d2d4d7" />
+                  }
+                </View>
+              </Pressable>
+              <IssueInformation showInfo={showInfo} issue={issue} />
             </>
             }
           </ScrollView>
@@ -605,6 +476,7 @@ const styles = StyleSheet.create({
     height: 50,
     alignItems: "center",
     justifyContent: "center",
+    flexDirection: "row"
   },
   status: {
     width: 25,

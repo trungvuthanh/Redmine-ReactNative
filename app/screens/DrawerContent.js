@@ -49,7 +49,7 @@ export default function DrawerContent(props) {
             <Text style={styles.drawerItemText}>Projects</Text>
           </Pressable>
           <Pressable
-            onPress={() => {}}
+            onPress={() => props.navigation.navigate('IssueStack')}
             style={styles.drawerItem}
           >
             <View style={styles.icon}>

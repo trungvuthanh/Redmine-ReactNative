@@ -51,7 +51,7 @@ export default function SubProject(props) {
 
   return (
     <Collapsible 
-      collapsed={props.showPhase}
+      collapsed={props.showSub}
     >
       <View
         style={styles.addPhaseContainer}

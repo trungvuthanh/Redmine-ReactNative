@@ -17,7 +17,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import CheckBox from '@react-native-community/checkbox';
-import DocumentPicker from 'react-native-document-picker'
+import DocumentPicker from 'react-native-document-picker';
 
 import myFont from '../config/myFont';
 import TrackerPicker from '../components/TrackerPicker';
@@ -29,27 +29,19 @@ import DoneRatioPicker from '../components/DoneRatioPicker';
 
 function dateInput() {
   const [date, setDate] = useState(new Date());
-  // const [mode, setMode] = useState('date');
   const [show, setShow] = useState(false);
 
-  // const showMode = (currentMode) => {
-  //   setShow(true);
-  //   setMode(currentMode);
-  // };
   const showDatepicker = () => {
-    // showMode('date');
     setShow(true);
   };
 
   const onChange = (event, selectedDate) => {
     const currentDate = selectedDate || date
-    // setShow(Platform.OS === 'ios');
     setShow(false);
     setDate(currentDate);
   }
   return {
     date,
-    // mode,
     show,
     showDatepicker,
     onChange
@@ -59,21 +51,34 @@ function dateInput() {
 export default function AddScreen({ route, navigation }) {
   const type = route.params.type;
   let projects = [], issues = [];
-  let parent_id;
+  let parent_id; // parent project
+  let parent_issue; // parent issue
   if (type === 'project') {
     projects = route.params.projects
     if (route.params.parent != undefined) {
       parent_id = route.params.parent;
     }
   } else if (type === 'issue') {
-    issues = route.params.issues;
+    issues = route.params.issues; // issues of parent project
     parent_id = route.params.parent_id;
+    if (route.params.parent_issue != undefined) {
+      parent_issue = route.params.parent_issue;
+      if (issues[0] != route.params.parent_issue) {
+        issues.splice(0, 0, route.params.parent_issue);
+      }
+    }
   }
     
   // General
   const [name, onChangeName] = useState("");
   const [description, onChangeDescription] = useState("");
-  const [subproject, onChangeSubProject] = useState(type === 'issue' ? {subject: "", id: 0} : {name: "", id: 0});
+  const [subproject, onChangeSubProject] = useState(
+    type === 'project'
+    ? {name: "", id: 0}
+    : route.params.parent_issue
+    ? {subject: route.params.parent_issue.subject, id: route.params.parent_issue.id}
+    : {subject: "", id: 0}
+  );
   const [isSubVisible, setIsSubVisible] = useState(false);
   const changeSubVisibility = (bool) => {
     setIsSubVisible(bool);
@@ -107,7 +112,7 @@ export default function AddScreen({ route, navigation }) {
   const [doneRatio, onChangeDoneRatio] = useState(0);
   const [isDoneRatioVisible, setIsDoneRatioVisible] = useState(false);
   const [isPrivate, setIsPrivate] = useState(false);
-  let attachment = {};
+    
   const onChangeStart = (event, selectedDate) => {
     startDate.onChange(event, selectedDate);
     console.log(startDate.date.toLocaleDateString());
@@ -140,14 +145,23 @@ export default function AddScreen({ route, navigation }) {
       const results = await DocumentPicker.pickMultiple({
         type: [DocumentPicker.types.images],
       })
-      for (const res of results) {
-        console.log(
-          res.uri,
-          res.type, // mime type
-          res.name,
-          res.size,
-        )
-      }
+      .then(() => {
+        if (results != null) {
+          for (const res of results) {
+            console.log(
+              res.uri,
+              res.type, // mime type
+              res.name,
+              res.size,
+            )
+          }  
+        } else {
+          console.log('Error')
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+      });
     } catch (err) {
       if (DocumentPicker.isCancel(err)) {
         // User cancelled the picker, exit any dialogs or menus and move on
@@ -247,9 +261,6 @@ export default function AddScreen({ route, navigation }) {
           );
         }
       })
-      // .then(() => {
-      //   navigation.goBack();
-      // })
       .catch((error) => {
         console.error(error);
       });
@@ -318,9 +329,6 @@ export default function AddScreen({ route, navigation }) {
           );
         }
       })
-      // .then(() => {
-      //   navigation.goBack();
-      // })
       .catch((error) => {
         console.error(error);
       });
@@ -328,587 +336,588 @@ export default function AddScreen({ route, navigation }) {
   }
 
   return (
-    // <SafeAreaView>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={styles.container}
-        keyboardVerticalOffset={styles.header.height}
-      >
-        <View style={styles.header}>
-          <Pressable
-            onPress={() => navigation.pop()}
-            style={styles.closeBtn}
-          >
-            <View>
-              <Ionicons name="close-sharp" size={myFont.menuIconSize} color="white" />
-            </View>
-          </Pressable>
-            {type === 'project' 
-            ? <Text style={styles.textHeader}>Add project</Text> 
-            : <Text style={styles.textHeader}>Add issue</Text>}
-        </View>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={styles.container}
+      keyboardVerticalOffset={styles.header.height}
+    >
+      <View style={styles.header}>
+        <Pressable
+          onPress={() => navigation.pop()}
+          style={styles.closeBtn}
+        >
+          <View>
+            <Ionicons name="close-sharp" size={myFont.menuIconSize} color="white" />
+          </View>
+        </Pressable>
+          {type === 'project' 
+          ? <Text style={styles.textHeader}>Add project</Text> 
+          : <Text style={styles.textHeader}>Add issue</Text>}
+      </View>
 
-        <ScrollView style={{marginBottom: 50}}>
-          {type === 'project'
-          ? <>
-              <View style={styles.groupRow}>
-                <Pressable
-                  style={({pressed}) => 
-                  [{
-                    backgroundColor: pressed
-                      ? myFont.buttonPressedColor
-                      : myFont.white
-                  }]
-                }
-                >
-                  <View style={styles.groupCell}>
-                    <View style={styles.label}>
-                      <Text style={styles.text}>name *</Text>
-                    </View>
-                    <TextInput
-                      style={styles.textInput}
-                      textAlignVertical="center"
-                      value={name}
-                      onChangeText={(name) => {
-                        onChangeName(name);
-                        onChangeIdentifier(toIdentifier(name));
-                      }}
-                    />
-                  </View>
-                </Pressable>
-              </View>
-              <View style={styles.groupRow}>
-                <Pressable
-                  style={({pressed}) => 
-                    [{
-                      backgroundColor: pressed
-                        ? myFont.buttonPressedColor
-                        : myFont.white
-                    }]
-                  }
-                >
-                  <View style={styles.groupCell}>
-                    <View style={styles.label}>
-                      <Text style={styles.text}>identifier *</Text>
-                    </View>
-                    <Text style={styles.textInput}>{identifier}</Text>
-                  </View>
-                </Pressable>
-              </View>
-              <View style={[styles.groupRow, {height: 138}]}>
-                <Pressable
-                  style={({pressed}) => [
-                    {
-                      backgroundColor: pressed
-                        ? myFont.buttonPressedColor
-                        : myFont.white
-                    }
-                  ]}
-                >
-                  <View style={[styles.groupCell, {height: 137}]}>
-                    <View style={styles.label}>
-                      <Text style={styles.text}>description</Text>
-                    </View>
-                    <TextInput 
-                      style={[
-                        styles.textInput,
-                        {minHeight: 100},
-                      ]} 
-                      multiline={true} 
-                      textAlignVertical="top"
-                      value={description}
-                      onChangeText={(text) => onChangeDescription(text)}
-                    />
-                  </View>
-                </Pressable>
-              </View>
-              <View style={styles.groupRow}>
-                <Pressable
-                  style={({pressed}) => 
-                  [{
-                    backgroundColor: pressed
-                      ? myFont.buttonPressedColor
-                      : myFont.white
-                  }]
-                }
-                >
-                  <View style={styles.groupCell}>
-                    <View style={styles.label}>
-                      <Text style={styles.text}>subproject of</Text>
-                      <Pressable
-                        onPress={() => onChangeSubProject({name: "", id: 0})}
-                        disabled={parent_id != undefined ? true : false}
-                      >
-                        <Text
-                          style={{color: myFont.blue}}
-                        >Clear</Text>
-                      </Pressable>
-                    </View>
-                    <Pressable
-                      onPress={() => changeSubVisibility(true)}
-                      disabled={parent_id != undefined ? true : false}
-                    >
-                      <Text style={styles.textInput}>{parent_id != undefined ? parent_id.name : subproject.name}</Text>
-                    </Pressable>
-                    <View>
-                      <Modal
-                        transparent={true}
-                        visible={isSubVisible}
-                        onRequestClose={() => changeSubVisibility(false)}
-                      >
-                        <ParentProjectPicker
-                          changeSubVisibility={changeSubVisibility}
-                          setSub={setSubProject}
-                          projectList={projects}
-                        />
-                      </Modal>
-                    </View>
-                  </View>
-                </Pressable>
-              </View>
-              <View 
-                style={[
-                  styles.groupRow,
-                  {flexDirection: "row"}
-                ]}
+      <ScrollView style={{marginBottom: 50}}>
+        {type === 'project'
+        ? <>
+            <View style={styles.groupRow}>
+              <Pressable
+                style={({pressed}) => 
+                [{
+                  backgroundColor: pressed
+                    ? myFont.buttonPressedColor
+                    : myFont.white
+                }]
+              }
               >
-                <Pressable
-                  style={({pressed}) => [
-                    styles.halfCell,
-                    {
-                      backgroundColor: pressed
-                        ? myFont.buttonPressedColor
-                        : myFont.white
-                    }
-                  ]}
-                >
+                <View style={styles.groupCell}>
                   <View style={styles.label}>
-                    <Text style={styles.text}>is public</Text>
-                  </View>
-                  <CheckBox
-                    disabled={false}
-                    value={isPublic}
-                    onValueChange={(newValue) => setIsPublic(newValue)}
-                    style={{marginLeft: 4}}
-                  />
-                </Pressable>
-                <Pressable
-                  style={({pressed}) => [
-                    styles.halfCell,
-                    {
-                      backgroundColor: pressed
-                        ? myFont.buttonPressedColor
-                        : myFont.white,
-                      position: "relative",
-                    }
-                  ]}
-                >
-                  <View style={styles.label}>
-                    <Text style={styles.text}>inherit members</Text>
-                  </View>
-                  <CheckBox
-                    disabled={false}
-                    value={isInherit}
-                    onValueChange={(newValue) => setIsInherit(newValue)}
-                    style={{marginLeft: 4}}
-                  />
-                </Pressable>
-              </View>
-            </>
-          : <>
-              <View style={styles.groupRow}>
-                <Pressable
-                  style={({pressed}) => 
-                  [{
-                    backgroundColor: pressed
-                      ? myFont.buttonPressedColor
-                      : myFont.white
-                  }]}
-                >
-                  <View style={styles.groupCell}>
-                    <View style={styles.label}>
-                      <Text style={styles.text}>subject *</Text>
-                    </View>
-                    <TextInput
-                      style={styles.textInput}
-                      textAlignVertical="center"
-                      value={name}
-                      onChangeText={(name) => {
-                        onChangeName(name);
-                        onChangeIdentifier(toIdentifier(name));
-                      }}
-                    />
-                  </View>
-                </Pressable>
-              </View>
-              <View style={[styles.groupRow, {height: 138}]}>
-                <Pressable
-                  style={({pressed}) => [
-                    {
-                      backgroundColor: pressed
-                        ? myFont.buttonPressedColor
-                        : myFont.white
-                    }
-                  ]}
-                >
-                  <View style={[styles.groupCell, {height: 137}]}>
-                    <View style={styles.label}>
-                      <Text style={styles.text}>description</Text>
-                    </View>
-                    <TextInput 
-                      style={[
-                        styles.textInput,
-                        {minHeight: 100},
-                      ]} 
-                      multiline={true} 
-                      textAlignVertical="top"
-                      value={description}
-                      onChangeText={(text) => onChangeDescription(text)}
-                    />
-                  </View>
-                </Pressable>
-              </View>
-              <View style={styles.groupRow}>
-                <Pressable
-                  style={({pressed}) => 
-                  [{
-                    backgroundColor: pressed
-                      ? myFont.buttonPressedColor
-                      : myFont.white
-                  }]
-                }
-                >
-                  <View style={styles.groupCell}>
-                    <View style={styles.label}>
-                      <Text style={styles.text}>Parent task</Text>
-                      <Pressable
-                        onPress={() => onChangeSubProject({subject: "", id: 0})}
-                      >
-                        <Text
-                          style={{color: myFont.blue}}
-                        >Clear</Text>
-                      </Pressable>
-                    </View>
-                    <Pressable
-                      onPress={() => changeSubVisibility(true)}
-                    >
-                      <Text style={styles.textInput}>{subproject.subject}</Text>
-                    </Pressable>
-                    <View>
-                      <Modal
-                        transparent={true}
-                        visible={isSubVisible}
-                        onRequestClose={() => changeSubVisibility(false)}
-                      >
-                        <ParentIssuePicker
-                          changeSubVisibility={changeSubVisibility}
-                          setSub={setSubProject}
-                          issueList={issues}
-                        />
-                      </Modal>
-                    </View>
-                  </View>
-                </Pressable>
-              </View>
-              <View 
-                style={[
-                  styles.groupRow,
-                  {flexDirection: "row"}
-                ]}
-              >
-                <Pressable
-                  onPress={startDate.showDatepicker}
-                  style={styles.halfCell}
-                >
-                  <View style={styles.label}>
-                    <Text style={styles.text}>start date</Text>
-                  </View>
-                  <View style={styles.textDate}>
-                    <Text style={{fontSize: 20.8}}>{standardDate(startDate.date).split('-').reverse().join('/')}</Text>
-                    <View style={styles.dateIcon}>
-                      <Ionicons name="calendar-sharp" size={24} color={myFont.blue} />
-                    </View>
-                  </View>
-                  {startDate.show && (
-                    <DateTimePicker
-                      testID="dateStartPicker"
-                      value={startDate.date}
-                      mode="date"
-                      is24Hour={true}
-                      onChange={onChangeStart}
-                      
-                    />
-                  )}
-                </Pressable>
-                <Pressable
-                  onPress={endDate.showDatepicker}
-                  style={styles.halfCell}
-                >
-                  <View style={styles.label}>
-                    <Text style={styles.text}>due date</Text>
-                  </View>
-                  <View style={styles.textDate}>
-                    <Text style={{fontSize: 20.8}}>{standardDate(endDate.date).split('-').reverse().join('/')}</Text>
-                    <View style={styles.dateIcon}>
-                      <Ionicons name="calendar-sharp" size={24} color={myFont.blue} />
-                    </View>
-                  </View>
-                  {endDate.show && (
-                    <DateTimePicker
-                      testID="dateEndPicker"
-                      value={endDate.date}
-                      mode="date"
-                      is24Hour={true}
-                      onChange={onChangeEnd}
-                    />
-                  )}
-                </Pressable>
-              </View>
-              <View 
-                style={[
-                  styles.groupRow,
-                  {flexDirection: "row"}
-                ]}
-              >
-                <Pressable
-                  style={({pressed}) => [
-                    styles.halfCell,
-                    {
-                      backgroundColor: pressed
-                        ? myFont.buttonPressedColor
-                        : myFont.white
-                    },
-                  ]}
-                >
-                  <View style={styles.label}>
-                    <Text style={styles.text}>estimated time (h)</Text>
+                    <Text style={styles.text}>name *</Text>
                   </View>
                   <TextInput
                     style={styles.textInput}
                     textAlignVertical="center"
-                    value={duration}
-                    onChangeText={(value) => onChangeDuration(value.toString())}
+                    value={name}
+                    onChangeText={(name) => {
+                      onChangeName(name);
+                      onChangeIdentifier(toIdentifier(name));
+                    }}
                   />
-                </Pressable>
-                <Pressable
-                  style={({pressed}) => [
-                    styles.halfCell,
-                    {
-                      backgroundColor: pressed
-                        ? myFont.buttonPressedColor
-                        : myFont.white,
-                      position: "relative",
-                    }
-                  ]}
-                >
-                  <View style={styles.label}>
-                    <Text style={styles.text}>status *</Text>
-                  </View>
-                  <Pressable
-                    onPress={() => changeStatusVisibility(true)}
-                    style={[styles.statusTouch, {backgroundColor: myFont.statusColor[status - 1]}]}
-                  />
-                  <View>
-                    <Modal
-                      transparent={true}
-                      visible={isStatusVisible}
-                      onRequestClose={() => changeStatusVisibility(false)}
-                    >
-                      <StatusPicker
-                        changeStatusVisibility={changeStatusVisibility}
-                        setStatus={onChangeStatus}
-                      />
-                    </Modal>
-                  </View>
-                </Pressable>
-              </View>
-              <View
-                style={[
-                  styles.groupRow,
-                  {flexDirection: "row"}
-                ]}
-              >
-                <Pressable
-                  style={({pressed}) => [
-                    styles.halfCell,
-                    {
-                      backgroundColor: pressed
-                        ? myFont.buttonPressedColor
-                        : myFont.white,
-                      position: "relative",
-                    }
-                  ]}
-                >
-                  <View style={styles.label}>
-                    <Text style={styles.text}>tracker *</Text>
-                  </View>
-                  <Pressable
-                    onPress={() => changeTrackerVisibility(true)}
-                  >
-                    <Text style={styles.textInput}>{tracker.name}</Text>
-                  </Pressable>
-                  <View>
-                    <Modal
-                      transparent={true}
-                      visible={isTrackerVisible}
-                      onRequestClose={() => changeTrackerVisibility(false)}
-                    >
-                      <TrackerPicker
-                        changeTrackerVisibility={changeTrackerVisibility}
-                        setTracker={onChangeTracker}
-                      />
-                    </Modal>
-                  </View>
-                </Pressable>
-                <Pressable
-                  style={({pressed}) => [
-                    styles.halfCell,
-                    {
-                      backgroundColor: pressed
-                        ? myFont.buttonPressedColor
-                        : myFont.white,
-                      position: "relative",
-                    }
-                  ]}
-                >
-                  <View style={styles.label}>
-                    <Text style={styles.text}>priority *</Text>
-                  </View>
-                  <Pressable
-                    onPress={() => changePriorityVisibility(true)}
-                  >
-                    <Text style={styles.textInput}>{priority.name}</Text>
-                  </Pressable>
-                  <View>
-                    <Modal
-                      transparent={true}
-                      visible={isPriorityVisible}
-                      onRequestClose={() => changePriorityVisibility(false)}
-                    >
-                      <PriorityPicker
-                        changePriorityVisibility={changePriorityVisibility}
-                        setPriority={onChangePriority}
-                      />
-                    </Modal>
-                  </View>
-                </Pressable>
-              </View>
-              <View
-                style={[
-                  styles.groupRow,
-                  {flexDirection: "row"}
-                ]}
-              >
-                <Pressable
-                  style={({pressed}) => [
-                    styles.halfCell,
-                    {
-                      backgroundColor: pressed
-                        ? myFont.buttonPressedColor
-                        : myFont.white,
-                      position: "relative",
-                    }
-                  ]}
-                >
-                  <View style={styles.label}>
-                    <Text style={styles.text}>% done</Text>
-                  </View>
-                  <Pressable
-                    onPress={() => changeDoneRatioVisibility(true)}
-                  >
-                    <Text style={styles.textInput}>{doneRatio.toString()} %</Text>
-                  </Pressable>
-                  <View>
-                    <Modal
-                      transparent={true}
-                      visible={isDoneRatioVisible}
-                      onRequestClose={() => changeDoneRatioVisibility(false)}
-                    >
-                      <DoneRatioPicker
-                        changeDoneRatioVisibility={changeDoneRatioVisibility}
-                        setDoneRatio={onChangeDoneRatio}
-                      />
-                    </Modal>
-                  </View>
-                </Pressable>
-                <Pressable
-                  style={({pressed}) => [
-                    styles.halfCell,
-                    {
-                      backgroundColor: pressed
-                        ? myFont.buttonPressedColor
-                        : myFont.white
-                    }
-                  ]}
-                >
-                  <View style={styles.label}>
-                    <Text style={styles.text}>private</Text>
-                  </View>
-                  <CheckBox
-                    disabled={false}
-                    value={isPrivate}
-                    onValueChange={(newValue) => setIsPrivate(newValue)}
-                    style={{marginLeft: 4}}
-                  />
-                </Pressable>
-              </View>
-              <View style={styles.groupRow}>
-                <Pressable
-                  style={({pressed}) => 
+                </View>
+              </Pressable>
+            </View>
+            <View style={styles.groupRow}>
+              <Pressable
+                style={({pressed}) => 
                   [{
                     backgroundColor: pressed
                       ? myFont.buttonPressedColor
                       : myFont.white
                   }]
                 }
-                >
-                  <View style={styles.groupCell}>
-                    <View style={styles.label}>
-                      <Text style={styles.text}>Attach files</Text>
-                    </View>
+              >
+                <View style={styles.groupCell}>
+                  <View style={styles.label}>
+                    <Text style={styles.text}>identifier *</Text>
                   </View>
-                </Pressable>
-                <View style={{width: "50%", alignSelf: "center"}}>
-                  <Button
-                    title="Upload files"
-                    onPress={() => uploadFile()}
-                  ></Button>
+                  <Text style={styles.textInput}>{identifier}</Text>
                 </View>
+              </Pressable>
+            </View>
+            <View style={[styles.groupRow, {height: 138}]}>
+              <Pressable
+                style={({pressed}) => [
+                  {
+                    backgroundColor: pressed
+                      ? myFont.buttonPressedColor
+                      : myFont.white
+                  }
+                ]}
+              >
+                <View style={[styles.groupCell, {height: 137}]}>
+                  <View style={styles.label}>
+                    <Text style={styles.text}>description</Text>
+                  </View>
+                  <TextInput 
+                    style={[
+                      styles.textInput,
+                      {minHeight: 100},
+                    ]} 
+                    multiline={true} 
+                    textAlignVertical="top"
+                    value={description}
+                    onChangeText={(text) => onChangeDescription(text)}
+                  />
+                </View>
+              </Pressable>
+            </View>
+            <View style={styles.groupRow}>
+              <Pressable
+                style={({pressed}) => 
+                [{
+                  backgroundColor: pressed
+                    ? myFont.buttonPressedColor
+                    : myFont.white
+                }]
+              }
+              >
+                <View style={styles.groupCell}>
+                  <View style={styles.label}>
+                    <Text style={styles.text}>subproject of</Text>
+                    <Pressable
+                      onPress={() => onChangeSubProject({name: "", id: 0})}
+                      disabled={parent_id != undefined ? true : false}
+                    >
+                      <Text
+                        style={{color: myFont.blue}}
+                      >Clear</Text>
+                    </Pressable>
+                  </View>
+                  <Pressable
+                    onPress={() => changeSubVisibility(true)}
+                    disabled={parent_id != undefined ? true : false}
+                  >
+                    <Text style={styles.textInput}>{parent_id != undefined ? parent_id.name : subproject.name}</Text>
+                  </Pressable>
+                  <View>
+                    <Modal
+                      transparent={true}
+                      visible={isSubVisible}
+                      onRequestClose={() => changeSubVisibility(false)}
+                    >
+                      <ParentProjectPicker
+                        changeSubVisibility={changeSubVisibility}
+                        setSub={setSubProject}
+                        projectList={projects}
+                      />
+                    </Modal>
+                  </View>
+                </View>
+              </Pressable>
+            </View>
+            <View 
+              style={[
+                styles.groupRow,
+                {flexDirection: "row"}
+              ]}
+            >
+              <Pressable
+                style={({pressed}) => [
+                  styles.halfCell,
+                  {
+                    backgroundColor: pressed
+                      ? myFont.buttonPressedColor
+                      : myFont.white
+                  }
+                ]}
+              >
+                <View style={styles.label}>
+                  <Text style={styles.text}>is public</Text>
+                </View>
+                <CheckBox
+                  disabled={false}
+                  value={isPublic}
+                  onValueChange={(newValue) => setIsPublic(newValue)}
+                  style={{marginLeft: 4}}
+                />
+              </Pressable>
+              <Pressable
+                style={({pressed}) => [
+                  styles.halfCell,
+                  {
+                    backgroundColor: pressed
+                      ? myFont.buttonPressedColor
+                      : myFont.white,
+                    position: "relative",
+                  }
+                ]}
+              >
+                <View style={styles.label}>
+                  <Text style={styles.text}>inherit members</Text>
+                </View>
+                <CheckBox
+                  disabled={false}
+                  value={isInherit}
+                  onValueChange={(newValue) => setIsInherit(newValue)}
+                  style={{marginLeft: 4}}
+                />
+              </Pressable>
+            </View>
+          </>
+        : <>
+            <View style={styles.groupRow}>
+              <Pressable
+                style={({pressed}) => 
+                [{
+                  backgroundColor: pressed
+                    ? myFont.buttonPressedColor
+                    : myFont.white
+                }]}
+              >
+                <View style={styles.groupCell}>
+                  <View style={styles.label}>
+                    <Text style={styles.text}>subject *</Text>
+                  </View>
+                  <TextInput
+                    style={styles.textInput}
+                    textAlignVertical="center"
+                    value={name}
+                    onChangeText={(name) => {
+                      onChangeName(name);
+                      onChangeIdentifier(toIdentifier(name));
+                    }}
+                  />
+                </View>
+              </Pressable>
+            </View>
+            <View style={[styles.groupRow, {height: 138}]}>
+              <Pressable
+                style={({pressed}) => [
+                  {
+                    backgroundColor: pressed
+                      ? myFont.buttonPressedColor
+                      : myFont.white
+                  }
+                ]}
+              >
+                <View style={[styles.groupCell, {height: 137}]}>
+                  <View style={styles.label}>
+                    <Text style={styles.text}>description</Text>
+                  </View>
+                  <TextInput 
+                    style={[
+                      styles.textInput,
+                      {minHeight: 100},
+                    ]} 
+                    multiline={true} 
+                    textAlignVertical="top"
+                    value={description}
+                    onChangeText={(text) => onChangeDescription(text)}
+                  />
+                </View>
+              </Pressable>
+            </View>
+            <View style={styles.groupRow}>
+              <Pressable
+                style={({pressed}) => 
+                [{
+                  backgroundColor: pressed
+                    ? myFont.buttonPressedColor
+                    : myFont.white
+                }]
+              }
+              >
+                <View style={styles.groupCell}>
+                  <View style={styles.label}>
+                    <Text style={styles.text}>Parent task</Text>
+                    <Pressable
+                      onPress={() => onChangeSubProject({subject: "", id: 0})}
+                    >
+                      <Text
+                        style={{color: myFont.blue}}
+                      >Clear</Text>
+                    </Pressable>
+                  </View>
+                  <Pressable
+                    onPress={() => changeSubVisibility(true)}
+                  >
+                    <Text style={styles.textInput}>{subproject.subject}</Text>
+                  </Pressable>
+                  <View>
+                    <Modal
+                      transparent={true}
+                      visible={isSubVisible}
+                      onRequestClose={() => changeSubVisibility(false)}
+                    >
+                      <ParentIssuePicker
+                        changeSubVisibility={changeSubVisibility}
+                        setSub={setSubProject}
+                        issueList={issues}
+                      />
+                    </Modal>
+                  </View>
+                </View>
+              </Pressable>
+            </View>
+            <View 
+              style={[
+                styles.groupRow,
+                {flexDirection: "row"}
+              ]}
+            >
+              <Pressable
+                onPress={startDate.showDatepicker}
+                style={styles.halfCell}
+              >
+                <View style={styles.label}>
+                  <Text style={styles.text}>start date</Text>
+                </View>
+                <View style={styles.textDate}>
+                  <Text style={{fontSize: 20.8}}>{standardDate(startDate.date).split('-').reverse().join('/')}</Text>
+                  <View style={styles.dateIcon}>
+                    <Ionicons name="calendar-sharp" size={24} color={myFont.blue} />
+                  </View>
+                </View>
+                {startDate.show && (
+                  <DateTimePicker
+                    testID="dateStartPicker"
+                    value={startDate.date}
+                    mode="date"
+                    is24Hour={true}
+                    onChange={onChangeStart}
+                    
+                  />
+                )}
+              </Pressable>
+              <Pressable
+                onPress={endDate.showDatepicker}
+                style={styles.halfCell}
+              >
+                <View style={styles.label}>
+                  <Text style={styles.text}>due date</Text>
+                </View>
+                <View style={styles.textDate}>
+                  <Text style={{fontSize: 20.8}}>{standardDate(endDate.date).split('-').reverse().join('/')}</Text>
+                  <View style={styles.dateIcon}>
+                    <Ionicons name="calendar-sharp" size={24} color={myFont.blue} />
+                  </View>
+                </View>
+                {endDate.show && (
+                  <DateTimePicker
+                    testID="dateEndPicker"
+                    value={endDate.date}
+                    mode="date"
+                    is24Hour={true}
+                    onChange={onChangeEnd}
+                  />
+                )}
+              </Pressable>
+            </View>
+            <View 
+              style={[
+                styles.groupRow,
+                {flexDirection: "row"}
+              ]}
+            >
+              <Pressable
+                style={({pressed}) => [
+                  styles.halfCell,
+                  {
+                    backgroundColor: pressed
+                      ? myFont.buttonPressedColor
+                      : myFont.white
+                  },
+                ]}
+              >
+                <View style={styles.label}>
+                  <Text style={styles.text}>estimated time (h)</Text>
+                </View>
+                <TextInput
+                  style={styles.textInput}
+                  textAlignVertical="center"
+                  value={duration}
+                  onChangeText={(value) => onChangeDuration(value.toString())}
+                />
+              </Pressable>
+              <Pressable
+                style={({pressed}) => [
+                  styles.halfCell,
+                  {
+                    backgroundColor: pressed
+                      ? myFont.buttonPressedColor
+                      : myFont.white,
+                    position: "relative",
+                  }
+                ]}
+              >
+                <View style={styles.label}>
+                  <Text style={styles.text}>status *</Text>
+                </View>
+                <View style={{flexDirection: 'row'}}>
+                  <Pressable
+                    onPress={() => changeStatusVisibility(true)}
+                    style={[styles.statusTouch, {backgroundColor: myFont.statusColor[status - 1]}]}
+                  />
+                  <Text style={styles.textInput}>New</Text>
+                </View>
+                
+                <View>
+                  <Modal
+                    transparent={true}
+                    visible={isStatusVisible}
+                    onRequestClose={() => changeStatusVisibility(false)}
+                  >
+                    <StatusPicker
+                      changeStatusVisibility={changeStatusVisibility}
+                      setStatus={onChangeStatus}
+                    />
+                  </Modal>
+                </View>
+              </Pressable>
+            </View>
+            <View
+              style={[
+                styles.groupRow,
+                {flexDirection: "row"}
+              ]}
+            >
+              <Pressable
+                style={({pressed}) => [
+                  styles.halfCell,
+                  {
+                    backgroundColor: pressed
+                      ? myFont.buttonPressedColor
+                      : myFont.white,
+                    position: "relative",
+                  }
+                ]}
+              >
+                <View style={styles.label}>
+                  <Text style={styles.text}>tracker *</Text>
+                </View>
+                <Pressable
+                  onPress={() => changeTrackerVisibility(true)}
+                >
+                  <Text style={styles.textInput}>{tracker.name}</Text>
+                </Pressable>
+                <View>
+                  <Modal
+                    transparent={true}
+                    visible={isTrackerVisible}
+                    onRequestClose={() => changeTrackerVisibility(false)}
+                  >
+                    <TrackerPicker
+                      changeTrackerVisibility={changeTrackerVisibility}
+                      setTracker={onChangeTracker}
+                    />
+                  </Modal>
+                </View>
+              </Pressable>
+              <Pressable
+                style={({pressed}) => [
+                  styles.halfCell,
+                  {
+                    backgroundColor: pressed
+                      ? myFont.buttonPressedColor
+                      : myFont.white,
+                    position: "relative",
+                  }
+                ]}
+              >
+                <View style={styles.label}>
+                  <Text style={styles.text}>priority *</Text>
+                </View>
+                <Pressable
+                  onPress={() => changePriorityVisibility(true)}
+                >
+                  <Text style={styles.textInput}>{priority.name}</Text>
+                </Pressable>
+                <View>
+                  <Modal
+                    transparent={true}
+                    visible={isPriorityVisible}
+                    onRequestClose={() => changePriorityVisibility(false)}
+                  >
+                    <PriorityPicker
+                      changePriorityVisibility={changePriorityVisibility}
+                      setPriority={onChangePriority}
+                    />
+                  </Modal>
+                </View>
+              </Pressable>
+            </View>
+            <View
+              style={[
+                styles.groupRow,
+                {flexDirection: "row"}
+              ]}
+            >
+              <Pressable
+                style={({pressed}) => [
+                  styles.halfCell,
+                  {
+                    backgroundColor: pressed
+                      ? myFont.buttonPressedColor
+                      : myFont.white,
+                    position: "relative",
+                  }
+                ]}
+              >
+                <View style={styles.label}>
+                  <Text style={styles.text}>% done</Text>
+                </View>
+                <Pressable
+                  onPress={() => changeDoneRatioVisibility(true)}
+                >
+                  <Text style={styles.textInput}>{doneRatio.toString()} %</Text>
+                </Pressable>
+                <View>
+                  <Modal
+                    transparent={true}
+                    visible={isDoneRatioVisible}
+                    onRequestClose={() => changeDoneRatioVisibility(false)}
+                  >
+                    <DoneRatioPicker
+                      changeDoneRatioVisibility={changeDoneRatioVisibility}
+                      setDoneRatio={onChangeDoneRatio}
+                    />
+                  </Modal>
+                </View>
+              </Pressable>
+              <Pressable
+                style={({pressed}) => [
+                  styles.halfCell,
+                  {
+                    backgroundColor: pressed
+                      ? myFont.buttonPressedColor
+                      : myFont.white
+                  }
+                ]}
+              >
+                <View style={styles.label}>
+                  <Text style={styles.text}>private</Text>
+                </View>
+                <CheckBox
+                  disabled={false}
+                  value={isPrivate}
+                  onValueChange={(newValue) => setIsPrivate(newValue)}
+                  style={{marginLeft: 4}}
+                />
+              </Pressable>
+            </View>
+            <View style={styles.groupRow}>
+              <Pressable
+                style={({pressed}) => 
+                [{
+                  backgroundColor: pressed
+                    ? myFont.buttonPressedColor
+                    : myFont.white
+                }]
+              }
+              >
+                <View style={styles.groupCell}>
+                  <View style={styles.label}>
+                    <Text style={styles.text}>Attach files</Text>
+                  </View>
+                </View>
+              </Pressable>
+              <View style={{width: "50%", alignSelf: "center"}}>
+                <Button
+                  title="Upload files"
+                  onPress={() => uploadFile()}
+                ></Button>
               </View>
-            </>
-          }
-        </ScrollView>
-
-        <View style={styles.footer}>
-          <Pressable
-            onPress={() => navigation.goBack()}
-            style={({pressed}) => [
-              {
-                backgroundColor: pressed
+            </View>
+          </>
+        }
+      </ScrollView>
+      <View style={styles.footer}>
+        <Pressable
+          onPress={() => navigation.goBack()}
+          style={({pressed}) => [
+            {
+              backgroundColor: pressed
+              ? myFont.buttonPressedColor
+              : myFont.footerBackgroundColor
+            },
+            styles.backButton
+          ]}
+        >
+          <Ionicons name="chevron-back" size={30} color={myFont.blue} />
+        </Pressable>
+        <Pressable
+          onPress={() => saveData()}
+          style={({pressed}) => [
+            {
+              backgroundColor: pressed
                 ? myFont.buttonPressedColor
-                : myFont.footerBackgroundColor
-              },
-              styles.backButton
-            ]}
-          >
-            <Ionicons name="chevron-back" size={30} color={myFont.blue} />
-          </Pressable>
-          <Pressable
-            onPress={() => saveData()}
-            style={({pressed}) => [
-              {
-                backgroundColor: pressed
-                  ? myFont.buttonPressedColor
-                  : myFont.addButtonColor
-              },
-              styles.saveButton
-            ]}
-          >
-            <Text style={styles.saveText}>save</Text>
-          </Pressable>
-        </View>
-      </KeyboardAvoidingView>
-    // </SafeAreaView>
+                : myFont.addButtonColor
+            },
+            styles.saveButton
+          ]}
+        >
+          <Text style={styles.saveText}>save</Text>
+        </Pressable>
+      </View>
+    </KeyboardAvoidingView>
   );
 };
 
