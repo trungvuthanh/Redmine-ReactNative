@@ -1,6 +1,6 @@
 // import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useReducer } from 'react';
-import { StyleSheet, StatusBar } from 'react-native';
+import { StyleSheet, StatusBar, Alert } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
@@ -166,7 +166,7 @@ export default function App() {
   const initialLoginState = {
     isLoading: true,
     username: null,
-    userToken: null,
+    apiKey: null,
   };
 
   const loginReducer = (prevState, action) => {
@@ -174,21 +174,21 @@ export default function App() {
       case "RETRIEVE_TOKEN":
         return {
           ...prevState,
-          userToken: action.token,
+          apiKey: action.token,
           isLoading: false,
         };
       case "LOGIN":
         return {
           ...prevState,
           username: action.id,
-          userToken: action.token,
+          apiKey: action.token,
           isLoading: false,
         };
       case "LOGOUT":
         return {
           ...prevState,
           username: null,
-          userToken: null,
+          apiKey: null,
           isLoading: false,
         };
     }
@@ -199,41 +199,36 @@ export default function App() {
   const authContext = React.useMemo(
     () => ({
       signIn: async (username, password) => {
-        let userToken;
-        userToken = null;
-        fetch("http://", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            username: username,
-            password: password,
-          }),
-        })
-          .then((response) => response.json())
-          .then(async (json) => {
-            if (json[0]._id == -1) {
-              alert("Username or Password is incorrect");
-            } else {
-              // signIn(json[0]._id);
+        let apiKey;
+        apiKey = null;
+        fetch(username + ':' + password + '@192.168.1.50:80/redmine/users/current.json')
+        .then((response) => {
+          if (response.status == 401) {
+            Alert.alert(
+              "username or password is incorrect",
+              "",
+            );
+          } else {
+            response.json()
+            .then(async (json) => {
               try {
-                userToken = "abc";
-                await AsyncStorage.setItem("userToken", userToken);
+                apiKey = json.user.api_key;
+                await AsyncStorage.setItem("apiKey", apiKey);
               } catch (e) {
                 console.error(e);
               }
-              dispatch({ type: "LOGIN", id: username, token: userToken });
+              dispatch({ type: "LOGIN", id: username, token: apiKey });
               console.log("Signed in successfully");
-            }
-          })
-          .catch((error) => {
-            console.error(error);
-          });
+            })
+            .catch((error) => {
+              console.error(error);
+            });
+          }
+        })
       },
       signOut: async () => {
         try {
-          await AsyncStorage.removeItem("userToken");
+          await AsyncStorage.removeItem("apiKey");
         } catch (e) {
           console.error(e);
         }
@@ -243,6 +238,13 @@ export default function App() {
     []
   );
 
+  if(loginState.isLoading) {
+    return(
+      <View style={{flex:1,justifyContent:'center',alignItems:'center'}}>
+        <ActivityIndicator size="large"/>
+      </View>
+    );
+  }
   return (
     <>
       <StatusBar
@@ -250,9 +252,11 @@ export default function App() {
         barStyle={"dark-content"}
         hidden={false}
       />
-      <NavigationContainer>
-        <DrawerScreen/>
-      </NavigationContainer>
+      <AuthContext.Provider value={authContext}>
+        <NavigationContainer>
+          {loginState.apiKey ? <DrawerScreen/> : <LoginScreen/>}
+        </NavigationContainer>
+      </AuthContext.Provider>
     </>
   );
 }

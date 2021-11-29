@@ -11,12 +11,15 @@ import {
   ScrollView,
 } from 'react-native';
 
+import { AuthContext } from '../components/Context';
 import myFont from '../config/myFont';
 
 export default function LoginScreen({ navigation }) {
   const [username, onChangeUsername] = useState('');
   const [password, onChangePassword] = useState('');
   const [isObscure, setIsObscure] = useState(true);
+
+  const { signIn } = React.useContext(AuthContext);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -45,7 +48,9 @@ export default function LoginScreen({ navigation }) {
                 value={password}
               />
               <Pressable
-                onPress={() => {}}
+                onPress={() => {
+                  signIn(username, password);
+                }}
                 style={({pressed}) => [
                   {
                     backgroundColor: pressed
