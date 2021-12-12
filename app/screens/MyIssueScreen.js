@@ -102,7 +102,12 @@ export default function MyIssueScreen({ route, navigation }) {
             </Text>
           </View>
           {/* <Header title="My ToDo" amount={myIssueAmount} /> */}
-          <ScrollView style={{marginBottom: 50}}>
+          <ScrollView 
+            style={{marginBottom: 50}}
+            refreshControl={
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            }
+          >
             {myIssueList}
           </ScrollView>
           {/* <Footer/> */}

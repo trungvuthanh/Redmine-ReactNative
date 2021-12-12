@@ -24,7 +24,7 @@ export default function HomeScreen({ navigation }) {
   const [myIssueAmount, setMyIssueAmount] = useState(0);
   const [myIssues, setMyIssues] = useState([]);
   const [openProjectAmount, setOpenProjectAmount] = useState(0);
-
+    
   // pull to refresh function
   const [refreshing, setRefreshing] = React.useState(false);
   const onRefresh = React.useCallback(() => {
@@ -60,14 +60,21 @@ export default function HomeScreen({ navigation }) {
       setIssues(json.issues);
       let myIssueCount = 0;
       let myIssuesArr = []
+      let overdueIssuesCount = 0;
+      let today = new Date();
       for (let issue of json.issues) {
         if (issue.assigned_to) {
           myIssueCount += 1;
           myIssuesArr.push(issue);
         }
+        if (issue.due_date) {
+          let dueDate = new Date(issue.due_date);
+          if (dueDate < today) overdueIssuesCount += 1;
+        }
       }
       setMyIssues(myIssuesArr);
       setMyIssueAmount(myIssueCount);
+      setOverdueAmount(overdueIssuesCount);
     })
     .catch((error) => {
       console.error(error);
@@ -103,7 +110,7 @@ export default function HomeScreen({ navigation }) {
           >
             <Pressable
               onPress={() => {
-                navigation.navigate("Overdue", { amount: overdueAmount })
+                navigation.navigate("OverdueStack")
               }}
               style={({ pressed }) => [
                 styles.tiles,

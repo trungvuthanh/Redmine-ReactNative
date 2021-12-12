@@ -17,11 +17,14 @@ import {
   Octicons,
 } from '@expo/vector-icons';
 
+import { AuthContext } from '../components/Context';
 import myFont from '../config/myFont';
 import { info } from '../info';
 import { Drawer } from 'react-native-paper';
 
 export default function DrawerContent(props) {
+  const { signOut } = React.useContext(AuthContext);
+
   return (
     <View style={styles.container}>
       <DrawerContentScrollView {...props}>
@@ -113,6 +116,23 @@ export default function DrawerContent(props) {
           </Pressable>
         </Drawer.Section>
       </DrawerContentScrollView>
+      <Drawer.Section>
+        <Pressable
+          onPress={() => {signOut()}}
+          style={[
+            styles.drawerItem,
+            {
+              borderTopWidth: 1,
+              borderTopColor: "#ffffff66",
+            }
+          ]}
+        >
+          <View style={styles.icon}>
+            <FontAwesome name="sign-out" size={24} color="#898c91"/>
+          </View>
+          <Text style={styles.drawerItemText}>Sign out</Text>
+        </Pressable>
+      </Drawer.Section>
     </View>
   );
 }

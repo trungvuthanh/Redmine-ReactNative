@@ -1,6 +1,12 @@
 // import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useReducer } from 'react';
-import { StyleSheet, StatusBar, Alert } from 'react-native';
+import {
+  StyleSheet,
+  StatusBar,
+  Alert,
+  View,
+  ActivityIndicator,
+} from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
@@ -21,6 +27,7 @@ import { AuthContext } from "./app/components/Context";
 
 const Drawer = createDrawerNavigator();
 const HomeStack = createStackNavigator();
+const OverdueStack = createStackNavigator();
 const IssueStack = createStackNavigator();
 const MyIssueStack = createStackNavigator();
 const OpenProjectStack = createStackNavigator();
@@ -46,8 +53,8 @@ const HomeStackScreen = () => (
       }}
     />
     <HomeStack.Screen
-      name="Overdue"
-      component={OverdueScreen}
+      name="OverdueStack"
+      component={OverdueStackScreen}
       options={{
         headerShown: false,
       }}
@@ -82,6 +89,32 @@ const HomeStackScreen = () => (
     />
   </HomeStack.Navigator>
 );
+
+const OverdueStackScreen = () => (
+  <OverdueStack.Navigator initialRouteName='OverdueScreen'>
+    <OverdueStack.Screen
+      name="OverdueScreen"
+      component={OverdueScreen}
+      options={{
+        headerShown: false,
+      }}
+    />
+    <OverdueStack.Screen
+      name="DetailScreen"
+      component={DetailScreen}
+      options={{
+        headerShown: false,
+      }}
+    />
+    <OverdueStack.Screen
+      name="AddScreen"
+      component={AddScreen}
+      options={{
+        headerShown: false,
+      }}
+    />
+  </OverdueStack.Navigator>
+)
 
 const IssueStackScreen = () => (
   <IssueStack.Navigator initialRouteName='Issue'>
@@ -201,7 +234,11 @@ export default function App() {
       signIn: async (username, password) => {
         let apiKey;
         apiKey = null;
-        fetch(username + ':' + password + '@192.168.1.50:80/redmine/users/current.json')
+        fetch('http://' + username + ':' + password + '@192.168.1.50:80/redmine/users/current.json', {
+          headers: {
+            'X-Redmine-API-Key': '34dafb931f5817ecf25be180ceaf87029142915e',
+          },
+        })
         .then((response) => {
           if (response.status == 401) {
             Alert.alert(
@@ -238,13 +275,13 @@ export default function App() {
     []
   );
 
-  if(loginState.isLoading) {
-    return(
-      <View style={{flex:1,justifyContent:'center',alignItems:'center'}}>
-        <ActivityIndicator size="large"/>
-      </View>
-    );
-  }
+  // if(loginState.isLoading) {
+  //   return(
+  //     <View style={{flex:1,justifyContent:'center',alignItems:'center'}}>
+  //       <ActivityIndicator size="large"/>
+  //     </View>
+  //   );
+  // }
   return (
     <>
       <StatusBar
@@ -255,6 +292,7 @@ export default function App() {
       <AuthContext.Provider value={authContext}>
         <NavigationContainer>
           {loginState.apiKey ? <DrawerScreen/> : <LoginScreen/>}
+          {/* <DrawerScreen/> */}
         </NavigationContainer>
       </AuthContext.Provider>
     </>
