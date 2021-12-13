@@ -13,7 +13,6 @@ export default function SubProject(props) {
   const projects = props.projects;
   
   const mylist = projects.map((project, index) => {
-    // console.log(project);
     return (
       <Pressable
         key={index}

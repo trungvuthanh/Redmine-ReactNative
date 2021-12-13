@@ -14,7 +14,6 @@ export default function Phase(props) {
   const issues = props.issues;
   
   const mylist = issues.map((issue, index) => {
-    // console.log(issue);
     if (issue.parent == undefined) {
       return (
         <Pressable

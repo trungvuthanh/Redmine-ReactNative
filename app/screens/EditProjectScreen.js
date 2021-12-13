@@ -48,7 +48,7 @@ function dateInput() {
   }
 }
 
-export default function AddScreen({ route, navigation }) {
+export default function EditProjectScreen({ route, navigation }) {
   const type = route.params.type;
   let projects = [], issues = [];
   let parent_id; // parent project
@@ -541,6 +541,7 @@ export default function AddScreen({ route, navigation }) {
                     value={name}
                     onChangeText={(name) => {
                       onChangeName(name);
+                      onChangeIdentifier(toIdentifier(name));
                     }}
                   />
                 </View>
@@ -726,7 +727,6 @@ export default function AddScreen({ route, navigation }) {
                     <StatusPicker
                       changeStatusVisibility={changeStatusVisibility}
                       setStatus={onChangeStatus}
-                      editMode={false}
                     />
                   </Modal>
                 </View>

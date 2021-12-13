@@ -22,6 +22,8 @@ import MyIssueScreen from './app/screens/MyIssueScreen';
 import OpenProjectScreen from './app/screens/OpenProjectScreen';
 import AddScreen from './app/screens/AddScreen';
 import DetailScreen from './app/screens/DetailScreen';
+import EditIssueScreen from './app/screens/EditIssueScreen';
+import EditProjectScreen from './app/screens/EditProjectScreen';
 
 import { AuthContext } from "./app/components/Context";
 
@@ -113,6 +115,13 @@ const OverdueStackScreen = () => (
         headerShown: false,
       }}
     />
+    <OverdueStack.Screen
+      name="EditIssueScreen"
+      component={EditIssueScreen}
+      options={{
+        headerShown: false,
+      }}
+    />
   </OverdueStack.Navigator>
 )
 
@@ -135,6 +144,13 @@ const IssueStackScreen = () => (
     <IssueStack.Screen
       name="AddScreen"
       component={AddScreen}
+      options={{
+        headerShown: false,
+      }}
+    />
+    <IssueStack.Screen
+      name="EditIssueScreen"
+      component={EditIssueScreen}
       options={{
         headerShown: false,
       }}
@@ -165,6 +181,13 @@ const MyIssueStackScreen = () => (
         headerShown: false,
       }}
     />
+    <MyIssueStack.Screen
+      name="EditIssueScreen"
+      component={EditIssueScreen}
+      options={{
+        headerShown: false,
+      }}
+    />
   </MyIssueStack.Navigator>
 )
 
@@ -187,6 +210,20 @@ const OpenProjectStackScreen = () => (
     <OpenProjectStack.Screen
       name="DetailScreen"
       component={DetailScreen}
+      options={{
+        headerShown: false,
+      }}
+    />
+    <OpenProjectStack.Screen
+      name="EditIssueScreen"
+      component={EditIssueScreen}
+      options={{
+        headerShown: false,
+      }}
+    />
+    <OpenProjectStack.Screen
+      name="EditProjectScreen"
+      component={EditProjectScreen}
       options={{
         headerShown: false,
       }}

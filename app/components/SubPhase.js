@@ -9,11 +9,11 @@ import Collapsible from 'react-native-collapsible';
 
 import myFont from '../config/myFont';
 
+// SubPhase is for issues have parent issue
 export default function SubPhase(props) {
   const issues = props.issues;
   
   const mylist = issues.map((issue, index) => {
-    // console.log(issue);
     return (
       <Pressable
         key={index}

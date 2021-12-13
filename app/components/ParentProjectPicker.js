@@ -15,7 +15,6 @@ export default function ParentProjectPicker(props) {
   const OPTIONS = props.projectList;
 
   const onPressOption = (option) => {
-    // console.log(option);
     props.changeSubVisibility(false);
     props.setSub(option);
   }

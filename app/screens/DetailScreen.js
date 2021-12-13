@@ -27,14 +27,13 @@ export default function DetailScreen({ route, navigation }) {
   let project, issue;
   if (type === 'project') {
     project = route.params.project;
-    // console.log(project);
   } else if (type === 'issue') {
     issue = route.params.issue;
-    // console.log(issue);
   }
 
   // Sub issues
   const [issues, setIssues] = useState({issues: []});
+  const [allIssuesOfProject, setAllIssuesOfProject] = useState([]);
   // Sub projects
   const [projects, setProjects] = useState({projects: []});
   const [showSub, setShowSub] = useState(true);
@@ -69,7 +68,6 @@ export default function DetailScreen({ route, navigation }) {
       for (let issue of json.issues) {
         if (issue.parent == undefined) count += 1;
       }
-      // setIssueCount(json.total_count);
       setIssues(json);
       setIssueCount(count);
     })
@@ -103,10 +101,15 @@ export default function DetailScreen({ route, navigation }) {
         setIssues({issues: issueList});
         setIssueCount(count);
       })
+      fetch('http://192.168.1.50:80/redmine/issues/' + issue.id + '.json')
+      .then((response) => response.json())
+      .then((json) => {
+        issue = json.issue;
+      })
       .catch((error) => {
         console.error(error);
       })
-      .finally(() => setLoading(false));
+      .finally(() => setRefreshing(false));
     }
   }, []);
 
@@ -117,7 +120,7 @@ export default function DetailScreen({ route, navigation }) {
       fetch('http://192.168.1.50:80/redmine/issues.json?project_id=' + issue.project.id + '&status_id=*')
       .then((response) => response.json())
       .then((json) => {
-        // setIssues(json);
+        setAllIssuesOfProject(json.issues);
         let count = 0;
         let issueList = [];
         for (let iss of json.issues) {
@@ -128,6 +131,11 @@ export default function DetailScreen({ route, navigation }) {
         }
         setIssues({issues: issueList});
         setIssueCount(count);
+      })
+      fetch('http://192.168.1.50:80/redmine/issues/' + issue.id + '.json')
+      .then((response) => response.json())
+      .then((json) => {
+        issue = json.issue;
       })
       .catch((error) => {
         console.error(error);
@@ -415,7 +423,12 @@ export default function DetailScreen({ route, navigation }) {
               <Ionicons name="chevron-back" size={30} color={myFont.blue} />
             </Pressable>
             <Pressable
-              onPress={() => {}}
+              onPress={() => {
+                navigation.push('EditIssueScreen', {
+                  issue: issue,
+                  issues: allIssuesOfProject
+                })
+              }}
               style={({pressed}) => [
                 {
                   backgroundColor: pressed

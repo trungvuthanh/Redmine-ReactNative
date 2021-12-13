@@ -3,11 +3,13 @@ import { Text, View, StyleSheet, TouchableOpacity, ScrollView, Pressable, Dimens
 
 import myFont from '../config/myFont';
 
-const OPTIONS = ['New'];
+let OPTIONS = ['New'];
 
 const WIDTH = Dimensions.get('window').width;
 
 export default function StatusPicker(props) {
+  if (props.editMode == true) OPTIONS = ['New', 'In Progress', 'Resolved', 'Feedback', 'Closed', 'Rejected'];
+
   const onPressOption = (option) => {
     props.changeStatusVisibility(false);
     props.setStatus(option);
