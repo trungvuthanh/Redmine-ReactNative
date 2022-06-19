@@ -12,6 +12,8 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+import users from './app/config/ListUsers';
+
 import LoginScreen from './app/screens/LoginScreen';
 import DrawerContent from './app/screens/DrawerContent';
 import HomeScreen from './app/screens/HomeScreen';
@@ -34,14 +36,23 @@ const IssueStack = createStackNavigator();
 const MyIssueStack = createStackNavigator();
 const OpenProjectStack = createStackNavigator();
 
-const DrawerScreen = () => (
+const DrawerScreen = ({ fullname }) => (
   <Drawer.Navigator
     initialRouteName="Dashboard"
-    drawerContent={props => <DrawerContent {...props} />}
+    drawerContent={props => <DrawerContent {...props} {...fullname} />}
   >
-    <Drawer.Screen name="Dashboard" component={HomeStackScreen} options={{headerShown: false}}/>
-    <Drawer.Screen name="OpenProjectStack" component={OpenProjectStackScreen} options={{headerShown: false}}/>
-    <Drawer.Screen name="IssueStack" component={IssueStackScreen} options={{headerShown: false}}/>
+    <Drawer.Screen
+      name="Dashboard"
+      component={HomeStackScreen}
+      options={{headerShown: false}}/>
+    <Drawer.Screen
+      name="OpenProjectStack"
+      component={OpenProjectStackScreen}
+      options={{headerShown: false}}/>
+    <Drawer.Screen
+      name="IssueStack"
+      component={IssueStackScreen}
+      options={{headerShown: false}}/>
   </Drawer.Navigator>
 );
 
@@ -233,9 +244,19 @@ const OpenProjectStackScreen = () => (
 
 export default function App() {
 
+  const authenticate = (username, password) => {
+    for (let user of users) {
+      if (user.username === username && user.password === password) {
+        return user;
+      }
+    }
+    return null;
+  }
+
   const initialLoginState = {
     isLoading: true,
     username: null,
+    fullname: null,
     apiKey: null,
   };
 
@@ -251,6 +272,7 @@ export default function App() {
         return {
           ...prevState,
           username: action.id,
+          fullname: action.fullname,
           apiKey: action.token,
           isLoading: false,
         };
@@ -258,6 +280,7 @@ export default function App() {
         return {
           ...prevState,
           username: null,
+          fullname: null,
           apiKey: null,
           isLoading: false,
         };
@@ -269,36 +292,56 @@ export default function App() {
   const authContext = React.useMemo(
     () => ({
       signIn: async (username, password) => {
-        let apiKey;
-        apiKey = null;
-        fetch('http://' + username + ':' + password + '@192.168.1.50:80/redmine/users/current.json', {
-          headers: {
-            'X-Redmine-API-Key': '34dafb931f5817ecf25be180ceaf87029142915e',
-          },
-        })
-        .then((response) => {
-          if (response.status == 401) {
-            Alert.alert(
-              "username or password is incorrect",
-              "",
-            );
-          } else {
-            response.json()
-            .then(async (json) => {
-              try {
-                apiKey = json.user.api_key;
-                await AsyncStorage.setItem("apiKey", apiKey);
-              } catch (e) {
-                console.error(e);
-              }
-              dispatch({ type: "LOGIN", id: username, token: apiKey });
-              console.log("Signed in successfully");
-            })
-            .catch((error) => {
-              console.error(error);
-            });
+        let user = authenticate(username, password);
+        if (user) {
+          let apiKey = user.api_key;
+          try {
+            await AsyncStorage.setItem("apiKey", user.api_key);
+          } catch (e) {
+            console.error(e);
           }
-        })
+          dispatch({
+            type: "LOGIN",
+            id: username,
+            fullname: user.firstname + ' ' + user.lastname,
+            token: apiKey
+          });
+          console.log("Signed in successfully");
+        } else {
+          Alert.alert(
+            "username or password is incorrect",
+            "",
+          );
+        }
+        // let apiKey = null;
+        // fetch('http://' + username + ':' + password + '@192.168.1.50:80/redmine/users/current.json', {
+        //   headers: {
+        //     'X-Redmine-API-Key': '34dafb931f5817ecf25be180ceaf87029142915e',
+        //   },
+        // })
+        // .then((response) => {
+        //   if (response.status == 401) {
+        //     Alert.alert(
+        //       "username or password is incorrect",
+        //       "",
+        //     );
+        //   } else {
+        //     response.json()
+        //     .then(async (json) => {
+        //       try {
+        //         apiKey = json.user.api_key;
+        //         await AsyncStorage.setItem("apiKey", apiKey);
+        //       } catch (e) {
+        //         console.error(e);
+        //       }
+        //       dispatch({ type: "LOGIN", id: username, token: apiKey });
+        //       console.log("Signed in successfully");
+        //     })
+        //     .catch((error) => {
+        //       console.error(error);
+        //     });
+        //   }
+        // })
       },
       signOut: async () => {
         try {
@@ -307,6 +350,7 @@ export default function App() {
           console.error(e);
         }
         dispatch({ type: "LOGOUT" });
+        console.log("Signed out successfully");
       },
     }),
     []
@@ -328,7 +372,7 @@ export default function App() {
       />
       <AuthContext.Provider value={authContext}>
         <NavigationContainer>
-          {loginState.apiKey ? <DrawerScreen/> : <LoginScreen/>}
+          {loginState.apiKey ? <DrawerScreen fullname={{fullname: loginState.fullname}} /> : <LoginScreen/>}
           {/* <DrawerScreen/> */}
         </NavigationContainer>
       </AuthContext.Provider>

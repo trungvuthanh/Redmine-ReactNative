@@ -19,7 +19,6 @@ import {
 
 import { AuthContext } from '../components/Context';
 import myFont from '../config/myFont';
-import { info } from '../info';
 import { Drawer } from 'react-native-paper';
 
 export default function DrawerContent(props) {
@@ -30,107 +29,195 @@ export default function DrawerContent(props) {
       <DrawerContentScrollView {...props}>
         <View style={styles.userInfoSection}>
           <Ionicons name="person-circle" size={50} color="white" />
-          <Text style={styles.userInfoName}>Thanh Trung Admin</Text>
+          <Text style={styles.userInfoName}>{props.fullname}</Text>
         </View>
         <Drawer.Section style={styles.drawerSection}>
           <Pressable
             onPress={() => props.navigation.navigate("Home")}
-            style={styles.drawerItem}
+            style={({pressed}) => [
+              styles.drawerItem,
+              {
+                backgroundColor: pressed ? myFont.gray : myFont.black,
+              },
+            ]}
           >
-            <View style={styles.icon}>
-              <MaterialCommunityIcons name="view-dashboard-outline" size={25} color="#898c91"/>
-            </View>
-            <Text style={styles.drawerItemText}>Dashboard</Text>
+            {({pressed}) => (
+              <>
+                <View style={styles.icon}>
+                  <MaterialCommunityIcons name="view-dashboard-outline" size={25} color={pressed ? myFont.white : myFont.gray}/>
+                </View>
+                <Text style={styles.drawerItemText}>Dashboard</Text>
+              </>
+            )}
           </Pressable>
           <Pressable
             onPress={() => props.navigation.navigate("OpenProjectStack")}
-            style={styles.drawerItem}
+            style={({pressed}) => [
+              styles.drawerItem,
+              {
+                backgroundColor: pressed ? myFont.gray : myFont.black,
+              },
+            ]}
           >
-            <View style={styles.icon}>
-              <Ionicons name="briefcase-outline" size={25} color="#898c91"/>
-            </View>
-            <Text style={styles.drawerItemText}>Projects</Text>
+            {({pressed}) => (
+              <>
+                <View style={styles.icon}>
+                  <Ionicons name="briefcase-outline" size={25} color={pressed ? myFont.white : myFont.gray}/>
+                </View>
+                <Text style={styles.drawerItemText}>Projects</Text>
+              </>
+            )}
           </Pressable>
           <Pressable
             onPress={() => props.navigation.navigate('IssueStack')}
-            style={styles.drawerItem}
+            style={({pressed}) => [
+              styles.drawerItem,
+              {
+                backgroundColor: pressed ? myFont.gray : myFont.black,
+              },
+            ]}
           >
-            <View style={styles.icon}>
-              <Octicons name="issue-opened" size={25} color="#898c91"/>
-            </View>
-            <Text style={styles.drawerItemText}>Issues</Text>
+            {({pressed}) => (
+              <>
+                <View style={styles.icon}>
+                  <Octicons name="issue-opened" size={25} color={pressed ? myFont.white : myFont.gray}/>
+                </View>
+                <Text style={styles.drawerItemText}>Issues</Text>
+              </>
+            )}
           </Pressable>
           <Pressable
             onPress={() => {}}
-            style={styles.drawerItem}
+            style={({pressed}) => [
+              styles.drawerItem,
+              {
+                backgroundColor: pressed ? myFont.gray : myFont.black,
+              },
+            ]}
           >
-            <View style={styles.icon}>
-              <Ionicons name="people-outline" size={25} color="#898c91"/>
-            </View>
-            <Text style={styles.drawerItemText}>Contact</Text>
+            {({pressed}) => (
+              <>
+                <View style={styles.icon}>
+                  <Ionicons name="people-outline" size={25} color={pressed ? myFont.white : myFont.gray}/>
+                </View>
+                <Text style={styles.drawerItemText}>Contact</Text>
+              </>
+            )}
           </Pressable>
           <Pressable
             onPress={() => {}}
-            style={styles.drawerItem}
+            style={({pressed}) => [
+              styles.drawerItem,
+              {
+                backgroundColor: pressed ? myFont.gray : myFont.black,
+              },
+            ]}
           >
-            <View style={styles.icon}>
-              <Ionicons name="calendar-outline" size={25} color="#898c91"/>
-            </View>
-            <Text style={styles.drawerItemText}>Agenda</Text>
+            {({pressed}) => (
+              <>
+                <View style={styles.icon}>
+                  <Ionicons name="calendar-outline" size={25} color={pressed ? myFont.white : myFont.gray}/>
+                </View>
+                <Text style={styles.drawerItemText}>Agenda</Text>
+              </>
+            )}
           </Pressable>
           <Pressable
             onPress={() => {}}
-            style={styles.drawerItem}
+            style={({pressed}) => [
+              styles.drawerItem,
+              {
+                backgroundColor: pressed ? myFont.gray : myFont.black,
+              },
+            ]}
           >
-            <View style={styles.icon}>
-              <Ionicons name="time-outline" size={25} color="#898c91"/>
-            </View>
-            <Text style={styles.drawerItemText}>Worklogs</Text>
+            {({pressed}) => (
+              <>
+                <View style={styles.icon}>
+                  <Ionicons name="time-outline" size={25} color={pressed ? myFont.white : myFont.gray}/>
+                </View>
+                <Text style={styles.drawerItemText}>Worklogs</Text>
+              </>
+            )}
           </Pressable>
           <Pressable
             onPress={() => {}}
-            style={styles.drawerItem}
+            style={({pressed}) => [
+              styles.drawerItem,
+              {
+                backgroundColor: pressed ? myFont.gray : myFont.black,
+              },
+            ]}
           >
-            <View style={styles.icon}>
-              <Ionicons name="document-outline" size={25} color="#898c91"/>
-            </View>
-            <Text style={styles.drawerItemText}>Documents</Text>
+            {({pressed}) => (
+              <>
+                <View style={styles.icon}>
+                  <Ionicons name="document-outline" size={25} color={pressed ? myFont.white : myFont.gray}/>
+                </View>
+                <Text style={styles.drawerItemText}>Documents</Text>
+              </>
+            )}
           </Pressable>
           <Pressable
             onPress={() => {}}
-            style={styles.drawerItem}
+            style={({pressed}) => [
+              styles.drawerItem,
+              {
+                backgroundColor: pressed ? myFont.gray : myFont.black,
+              },
+            ]}
           >
-            <View style={styles.icon}>
-              <FontAwesome5 name="coins" size={24} color="#898c91"/>
-            </View>
-            <Text style={styles.drawerItemText}>Expenses</Text>
+            {({pressed}) => (
+              <>
+                <View style={styles.icon}>
+                  <FontAwesome5 name="coins" size={24} color={pressed ? myFont.white : myFont.gray}/>
+                </View>
+                <Text style={styles.drawerItemText}>Expenses</Text>
+              </>
+            )}
           </Pressable>
           <Pressable
             onPress={() => {}}
-            style={styles.drawerItem}
+            style={({pressed}) => [
+              styles.drawerItem,
+              {
+                backgroundColor: pressed ? myFont.gray : myFont.black,
+              },
+            ]}
           >
-            <View style={styles.icon}>
-              <FontAwesome name="envelope-o" size={24} color="#898c91"/>
-            </View>
-            <Text style={styles.drawerItemText}>Messages</Text>
+            {({pressed}) => (
+              <>
+                <View style={styles.icon}>
+                  <FontAwesome name="envelope-o" size={24} color={pressed ? myFont.white : myFont.gray}/>
+                </View>
+                <Text style={styles.drawerItemText}>Messages</Text>
+              </>
+            )}
           </Pressable>
         </Drawer.Section>
       </DrawerContentScrollView>
       <Drawer.Section>
         <Pressable
           onPress={() => {signOut()}}
-          style={[
+          style={({pressed}) => [
             styles.drawerItem,
             {
               borderTopWidth: 1,
               borderTopColor: "#ffffff66",
-            }
+            },
+            {
+              backgroundColor: pressed ? myFont.gray : myFont.black,
+            },
           ]}
         >
-          <View style={styles.icon}>
-            <FontAwesome name="sign-out" size={24} color="#898c91"/>
-          </View>
-          <Text style={styles.drawerItemText}>Sign out</Text>
+          {({pressed}) => (
+            <>
+              <View style={styles.icon}>
+                <FontAwesome name="sign-out" size={24} color={pressed ? myFont.white : myFont.gray}/>
+              </View>
+              <Text style={styles.drawerItemText}>Sign out</Text>
+            </>  
+          )}
         </Pressable>
       </Drawer.Section>
     </View>

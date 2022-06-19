@@ -6,6 +6,7 @@ export default {
   green: "#88e05f",
   white: "#fff",
   buttonPressedColor: "#ace7ff",
+  gray: "#898c91",
   
   // Header
   fontHomeHeaderSize: 22.4,
