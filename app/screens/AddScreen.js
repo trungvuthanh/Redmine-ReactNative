@@ -310,7 +310,6 @@ export default function AddScreen({ route, navigation }) {
         body: body,
       })
       .then((response) => {
-        console.log(response.status);
         if (response.status == 201) {
           Alert.alert(
             "Issue was added",

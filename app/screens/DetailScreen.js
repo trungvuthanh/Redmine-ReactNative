@@ -8,9 +8,12 @@ import {
   ActivityIndicator, 
   ScrollView, 
   RefreshControl, 
-  Dimensions
+  Dimensions,
+  Alert
 } from 'react-native';
 import { Ionicons, Entypo } from '@expo/vector-icons';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useIsFocused } from '@react-navigation/native';
 // import Collapsible from 'react-native-collapsible';
 
 import Phase from '../components/Phase';
@@ -19,6 +22,7 @@ import SubProject from '../components/SubProject';
 import IssueInformation from '../components/IssueInformation';
 import ProjectInformation from '../components/ProjectInformation';
 import myFont from '../config/myFont';
+import { localhost } from '../config/configurations';
 
 const WIDTH = Dimensions.get('window').width;
 
@@ -30,6 +34,8 @@ export default function DetailScreen({ route, navigation }) {
   } else if (type === 'issue') {
     issue = route.params.issue;
   }
+
+  const [user, setUser] = useState(null);
 
   // Sub issues
   const [issues, setIssues] = useState({issues: []});
@@ -43,10 +49,20 @@ export default function DetailScreen({ route, navigation }) {
   const [issueCount, setIssueCount] = useState(0);
   const [isLoading, setLoading] = useState(false);
 
+  const isFocused = useIsFocused();
+
+  const getUserInfo = async () => {
+    let user = await AsyncStorage.getItem('user');
+    if (user) {
+      let obj = JSON.parse(user);
+      setUser(obj);
+    }
+  }
+
   // type === 'project'
   const getIssues = async () => {
     // Get subprojects of this project
-    fetch('http://192.168.1.50:80/redmine/projects.json')
+    fetch(localhost + 'projects.json')
     .then((response) => response.json())
     .then((json) => {
       let projectList = [];
@@ -61,7 +77,7 @@ export default function DetailScreen({ route, navigation }) {
       setProjects({projects: projectList});
     })
     // Get issues of this project
-    fetch('http://192.168.1.50:80/redmine/issues.json?project_id=' + project.id + '&status_id=*') 
+    fetch(localhost + 'issues.json?project_id=' + project.id + '&status_id=*') 
     .then((response) => response.json())
     .then((json) => {
       let count = 0;
@@ -86,7 +102,7 @@ export default function DetailScreen({ route, navigation }) {
         setRefreshing(false);
       });
     } else {
-      fetch('http://192.168.1.50:80/redmine/issues.json?project_id=' + issue.project.id + '&status_id=*')
+      fetch(localhost + 'issues.json?project_id=' + issue.project.id + '&status_id=*')
       .then((response) => response.json())
       .then((json) => {
         // setIssues(json);
@@ -101,7 +117,7 @@ export default function DetailScreen({ route, navigation }) {
         setIssues({issues: issueList});
         setIssueCount(count);
       })
-      fetch('http://192.168.1.50:80/redmine/issues/' + issue.id + '.json')
+      fetch(localhost + 'issues/' + issue.id + '.json')
       .then((response) => response.json())
       .then((json) => {
         issue = json.issue;
@@ -114,35 +130,38 @@ export default function DetailScreen({ route, navigation }) {
   }, []);
 
   useEffect(() => {
-    if (type === 'project') {
-      getIssues();
-    } else {
-      fetch('http://192.168.1.50:80/redmine/issues.json?project_id=' + issue.project.id + '&status_id=*')
-      .then((response) => response.json())
-      .then((json) => {
-        setAllIssuesOfProject(json.issues);
-        let count = 0;
-        let issueList = [];
-        for (let iss of json.issues) {
-          if (iss.parent != undefined && iss.parent.id == issue.id) {
-            count += 1;
-            issueList.push(iss);
+    getUserInfo();
+    if (isFocused) {
+      if (type === 'project') {
+        getIssues();
+      } else {
+        fetch(localhost + 'issues.json?project_id=' + issue.project.id + '&status_id=*')
+        .then((response) => response.json())
+        .then((json) => {
+          setAllIssuesOfProject(json.issues);
+          let count = 0;
+          let issueList = [];
+          for (let iss of json.issues) {
+            if (iss.parent != undefined && iss.parent.id == issue.id) {
+              count += 1;
+              issueList.push(iss);
+            }
           }
-        }
-        setIssues({issues: issueList});
-        setIssueCount(count);
-      })
-      fetch('http://192.168.1.50:80/redmine/issues/' + issue.id + '.json')
-      .then((response) => response.json())
-      .then((json) => {
-        issue = json.issue;
-      })
-      .catch((error) => {
-        console.error(error);
-      })
-      .finally(() => setLoading(false));
+          setIssues({issues: issueList});
+          setIssueCount(count);
+        })
+        fetch(localhost + 'issues/' + issue.id + '.json')
+        .then((response) => response.json())
+        .then((json) => {
+          issue = json.issue;
+        })
+        .catch((error) => {
+          console.error(error);
+        })
+        .finally(() => setLoading(false));
+      }
     }
-  }, []);
+  }, [isFocused]);
 
   const addSubProject = () => {
     navigation.push('AddScreen', { 
@@ -182,6 +201,70 @@ export default function DetailScreen({ route, navigation }) {
       type: 'issue', 
       issue: issue 
     });
+  }
+
+  const deleteItem = async () => {
+    if (type === 'project') {
+      fetch(localhost + 'projects/' + project.id + '.json', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Redmine-API-Key': user.api_key,
+        },
+      })
+      .then((response) => {
+        console.log(response.status);
+        if (response.status == 204) {
+          Alert.alert(
+            "Project deleted successfully",
+            "",
+            [{
+              text: 'OK',
+              style: 'cancel',
+              onPress: () => navigation.goBack(),
+            }]
+          );  
+        } else {
+          Alert.alert(
+            "Fail to delete project",
+            "",
+          );
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+    } else {
+      fetch(localhost + 'issues/' + issue.id + '.json', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Redmine-API-Key': user.api_key,
+        },
+      })
+      .then((response) => {
+        console.log(response.status);
+        if (response.status == 204) {
+          Alert.alert(
+            "Issue deleted successfully",
+            "",
+            [{
+              text: 'OK',
+              style: 'cancel',
+              onPress: () => navigation.goBack(),
+            }]
+          );  
+        } else {
+          Alert.alert(
+            "Fail to delete issue",
+            "",
+          );
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+    }
   }
 
   return (
@@ -286,7 +369,7 @@ export default function DetailScreen({ route, navigation }) {
                     styles.title,
                     {fontWeight: showPhase ? "300" : "700"}
                   ]}
-                  >Phase of issue ({issueCount})</Text>
+                  >Issues ({issueCount})</Text>
                   {showPhase
                     ? <Entypo name="chevron-down" size={myFont.menuIconSize} color="#d2d4d7" />
                     : <Entypo name="chevron-up" size={myFont.menuIconSize} color="#d2d4d7" />
@@ -379,7 +462,7 @@ export default function DetailScreen({ route, navigation }) {
                     styles.title,
                     {fontWeight: showPhase ? "300" : "700"}
                   ]}
-                  >Phase of issue ({issueCount})</Text>
+                  >Subtasks ({issueCount})</Text>
                   {showPhase
                     ? <Entypo name="chevron-down" size={myFont.menuIconSize} color="#d2d4d7" />
                     : <Entypo name="chevron-up" size={myFont.menuIconSize} color="#d2d4d7" />
@@ -422,25 +505,56 @@ export default function DetailScreen({ route, navigation }) {
             >
               <Ionicons name="chevron-back" size={30} color={myFont.blue} />
             </Pressable>
-            <Pressable
-              onPress={() => {
-                navigation.push('EditIssueScreen', {
-                  issue: issue,
-                  issues: allIssuesOfProject
-                })
-              }}
-              style={({pressed}) => [
-                {
-                  backgroundColor: pressed
-                  ? myFont.buttonPressedColor
-                  : myFont.addButtonColor
-                },
-                styles.editButton
-              ]}
-            >
-              {/* <Ionicons name="add" size={40} color={myFont.white} /> */}
-              <Text style={styles.editText}>edit</Text>
-            </Pressable>
+            <View style={styles.footerGroupBtn}>
+              <Pressable
+                onPress={() => Alert.alert(
+                  "Are you sure you want to remove this item?",
+                  "",
+                  [
+                    {
+                      text: "Delete",
+                      onPress: () => deleteItem()
+                    },
+                    {
+                      text: "Cancel",
+                      style: "cancel"
+                    }
+                  ]
+                )}
+                style={({pressed}) => [
+                  {
+                    backgroundColor: pressed
+                    ? myFont.deleteButtonColorPressed
+                    : myFont.deleteButtonColor
+                  },
+                  styles.editButton
+                ]}>
+                <Text style={styles.editText}>delete</Text>
+              </Pressable>
+              <Pressable
+                onPress={() => {
+                  if (type === 'project') {
+                    navigation.push('EditProjectScreen', {
+                      project: project
+                    })
+                  } else {
+                    navigation.push('EditIssueScreen', {
+                      issue: issue,
+                      issues: allIssuesOfProject
+                    })  
+                  }
+                }}
+                style={({pressed}) => [
+                  {
+                    backgroundColor: pressed
+                    ? myFont.buttonPressedColor
+                    : myFont.addButtonColor
+                  },
+                  styles.editButton
+                ]}>
+                <Text style={styles.editText}>edit</Text>
+              </Pressable>
+            </View>
           </View>
         </>
       }
@@ -582,4 +696,9 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: 0,
   },
+  footerGroupBtn: {
+    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "space-between",
+  }
 })

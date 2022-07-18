@@ -18,7 +18,7 @@ import ItemTiles from "../components/ItemTiles";
 import myFont from '../config/myFont';
 import Footer from "../components/Footer";
 
-export default function OpenProjectScreen({ route, navigation }) {
+export default function ProjectScreen({ route, navigation }) {
   const [amount, setAmount] = useState(0)
   const [isLoading, setLoading] = useState(true);
   const [projectList, setProjectIdList] = useState([]);

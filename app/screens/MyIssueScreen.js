@@ -14,6 +14,7 @@ import { Ionicons } from '@expo/vector-icons';
 import Header from "../components/Header";
 import myFont from '../config/myFont';
 import Footer from "../components/Footer";
+import { localhost } from '../config/configurations';
 
 export default function MyIssueScreen({ route, navigation }) {
   const [isLoading, setLoading] = useState(true);
@@ -21,7 +22,7 @@ export default function MyIssueScreen({ route, navigation }) {
   const [myIssues, setMyIssues] = useState([]);
   
   const getIssues = async () => {
-    fetch('http://192.168.1.50:80/redmine/issues.json?assigned_to_id=1&status_id=*')
+    fetch(localhost + 'issues.json?assigned_to_id=1&status_id=*')
     .then((response) => response.json())
     .then((json) => {
       setMyIssues(json.issues);

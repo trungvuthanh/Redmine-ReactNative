@@ -14,16 +14,16 @@ import { Ionicons } from '@expo/vector-icons';
 import Header from "../components/Header";
 import HomeTiles from "../components/HomeTiles";
 import myFont from '../config/myFont';
+import { localhost } from '../config/configurations';
 
 export default function HomeScreen({ navigation }) {
   const [isLoading, setLoading] = useState(true);
   const [overdueAmount, setOverdueAmount] = useState(0);
-  const [expAmount, setExpAmount] = useState(0);
   const [issueAmount, setIssueAmount] = useState(0);
   const [issues, setIssues] = useState([]);
   const [myIssueAmount, setMyIssueAmount] = useState(0);
   const [myIssues, setMyIssues] = useState([]);
-  const [openProjectAmount, setOpenProjectAmount] = useState(0);
+  const [projectAmount, setProjectAmount] = useState(0);
     
   // pull to refresh function
   const [refreshing, setRefreshing] = React.useState(false);
@@ -38,13 +38,13 @@ export default function HomeScreen({ navigation }) {
 
   const getProjects = async () => {
     try {
-      const response = await fetch('http://192.168.1.50:80/redmine/projects.json');
+      const response = await fetch(localhost + 'projects.json');
       const json = await response.json();
       let count = 0;
       for (let project of json.projects) {
         if (project.id != 1 && project.parent == undefined) count += 1;
       }
-      setOpenProjectAmount(count);
+      setProjectAmount(count);
     } catch (error) {
       console.error(error);
     } finally {
@@ -53,11 +53,9 @@ export default function HomeScreen({ navigation }) {
   }
 
   const getIssues = async () => {
-    fetch('http://192.168.1.50:80/redmine/issues.json?status_id=*')
+    fetch(localhost + 'issues.json?status_id=*')
     .then((response) => response.json())
     .then((json) => {
-      setIssueAmount(json.total_count);
-      setIssues(json.issues);
       let myIssueCount = 0;
       let myIssuesArr = []
       let overdueIssuesCount = 0;
@@ -72,6 +70,10 @@ export default function HomeScreen({ navigation }) {
           if (dueDate < today) overdueIssuesCount += 1;
         }
       }
+      // setIssueAmount(json.total_count);
+      // setIssues(json.issues);
+      setIssueAmount(myIssueCount);
+      setIssues(myIssuesArr);
       setMyIssues(myIssuesArr);
       setMyIssueAmount(myIssueCount);
       setOverdueAmount(overdueIssuesCount);
@@ -123,21 +125,6 @@ export default function HomeScreen({ navigation }) {
             >
               <HomeTiles redMark="yes" title="Overdue issues" amount={overdueAmount} />
             </Pressable>
-            {/* <Pressable
-              onPress={() => {
-                navigation.navigate("Expired", { amount: expAmount })
-              }}
-              style={({ pressed }) => [
-                styles.tiles,
-                {
-                  backgroundColor: pressed
-                    ? myFont.buttonPressedColor
-                    : myFont.white
-                }
-              ]}
-            >
-              <HomeTiles redMark="yes" title="Expired Issue" amount={expAmount} />
-            </Pressable> */}
             <Pressable
               onPress={() => {
                 navigation.navigate("IssueStack")
@@ -153,7 +140,7 @@ export default function HomeScreen({ navigation }) {
             >
               <HomeTiles redMark="no" title="Issues" amount={issueAmount} />
             </Pressable>
-            <Pressable
+            {/* <Pressable
               onPress={() => {
                 navigation.navigate("MyIssueStack")
               }}
@@ -167,7 +154,7 @@ export default function HomeScreen({ navigation }) {
               ]}
             >
               <HomeTiles redMark="no" title="My Issues" amount={myIssueAmount} />
-            </Pressable>
+            </Pressable> */}
 
             {/* "Forthcoming ends" tile for projects about to reach due date
             <Pressable
@@ -189,7 +176,7 @@ export default function HomeScreen({ navigation }) {
 
             <Pressable
               onPress={() => {
-                navigation.navigate("OpenProjectStack")
+                navigation.navigate("ProjectStack")
               }}
               style={({ pressed }) => [
                 styles.tiles,
@@ -200,27 +187,8 @@ export default function HomeScreen({ navigation }) {
                 }
               ]}
             >
-              <HomeTiles redMark="no" title="Open projects" amount={openProjectAmount} />
+              <HomeTiles redMark="no" title="Projects" amount={projectAmount} />
             </Pressable>
-
-            {/* "Recently created projects" tile for projects created within 3 days
-            <Pressable
-              onPress={() => {
-                navigation.navigate("RecentCreate")
-              }}
-              style={({ pressed }) => [
-                styles.tiles,
-                {
-                  backgroundColor: pressed
-                    ? myFont.buttonPressedColor
-                    : myFont.white
-                }
-              ]}
-            >
-              <HomeTiles title="Recently created projects" amount="1" />
-            </Pressable>
-            */}
-            
           </ScrollView>
         </>
       )}

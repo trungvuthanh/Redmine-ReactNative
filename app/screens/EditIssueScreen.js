@@ -25,6 +25,7 @@ import PriorityPicker from '../components/PriorityPicker';
 import StatusPicker from '../components/StatusPicker';
 import ParentIssuePicker from '../components/ParentIssuePicker';
 import DoneRatioPicker from '../components/DoneRatioPicker';
+import { localhost } from '../config/configurations';
 
 function dateInput(dateStr) {
   const [date, setDate] = useState(new Date(dateStr));
@@ -153,7 +154,7 @@ export default function EditIssueScreen({ route, navigation }) {
   const saveData = () => {
     name != ""
     ? updateData()
-    :  Alert.alert(
+    : Alert.alert(
       "Name cannot be blank",
       "",
       [{
@@ -181,7 +182,7 @@ export default function EditIssueScreen({ route, navigation }) {
         done_ratio: doneRatio,
       }
     });
-    fetch('http://192.168.1.50:80/redmine/issues/' + issue.id + '.json', {
+    fetch(localhost + 'issues/' + issue.id + '.json', {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -217,20 +218,17 @@ export default function EditIssueScreen({ route, navigation }) {
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={styles.container}
-      keyboardVerticalOffset={styles.header.height}
-    >
+      keyboardVerticalOffset={styles.header.height}>
       <View style={styles.header}>
         <Pressable
           onPress={() => navigation.pop()}
-          style={styles.closeBtn}
-        >
+          style={styles.closeBtn}>
           <View>
             <Ionicons name="close-sharp" size={myFont.menuIconSize} color="white" />
           </View>
         </Pressable>
-          <Text style={styles.textHeader}>Edit issue</Text>
+        <Text style={styles.textHeader}>Edit issue</Text>
       </View>
-
       <ScrollView style={{marginBottom: 50}}>
         <View style={styles.groupRow}>
           <Pressable
@@ -239,8 +237,7 @@ export default function EditIssueScreen({ route, navigation }) {
               backgroundColor: pressed
                 ? myFont.buttonPressedColor
                 : myFont.white
-            }]}
-          >
+            }]}>
             <View style={styles.groupCell}>
               <View style={styles.label}>
                 <Text style={styles.text}>subject *</Text>
@@ -263,9 +260,7 @@ export default function EditIssueScreen({ route, navigation }) {
                 backgroundColor: pressed
                   ? myFont.buttonPressedColor
                   : myFont.white
-              }
-            ]}
-          >
+              }]}>
             <View style={[styles.groupCell, {height: 137}]}>
               <View style={styles.label}>
                 <Text style={styles.text}>description</Text>
@@ -290,31 +285,26 @@ export default function EditIssueScreen({ route, navigation }) {
               backgroundColor: pressed
                 ? myFont.buttonPressedColor
                 : myFont.white
-            }]
-          }
-          >
+            }]}>
             <View style={styles.groupCell}>
               <View style={styles.label}>
                 <Text style={styles.text}>Parent task</Text>
                 <Pressable
-                  onPress={() => onChangeSubProject({subject: "", id: 0})}
-                >
+                  onPress={() => onChangeSubProject({subject: "", id: 0})}>
                   <Text
                     style={{color: myFont.blue}}
                   >Clear</Text>
                 </Pressable>
               </View>
               <Pressable
-                onPress={() => changeSubVisibility(true)}
-              >
+                onPress={() => changeSubVisibility(true)}>
                 <Text style={styles.textInput}>{subproject.subject}</Text>
               </Pressable>
               <View>
                 <Modal
                   transparent={true}
                   visible={isSubVisible}
-                  onRequestClose={() => changeSubVisibility(false)}
-                >
+                  onRequestClose={() => changeSubVisibility(false)}>
                   <ParentIssuePicker
                     changeSubVisibility={changeSubVisibility}
                     setSub={setSubProject}
@@ -328,13 +318,10 @@ export default function EditIssueScreen({ route, navigation }) {
         <View 
           style={[
             styles.groupRow,
-            {flexDirection: "row"}
-          ]}
-        >
+            {flexDirection: "row"}]}>
           <Pressable
             onPress={startDate.showDatepicker}
-            style={styles.halfCell}
-          >
+            style={styles.halfCell}>
             <View style={styles.label}>
               <Text style={styles.text}>start date</Text>
             </View>
@@ -350,15 +337,11 @@ export default function EditIssueScreen({ route, navigation }) {
                 value={startDate.date}
                 mode="date"
                 is24Hour={true}
-                onChange={onChangeStart}
-                
-              />
-            )}
+                onChange={onChangeStart}/>)}
           </Pressable>
           <Pressable
             onPress={endDate.showDatepicker}
-            style={styles.halfCell}
-          >
+            style={styles.halfCell}>
             <View style={styles.label}>
               <Text style={styles.text}>due date</Text>
             </View>
@@ -382,9 +365,7 @@ export default function EditIssueScreen({ route, navigation }) {
         <View 
           style={[
             styles.groupRow,
-            {flexDirection: "row"}
-          ]}
-        >
+            {flexDirection: "row"}]}>
           <Pressable
             style={({pressed}) => [
               styles.halfCell,
@@ -392,9 +373,7 @@ export default function EditIssueScreen({ route, navigation }) {
                 backgroundColor: pressed
                   ? myFont.buttonPressedColor
                   : myFont.white
-              },
-            ]}
-          >
+              }]}>
             <View style={styles.label}>
               <Text style={styles.text}>estimated time (h)</Text>
             </View>
@@ -413,9 +392,7 @@ export default function EditIssueScreen({ route, navigation }) {
                   ? myFont.buttonPressedColor
                   : myFont.white,
                 position: "relative",
-              }
-            ]}
-          >
+              }]}>
             <View style={styles.label}>
               <Text style={styles.text}>status *</Text>
             </View>
@@ -431,8 +408,7 @@ export default function EditIssueScreen({ route, navigation }) {
               <Modal
                 transparent={true}
                 visible={isStatusVisible}
-                onRequestClose={() => changeStatusVisibility(false)}
-              >
+                onRequestClose={() => changeStatusVisibility(false)}>
                 <StatusPicker
                   changeStatusVisibility={changeStatusVisibility}
                   setStatus={onChangeStatus}
@@ -445,9 +421,7 @@ export default function EditIssueScreen({ route, navigation }) {
         <View
           style={[
             styles.groupRow,
-            {flexDirection: "row"}
-          ]}
-        >
+            {flexDirection: "row"}]}>
           <Pressable
             style={({pressed}) => [
               styles.halfCell,
@@ -456,23 +430,19 @@ export default function EditIssueScreen({ route, navigation }) {
                   ? myFont.buttonPressedColor
                   : myFont.white,
                 position: "relative",
-              }
-            ]}
-          >
+              }]}>
             <View style={styles.label}>
               <Text style={styles.text}>tracker *</Text>
             </View>
             <Pressable
-              onPress={() => changeTrackerVisibility(true)}
-            >
+              onPress={() => changeTrackerVisibility(true)}>
               <Text style={styles.textInput}>{tracker.name}</Text>
             </Pressable>
             <View>
               <Modal
                 transparent={true}
                 visible={isTrackerVisible}
-                onRequestClose={() => changeTrackerVisibility(false)}
-              >
+                onRequestClose={() => changeTrackerVisibility(false)}>
                 <TrackerPicker
                   changeTrackerVisibility={changeTrackerVisibility}
                   setTracker={onChangeTracker}
@@ -488,23 +458,19 @@ export default function EditIssueScreen({ route, navigation }) {
                   ? myFont.buttonPressedColor
                   : myFont.white,
                 position: "relative",
-              }
-            ]}
-          >
+              }]}>
             <View style={styles.label}>
               <Text style={styles.text}>priority *</Text>
             </View>
             <Pressable
-              onPress={() => changePriorityVisibility(true)}
-            >
+              onPress={() => changePriorityVisibility(true)}>
               <Text style={styles.textInput}>{priority.name}</Text>
             </Pressable>
             <View>
               <Modal
                 transparent={true}
                 visible={isPriorityVisible}
-                onRequestClose={() => changePriorityVisibility(false)}
-              >
+                onRequestClose={() => changePriorityVisibility(false)}>
                 <PriorityPicker
                   changePriorityVisibility={changePriorityVisibility}
                   setPriority={onChangePriority}
@@ -516,9 +482,7 @@ export default function EditIssueScreen({ route, navigation }) {
         <View
           style={[
             styles.groupRow,
-            {flexDirection: "row"}
-          ]}
-        >
+            {flexDirection: "row"}]}>
           <Pressable
             style={({pressed}) => [
               styles.halfCell,
@@ -527,23 +491,19 @@ export default function EditIssueScreen({ route, navigation }) {
                   ? myFont.buttonPressedColor
                   : myFont.white,
                 position: "relative",
-              }
-            ]}
-          >
+              }]}>
             <View style={styles.label}>
               <Text style={styles.text}>% done</Text>
             </View>
             <Pressable
-              onPress={() => changeDoneRatioVisibility(true)}
-            >
+              onPress={() => changeDoneRatioVisibility(true)}>
               <Text style={styles.textInput}>{doneRatio.toString()} %</Text>
             </Pressable>
             <View>
               <Modal
                 transparent={true}
                 visible={isDoneRatioVisible}
-                onRequestClose={() => changeDoneRatioVisibility(false)}
-              >
+                onRequestClose={() => changeDoneRatioVisibility(false)}>
                 <DoneRatioPicker
                   changeDoneRatioVisibility={changeDoneRatioVisibility}
                   setDoneRatio={onChangeDoneRatio}
@@ -558,9 +518,7 @@ export default function EditIssueScreen({ route, navigation }) {
                 backgroundColor: pressed
                   ? myFont.buttonPressedColor
                   : myFont.white
-              }
-            ]}
-          >
+              }]}>
             <View style={styles.label}>
               <Text style={styles.text}>private</Text>
             </View>
@@ -579,9 +537,7 @@ export default function EditIssueScreen({ route, navigation }) {
               backgroundColor: pressed
                 ? myFont.buttonPressedColor
                 : myFont.white
-            }]
-          }
-          >
+            }]}>
             <View style={styles.groupCell}>
               <View style={styles.label}>
                 <Text style={styles.text}>Attach files</Text>
@@ -606,8 +562,7 @@ export default function EditIssueScreen({ route, navigation }) {
               : myFont.footerBackgroundColor
             },
             styles.backButton
-          ]}
-        >
+          ]}>
           <Ionicons name="chevron-back" size={30} color={myFont.blue} />
         </Pressable>
         <Pressable
@@ -619,8 +574,7 @@ export default function EditIssueScreen({ route, navigation }) {
                 : myFont.addButtonColor
             },
             styles.saveButton
-          ]}
-        >
+          ]}>
           <Text style={styles.saveText}>save</Text>
         </Pressable>
       </View>

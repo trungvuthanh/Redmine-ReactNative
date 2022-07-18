@@ -12,7 +12,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-import users from './app/config/ListUsers';
+import users from './app/config/configurations';
 
 import LoginScreen from './app/screens/LoginScreen';
 import DrawerContent from './app/screens/DrawerContent';
@@ -21,7 +21,7 @@ import OverdueScreen from './app/screens/OverdueScreen';
 import ExpToDoScreen from './app/screens/ExpToDoScreen';
 import IssueScreen from './app/screens/IssueScreen';
 import MyIssueScreen from './app/screens/MyIssueScreen';
-import OpenProjectScreen from './app/screens/OpenProjectScreen';
+import ProjectScreen from './app/screens/ProjectScreen';
 import AddScreen from './app/screens/AddScreen';
 import DetailScreen from './app/screens/DetailScreen';
 import EditIssueScreen from './app/screens/EditIssueScreen';
@@ -34,7 +34,7 @@ const HomeStack = createStackNavigator();
 const OverdueStack = createStackNavigator();
 const IssueStack = createStackNavigator();
 const MyIssueStack = createStackNavigator();
-const OpenProjectStack = createStackNavigator();
+const ProjectStack = createStackNavigator();
 
 const DrawerScreen = ({ fullname }) => (
   <Drawer.Navigator
@@ -46,8 +46,8 @@ const DrawerScreen = ({ fullname }) => (
       component={HomeStackScreen}
       options={{headerShown: false}}/>
     <Drawer.Screen
-      name="OpenProjectStack"
-      component={OpenProjectStackScreen}
+      name="ProjectStack"
+      component={ProjectStackScreen}
       options={{headerShown: false}}/>
     <Drawer.Screen
       name="IssueStack"
@@ -94,8 +94,8 @@ const HomeStackScreen = () => (
       }}
     />
     <HomeStack.Screen
-      name="OpenProjectStack"
-      component={OpenProjectStackScreen}
+      name="ProjectStack"
+      component={ProjectStackScreen}
       options={{
         headerShown: false,
       }}
@@ -202,44 +202,44 @@ const MyIssueStackScreen = () => (
   </MyIssueStack.Navigator>
 )
 
-const OpenProjectStackScreen = () => (
-  <OpenProjectStack.Navigator initialRouteName="OpenProject">
-    <OpenProjectStack.Screen
-      name="OpenProject"
-      component={OpenProjectScreen}
+const ProjectStackScreen = () => (
+  <ProjectStack.Navigator initialRouteName="Project">
+    <ProjectStack.Screen
+      name="Project"
+      component={ProjectScreen}
       options={{
         headerShown: false,
       }}
     />
-    <OpenProjectStack.Screen
+    <ProjectStack.Screen
       name="AddScreen"
       component={AddScreen}
       options={{
         headerShown: false,
       }}
     />
-    <OpenProjectStack.Screen
+    <ProjectStack.Screen
       name="DetailScreen"
       component={DetailScreen}
       options={{
         headerShown: false,
       }}
     />
-    <OpenProjectStack.Screen
+    <ProjectStack.Screen
       name="EditIssueScreen"
       component={EditIssueScreen}
       options={{
         headerShown: false,
       }}
     />
-    <OpenProjectStack.Screen
+    <ProjectStack.Screen
       name="EditProjectScreen"
       component={EditProjectScreen}
       options={{
         headerShown: false,
       }}
     />
-  </OpenProjectStack.Navigator>
+  </ProjectStack.Navigator>
 );
 
 export default function App() {
@@ -296,7 +296,7 @@ export default function App() {
         if (user) {
           let apiKey = user.api_key;
           try {
-            await AsyncStorage.setItem("apiKey", user.api_key);
+            await AsyncStorage.setItem("user", JSON.stringify(user));
           } catch (e) {
             console.error(e);
           }
@@ -373,7 +373,6 @@ export default function App() {
       <AuthContext.Provider value={authContext}>
         <NavigationContainer>
           {loginState.apiKey ? <DrawerScreen fullname={{fullname: loginState.fullname}} /> : <LoginScreen/>}
-          {/* <DrawerScreen/> */}
         </NavigationContainer>
       </AuthContext.Provider>
     </>

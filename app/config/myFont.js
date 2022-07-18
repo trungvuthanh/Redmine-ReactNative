@@ -42,6 +42,8 @@ export default {
   // Footer
   addButtonColor: "#009ef6",
   backButtonIconPressed: "#94cae3",
+  deleteButtonColor: "#ff0000",
+  deleteButtonColorPressed: "#ff9898",
   footerBorderColor: "#d2d4d7",
   footerBackgroundColor: "#ecedee",
 };

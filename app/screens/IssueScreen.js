@@ -9,11 +9,13 @@ import {
   ActivityIndicator,
   RefreshControl,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+import ActionButton from 'react-native-action-button';
 
 import Header from "../components/Header";
 import myFont from '../config/myFont';
 import Footer from "../components/Footer";
+import { localhost } from '../config/configurations';
 
 export default function IssueScreen({ route, navigation }) {
   const [isLoading, setLoading] = useState(true);
@@ -21,7 +23,7 @@ export default function IssueScreen({ route, navigation }) {
   const [issues, setIssues] = useState([]);
 
   const getIssues = async () => {
-    fetch('http://192.168.1.50:80/redmine/issues.json?status_id=*')
+    fetch(localhost + 'issues.json?assigned_to_id=1&status_id=*')
     .then((response) => response.json())
     .then((json) => {
       setIssueAmount(json.total_count);
@@ -84,51 +86,80 @@ export default function IssueScreen({ route, navigation }) {
   }, []);
 
 	return (
-		<SafeAreaView style={styles.container}>
-      {isLoading ? <ActivityIndicator/> :
-        <>
-          <View style={styles.header}>
-            <Pressable
-              onPress={() => navigation.toggleDrawer()}
-              style={styles.menuContainer}
+    <>
+      <SafeAreaView style={styles.container}>
+        {isLoading ? <ActivityIndicator/> :
+          <>
+            <View style={styles.header}>
+              <Pressable
+                onPress={() => navigation.toggleDrawer()}
+                style={styles.menuContainer}
+              >
+                <View>
+                  <Ionicons name="ios-menu" size={myFont.menuIconSize} color="white" />
+                </View>
+              </Pressable>
+              <Text style={styles.textHeader}>
+                All Issues
+                <Text style={{fontSize: 18.6, letterSpacing: myFont.letterSpace}}> ({issueAmount})</Text>
+              </Text>
+            </View>
+            {/* <Header title="Issues" amount={issueAmount} /> */}
+            <ScrollView
+              style={{marginBottom: 50}}
+              refreshControl={
+                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+              }
             >
-              <View>
-                <Ionicons name="ios-menu" size={myFont.menuIconSize} color="white" />
-              </View>
-            </Pressable>
-            <Text style={styles.textHeader}>
-              All Issues
-              <Text style={{fontSize: 18.6, letterSpacing: myFont.letterSpace}}> ({issueAmount})</Text>
-            </Text>
-          </View>
-          {/* <Header title="Issues" amount={issueAmount} /> */}
-          <ScrollView
-            style={{marginBottom: 50}}
-            refreshControl={
-              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-            }
-          >
-            {issueList}
-          </ScrollView>
-          {/* <Footer/> */}
-          <View style={styles.footer}>
-            <Pressable
-              onPress={() => navigation.goBack()}
-              style={({pressed}) => [
-                {
-                  backgroundColor: pressed
-                    ? myFont.buttonPressedColor
-                    : myFont.footerBackgroundColor
-                },
-                styles.backButton
-              ]}
-            >
-              <Ionicons name="chevron-back" size={30} color={myFont.blue} />
-            </Pressable>
-          </View>    
-        </>
-      }
-    </SafeAreaView>
+              {issueList}
+            </ScrollView>
+            {/* <Footer/> */}
+            <View style={styles.footer}>
+              <Pressable
+                onPress={() => navigation.goBack()}
+                style={({pressed}) => [
+                  {
+                    backgroundColor: pressed
+                      ? myFont.buttonPressedColor
+                      : myFont.footerBackgroundColor
+                  },
+                  styles.backButton
+                ]}
+              >
+                <Ionicons name="chevron-back" size={30} color={myFont.blue} />
+              </Pressable>
+            </View>    
+          </>
+        }
+      </SafeAreaView>
+      {/* <ActionButton
+        offsetY={70}
+        offsetX={10}
+        degrees={0}
+        bgOpacity={0.55}
+        bgColor={myFont.white}
+        buttonColor='rgba(96, 84, 203, 1)'
+        size={50}
+        useNativeFeedback
+        nativeFeedbackRippleColor='rgba(255, 255, 255, 0)'
+        activeOpacity={1}
+        renderIcon={active => (
+          <>
+            <MaterialIcons
+              size={30}
+              name="search"
+              color={myFont.white}
+            />
+          </>
+        )}
+        onPressIn={() => {
+          
+        }}
+        onPressOut={() => {
+          
+        }}
+      /> */}
+    </>
 	);
 }
 

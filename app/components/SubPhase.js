@@ -66,7 +66,7 @@ export default function SubPhase(props) {
             styles.addPhaseButton
           ]}
         >
-          <Text style={styles.addPhaseText}>Add a phase</Text>
+          <Text style={styles.addPhaseText}>New issue</Text>
         </Pressable>
       </View>
       {mylist}

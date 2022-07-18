@@ -1,43 +1,11 @@
 export default users = [
   {
     id: 1,
-    username: 'trungvuthanh',
+    username: 'admin',
     password: 'password',
     api_key: '34dafb931f5817ecf25be180ceaf87029142915e',
     firstname: '',
     lastname: 'Admin'
-  },
-  {
-    id: 2,
-    username: '',
-    password: '',
-    api_key: '',
-    firstname: '',
-    lastname: ''
-  },
-  {
-    id: 3,
-    username: '',
-    password: '',
-    api_key: '',
-    firstname: '',
-    lastname: ''
-  },
-  {
-    id: 4,
-    username: '',
-    password: '',
-    api_key: '',
-    firstname: '',
-    lastname: ''
-  },
-  {
-    id: 5,
-    username: '',
-    password: '',
-    api_key: '',
-    firstname: '',
-    lastname: ''
   },
   {
     id: 6,
@@ -64,3 +32,5 @@ export default users = [
     lastname: '1'
   }
 ];
+
+export const localhost = 'http://192.168.1.50:80/redmine/';
