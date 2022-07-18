@@ -17,6 +17,7 @@ import Header from "../components/Header";
 import ItemTiles from "../components/ItemTiles";
 import myFont from '../config/myFont';
 import Footer from "../components/Footer";
+import { localhost } from '../config/configurations';
 
 export default function ProjectScreen({ route, navigation }) {
   const [amount, setAmount] = useState(0)
@@ -34,7 +35,7 @@ export default function ProjectScreen({ route, navigation }) {
   }, []);
 
   const getInfo = async () => {
-    fetch("http://192.168.1.50:80/redmine/projects.json")
+    fetch(localhost + 'projects.json')
     .then((response) => response.json())
     .then((json) => {
       setProjectIdList(

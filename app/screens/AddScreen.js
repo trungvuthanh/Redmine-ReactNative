@@ -26,6 +26,7 @@ import StatusPicker from '../components/StatusPicker';
 import ParentProjectPicker from '../components/ParentProjectPicker';
 import ParentIssuePicker from '../components/ParentIssuePicker';
 import DoneRatioPicker from '../components/DoneRatioPicker';
+import { localhost } from '../config/configurations';
 
 function dateInput() {
   const [date, setDate] = useState(new Date());
@@ -233,7 +234,7 @@ export default function AddScreen({ route, navigation }) {
           }
         });  
       }
-      fetch("http://192.168.1.50:80/redmine/projects.json", {
+      fetch(localhost + 'projects.json', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -301,7 +302,7 @@ export default function AddScreen({ route, navigation }) {
           done_ratio: doneRatio,
         }
       });
-      fetch("http://192.168.1.50:80/redmine/issues.json", {
+      fetch(localhost + 'issues.json', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

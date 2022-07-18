@@ -36,6 +36,7 @@ export default function DetailScreen({ route, navigation }) {
   }
 
   const [user, setUser] = useState(null);
+  const [members, setMembers] = useState([]);
 
   // Sub issues
   const [issues, setIssues] = useState({issues: []});
@@ -86,6 +87,12 @@ export default function DetailScreen({ route, navigation }) {
       }
       setIssues(json);
       setIssueCount(count);
+    })
+    // Get memberships
+    fetch(localhost + 'projects/' + project.id + '/memberships.json')
+    .then((response) => response.json())
+    .then((json) => {
+      setMembers(json.memberships);
     })
     .catch((error) => {
       console.error(error);
@@ -394,7 +401,7 @@ export default function DetailScreen({ route, navigation }) {
                   }
                 </View>
               </Pressable>
-              <ProjectInformation showInfo={showInfo} project={project} />
+              <ProjectInformation showInfo={showInfo} project={project} members={members} />
             </>
             : <>
               <View style={styles.nameHeader}>

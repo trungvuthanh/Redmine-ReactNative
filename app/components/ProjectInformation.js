@@ -12,6 +12,32 @@ import myFont from '../config/myFont';
 
 export default function ProjectInformation(props) {
   const project = props.project;
+
+  const members = props.members;
+  let managers = '', developers = '', reporters = '';
+  for (let member of members) {
+    for (let role of member.roles) {
+      if (role.name == 'Manager') {
+        if (managers == '') {
+          managers = member.user.name.trim();
+        } else {
+          managers += ', ' + member.user.name;
+        }
+      } else if (role.name == 'Developer') {
+        if (developers == '') {
+          developers = member.user.name.trim();
+        } else {
+          developers += ', ' + member.user.name;
+        }
+      } else if (role.name == 'Reporter') {
+        if (reporters == '') {
+          reporters = member.user.name.trim();
+        } else {
+          reporters += ', ' + member.user.name;
+        }
+      }
+    }
+  }
   
   return (
     <Collapsible 
@@ -83,6 +109,94 @@ export default function ProjectInformation(props) {
         </Pressable>
       </View>
       <View
+        style={{
+          width: "100%",
+          paddingBottom: 1,
+          borderStyle: "solid",
+          borderBottomWidth: 1,
+          borderBottomColor: myFont.itemBorderColor,
+        }}>
+        <Pressable
+          style={({pressed}) => 
+          [{
+            backgroundColor: pressed
+              ? myFont.buttonPressedColor
+              : myFont.white,
+          }]
+        }
+        >
+          <View style={styles.groupCell}>
+            <View style={styles.label}>
+              <Text style={styles.text}>members</Text>
+            </View>
+            <View
+              style={{
+                width: "100%",
+                flexDirection: "row",
+              }}
+            >
+              <View
+                style={[
+                  styles.label,
+                  {width: "33%"}
+                ]}>
+                <Text style={{fontSize: 20.8, fontStyle: 'italic'}}>Manager</Text>
+              </View>
+              <View
+                style={[
+                  styles.label,
+                  {width: "66%"}
+                ]}>
+                <Text style={{fontSize: 20.8}}>{managers}</Text>
+              </View>
+            </View>
+            <View
+              style={{
+                width: "100%",
+                flexDirection: "row",
+              }}
+            >
+              <View
+                style={[
+                  styles.label,
+                  {width: "33%"}
+                ]}>
+                <Text style={{fontSize: 20.8, fontStyle: 'italic'}}>Developer</Text>
+              </View>
+              <View
+                style={[
+                  styles.label,
+                  {width: "66%"}
+                ]}>
+                <Text style={{fontSize: 20.8}}>{developers}</Text>
+              </View>
+            </View>
+            <View
+              style={{
+                width: "100%",
+                flexDirection: "row",
+                height: 50,
+              }}
+            >
+              <View
+                style={[
+                  styles.label,
+                  {width: "33%"}
+                ]}>
+                <Text style={{fontSize: 20.8, fontStyle: 'italic'}}>Reporter</Text>
+              </View>
+              <View
+                style={[
+                  styles.label,
+                  {width: "66%"}
+                ]}>
+                <Text style={{fontSize: 20.8}}>{reporters}</Text>
+              </View>
+            </View>
+          </View>
+        </Pressable>
+      </View>
+      <View
         style={[
           styles.groupRow,
           {flexDirection: "row"}
@@ -148,6 +262,20 @@ const styles = StyleSheet.create({
     borderStyle: "solid",
     borderRightWidth: 1,
     borderRightColor: myFont.itemBorderColor,
+  },
+  roleCell: {
+    width: "33%",
+    height: 73,
+    borderStyle: "solid",
+    borderBottomWidth: 1,
+    borderBottomColor: myFont.itemBorderColor,
+  },
+  memberCell: {
+    width: "66%",
+    height: 73,
+    borderStyle: "solid",
+    borderBottomWidth: 1,
+    borderBottomColor: myFont.itemBorderColor,
   },
   label: {
     paddingTop: 10,
