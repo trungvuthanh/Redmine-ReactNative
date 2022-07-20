@@ -73,7 +73,7 @@ export default function IssueScreen({ route, navigation }) {
           </View>
           <View>
             <Text>{issue.subject}</Text>
-            <Text>(#{issue.id})</Text>
+            <Text>#{issue.id}</Text>
           </View>
         </Pressable>
       </View>  

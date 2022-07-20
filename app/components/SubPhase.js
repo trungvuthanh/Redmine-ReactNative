@@ -42,7 +42,7 @@ export default function SubPhase(props) {
         </View>
         <View>
           <Text>{issue.subject}</Text>
-          <Text>(#{issue.id})</Text>
+          <Text>#{issue.id}</Text>
         </View>
       </Pressable>
     );
@@ -50,7 +50,7 @@ export default function SubPhase(props) {
 
   return (
     <Collapsible 
-      collapsed={props.showPhase}
+      collapsed={props.collapseIssue}
     >
       <View
         style={styles.addPhaseContainer}

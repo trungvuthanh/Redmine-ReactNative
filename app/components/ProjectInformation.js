@@ -80,7 +80,7 @@ export default function ProjectInformation(props) {
   
   return (
     <Collapsible 
-      collapsed={props.showInfo}
+      collapsed={props.collapseDetail}
     >
       <View style={styles.groupRow}>
         <Pressable
@@ -196,7 +196,7 @@ export default function ProjectInformation(props) {
             <View
               style={{
                 flexDirection: "row",
-                padding: 10,
+                margin: 10,
               }}>
               <Button
                 title={membershipCollapsed ? "NEW MEMBER" : "CLOSE"}

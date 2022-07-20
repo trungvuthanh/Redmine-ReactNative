@@ -43,8 +43,7 @@ export default function Phase(props) {
           </View>
           <View>
             <Text>{issue.subject}</Text>
-            <Text>(#{issue.id})</Text>
-            {/* {issue.parent ? <Text>Parent id: ({issue.parent.id})</Text> : <></>} */}
+            <Text>#{issue.id}</Text>
           </View>
         </Pressable>
       );
@@ -53,7 +52,7 @@ export default function Phase(props) {
 
   return (
     <Collapsible 
-      collapsed={props.showPhase}
+      collapsed={props.collapseIssue}
     >
       <View
         style={styles.addPhaseContainer}

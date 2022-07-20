@@ -49,9 +49,9 @@ export default function DetailScreen({ route, navigation }) {
   const [allIssuesOfProject, setAllIssuesOfProject] = useState([]);
   // Sub projects
   const [projects, setProjects] = useState({projects: []});
-  const [showSub, setShowSub] = useState(true);
-  const [showPhase, setShowPhase] = useState(true);
-  const [showInfo, setshowInfo] = useState(true);
+  const [collapseSubproject, setCollapseSubproject] = useState(true);
+  const [collapseIssue, setCollapseIssue] = useState(true);
+  const [collapseDetail, setShowInfo] = useState(false);
   const [projectCount, setProjectCount] = useState(0);
   const [issueCount, setIssueCount] = useState(0);
   const [isLoading, setLoading] = useState(false);
@@ -396,7 +396,7 @@ export default function DetailScreen({ route, navigation }) {
                   >{project.name}</Text>
                   <Text
                     style={{fontSize: 16, color: "#898c91"}}
-                  >(#{project.id})</Text>
+                  >#{project.id}</Text>
                 </View>
               </View>
               <View 
@@ -423,60 +423,60 @@ export default function DetailScreen({ route, navigation }) {
                 </View>
               </View>
               <Pressable
-                onPress={() => setShowSub(!showSub)}
+                onPress={() => setCollapseSubproject(!collapseSubproject)}
               >
                 <View
                   style={styles.tile}
                 >
                   <Text style={[
                     styles.title,
-                    {fontWeight: showSub ? "300" : "700"}
+                    {fontWeight: collapseSubproject ? "300" : "700"}
                   ]}
                   >Subprojects ({projectCount})</Text>
-                  {showSub
+                  {collapseSubproject
                     ? <Entypo name="chevron-down" size={myFont.menuIconSize} color="#d2d4d7" />
                     : <Entypo name="chevron-up" size={myFont.menuIconSize} color="#d2d4d7" />
                   }
                 </View>
               </Pressable>
-              <SubProject showSub={showSub} projects={projects.projects} addSubProject={addSubProject} navigateTo={navigateToSubProject}/>
+              <SubProject collapseSubproject={collapseSubproject} projects={projects.projects} addSubProject={addSubProject} navigateTo={navigateToSubProject}/>
               <Pressable
-                onPress={() => setShowPhase(!showPhase)}
+                onPress={() => setCollapseIssue(!collapseIssue)}
               >
                 <View
                   style={styles.tile}
                 >
                   <Text style={[
                     styles.title,
-                    {fontWeight: showPhase ? "300" : "700"}
+                    {fontWeight: collapseIssue ? "300" : "700"}
                   ]}
                   >Issues ({issueCount})</Text>
-                  {showPhase
+                  {collapseIssue
                     ? <Entypo name="chevron-down" size={myFont.menuIconSize} color="#d2d4d7" />
                     : <Entypo name="chevron-up" size={myFont.menuIconSize} color="#d2d4d7" />
                   }
                 </View>
               </Pressable>
-              <Phase showPhase={showPhase} issues={issues.issues} addNewPhase={addNewPhase} navigateToIssue={navigateToSubIssue} />
+              <Phase collapseIssue={collapseIssue} issues={issues.issues} addNewPhase={addNewPhase} navigateToIssue={navigateToSubIssue} />
               <Pressable
-                onPress={() => setshowInfo(!showInfo)}
+                onPress={() => setShowInfo(!collapseDetail)}
               >
                 <View
                   style={styles.tile}
                 >
                   <Text style={[
                     styles.title,
-                    {fontWeight: showInfo ? "300" : "700"}
+                    {fontWeight: collapseDetail ? "300" : "700"}
                   ]}
                   >Detail</Text>
-                  {showInfo
+                  {collapseDetail
                     ? <Entypo name="chevron-down" size={myFont.menuIconSize} color="#d2d4d7" />
                     : <Entypo name="chevron-up" size={myFont.menuIconSize} color="#d2d4d7" />
                   }
                 </View>
               </Pressable>
               <ProjectInformation
-                showInfo={showInfo}
+                collapseDetail={collapseDetail}
                 project={project}
                 members={members}
                 selectUser={selectUser}
@@ -504,7 +504,7 @@ export default function DetailScreen({ route, navigation }) {
                   >{issue.subject}</Text>
                   <Text
                     style={{fontSize: 16, color: "#898c91"}}
-                  >(#{issue.id})</Text>
+                  >#{issue.id}</Text>
                 </View>
               </View>
               <View 
@@ -541,41 +541,41 @@ export default function DetailScreen({ route, navigation }) {
                 </View>
               </View>
               <Pressable
-                onPress={() => setShowPhase(!showPhase)}
+                onPress={() => setCollapseIssue(!collapseIssue)}
               >
                 <View
                   style={styles.tile}
                 >
                   <Text style={[
                     styles.title,
-                    {fontWeight: showPhase ? "300" : "700"}
+                    {fontWeight: collapseIssue ? "300" : "700"}
                   ]}
                   >Subtasks ({issueCount})</Text>
-                  {showPhase
+                  {collapseIssue
                     ? <Entypo name="chevron-down" size={myFont.menuIconSize} color="#d2d4d7" />
                     : <Entypo name="chevron-up" size={myFont.menuIconSize} color="#d2d4d7" />
                   }
                 </View>
               </Pressable>
-              <SubPhase showPhase={showPhase} issues={issues.issues} addNewPhase={addNewPhase} navigateToIssue={navigateToSubIssue}/>
+              <SubPhase collapseIssue={collapseIssue} issues={issues.issues} addNewPhase={addNewPhase} navigateToIssue={navigateToSubIssue}/>
               <Pressable
-                onPress={() => setshowInfo(!showInfo)}
+                onPress={() => setShowInfo(!collapseDetail)}
               >
                 <View
                   style={styles.tile}
                 >
                   <Text style={[
                     styles.title,
-                    {fontWeight: showInfo ? "300" : "700"}
+                    {fontWeight: collapseDetail ? "300" : "700"}
                   ]}
                   >Detail</Text>
-                  {showInfo
+                  {collapseDetail
                     ? <Entypo name="chevron-down" size={myFont.menuIconSize} color="#d2d4d7" />
                     : <Entypo name="chevron-up" size={myFont.menuIconSize} color="#d2d4d7" />
                   }
                 </View>
               </Pressable>
-              <IssueInformation showInfo={showInfo} issue={issue} />
+              <IssueInformation collapseDetail={collapseDetail} issue={issue} />
             </>
             }
           </ScrollView>
@@ -745,12 +745,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     alignItems: "center",
     justifyContent: "center",
-  },
-  editText: {
-    fontSize: 16,
-    color: myFont.white,
-    fontWeight: "700",
-    textTransform: "uppercase",
   },
   backButton: {
     width: 50,

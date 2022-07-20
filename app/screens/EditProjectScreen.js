@@ -140,7 +140,7 @@ export default function EditProjectScreen({ route, navigation }) {
             }]}>
             <View style={styles.groupCell}>
               <View style={styles.label}>
-                <Text style={styles.text}>name *</Text>
+                <Text style={styles.text}>NAME *</Text>
               </View>
               <TextInput
                 style={styles.textInput}
@@ -164,7 +164,7 @@ export default function EditProjectScreen({ route, navigation }) {
               }]}>
             <View style={styles.groupCell}>
               <View style={styles.label}>
-                <Text style={styles.text}>identifier *</Text>
+                <Text style={styles.text}>IDENTIFIER *</Text>
               </View>
               <Text style={styles.textInput}>{identifier}</Text>
             </View>
@@ -180,7 +180,7 @@ export default function EditProjectScreen({ route, navigation }) {
               }]}>
             <View style={[styles.groupCell, {height: 137}]}>
               <View style={styles.label}>
-                <Text style={styles.text}>description</Text>
+                <Text style={styles.text}>DESCRIPTION</Text>
               </View>
               <TextInput 
                 style={[
@@ -209,7 +209,7 @@ export default function EditProjectScreen({ route, navigation }) {
                   : myFont.white
               }]}>
             <View style={styles.label}>
-              <Text style={styles.text}>is public</Text>
+              <Text style={styles.text}>IS PUBLIC</Text>
             </View>
             <CheckBox
               disabled={false}
@@ -228,7 +228,7 @@ export default function EditProjectScreen({ route, navigation }) {
                 position: "relative",
               }]}>
             <View style={styles.label}>
-              <Text style={styles.text}>inherit members</Text>
+              <Text style={styles.text}>INHERIT MEMBERS</Text>
             </View>
             <CheckBox
               disabled={false}
@@ -285,12 +285,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  saveText: {
-    fontSize: 16,
-    color: myFont.white,
-    fontWeight: "700",
-    textTransform: "uppercase",
-  },
   backButton: {
     width: 50,
     height: 50,
@@ -334,7 +328,6 @@ const styles = StyleSheet.create({
     fontSize: myFont.fontAddScreenSize,
     color: myFont.fontAddScreenColor,
     fontWeight: "300",
-    textTransform: "uppercase"
   },
   label: {
     paddingTop: 10,

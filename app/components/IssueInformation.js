@@ -15,7 +15,7 @@ export default function IssueInformation(props) {
   
   return (
     <Collapsible 
-      collapsed={props.showInfo}
+      collapsed={props.collapseDetail}
     >
       <View style={styles.groupRow}>
         <Pressable
@@ -29,10 +29,10 @@ export default function IssueInformation(props) {
         >
           <View style={styles.groupCell}>
             <View style={styles.label}>
-              <Text style={styles.text}>Project</Text>
+              <Text style={styles.text}>PROJECT</Text>
             </View>
             <View style={styles.textDate}>
-              <Text style={{fontSize: 20.8}}>(#{issue.project.id}) {issue.project.name}</Text>
+              <Text style={{fontSize: 20.8}}>#{issue.project.id} - {issue.project.name}</Text>
             </View>
           </View>
         </Pressable>
@@ -55,7 +55,7 @@ export default function IssueInformation(props) {
           ]}
         >
           <View style={styles.label}>
-            <Text style={styles.text}>tracker</Text>
+            <Text style={styles.text}>TRACKER</Text>
           </View>
           <View style={styles.textDate}>
             <Text style={{fontSize: 20.8}}>{issue.tracker.name}</Text>
@@ -73,7 +73,7 @@ export default function IssueInformation(props) {
           ]}
         >
           <View style={styles.label}>
-            <Text style={styles.text}>priority *</Text>
+            <Text style={styles.text}>PRIORITY *</Text>
           </View>
           <View style={styles.textDate}>
             <Text style={{fontSize: 20.8}}>{issue.priority.name}</Text>
@@ -97,7 +97,7 @@ export default function IssueInformation(props) {
           ]}
         >
           <View style={styles.label}>
-            <Text style={styles.text}>estimated time (h)</Text>
+            <Text style={styles.text}>ESTIMATED TIME (H)</Text>
           </View>
           <View style={styles.textDate}>
             <Text style={{fontSize: 20.8}}>{issue.estimated_hours}</Text>
@@ -115,7 +115,7 @@ export default function IssueInformation(props) {
           ]}
         >
           <View style={styles.label}>
-            <Text style={styles.text}>status</Text>
+            <Text style={styles.text}>STATUS</Text>
           </View>
           <View style={{flexDirection: 'row'}}>
             <View
@@ -137,7 +137,7 @@ export default function IssueInformation(props) {
         >
           <View style={[styles.groupCell, {height: 137}]}>
             <View style={styles.label}>
-              <Text style={styles.text}>description</Text>
+              <Text style={styles.text}>DESCRIPTION</Text>
             </View>
             <View style={styles.textDate}>
               <Text style={{fontSize: 20.8}}>{issue.description}</Text>
@@ -157,10 +157,10 @@ export default function IssueInformation(props) {
         >
           <View style={styles.groupCell}>
             <View style={styles.label}>
-              <Text style={styles.text}>Assigned to</Text>
+              <Text style={styles.text}>ASSIGNED TO</Text>
             </View>
             <View style={styles.textDate}>
-              <Text style={{fontSize: 20.8}}>{issue.assigned_to ? issue.assigned_to.name : ''}</Text>
+              <Text style={{fontSize: 20.8}}>{issue.assigned_to ? issue.assigned_to.name.trim() : ''}</Text>
             </View>
           </View>
         </Pressable>
@@ -182,7 +182,7 @@ export default function IssueInformation(props) {
           ]}
         >
           <View style={styles.label}>
-            <Text style={styles.text}>private</Text>
+            <Text style={styles.text}>PRIVATE</Text>
           </View>
           <CheckBox
             disabled={true}
@@ -222,7 +222,6 @@ const styles = StyleSheet.create({
     fontSize: myFont.fontAddScreenSize,
     color: myFont.fontAddScreenColor,
     fontWeight: "300",
-    textTransform: "uppercase"
   },
   textDate: {
     paddingVertical: 1,

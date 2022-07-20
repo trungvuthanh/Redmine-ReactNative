@@ -240,7 +240,7 @@ export default function EditIssueScreen({ route, navigation }) {
             }]}>
             <View style={styles.groupCell}>
               <View style={styles.label}>
-                <Text style={styles.text}>subject *</Text>
+                <Text style={styles.text}>SUBJECT *</Text>
               </View>
               <TextInput
                 style={styles.textInput}
@@ -263,7 +263,7 @@ export default function EditIssueScreen({ route, navigation }) {
               }]}>
             <View style={[styles.groupCell, {height: 137}]}>
               <View style={styles.label}>
-                <Text style={styles.text}>description</Text>
+                <Text style={styles.text}>DESCRIPTION</Text>
               </View>
               <TextInput 
                 style={[
@@ -288,7 +288,7 @@ export default function EditIssueScreen({ route, navigation }) {
             }]}>
             <View style={styles.groupCell}>
               <View style={styles.label}>
-                <Text style={styles.text}>Parent task</Text>
+                <Text style={styles.text}>PARENT TASK</Text>
                 <Pressable
                   onPress={() => onChangeSubProject({subject: "", id: 0})}>
                   <Text
@@ -323,7 +323,7 @@ export default function EditIssueScreen({ route, navigation }) {
             onPress={startDate.showDatepicker}
             style={styles.halfCell}>
             <View style={styles.label}>
-              <Text style={styles.text}>start date</Text>
+              <Text style={styles.text}>START DATE</Text>
             </View>
             <View style={styles.textDate}>
               <Text style={{fontSize: 20.8}}>{standardDate(startDate.date).split('-').reverse().join('/')}</Text>
@@ -343,7 +343,7 @@ export default function EditIssueScreen({ route, navigation }) {
             onPress={endDate.showDatepicker}
             style={styles.halfCell}>
             <View style={styles.label}>
-              <Text style={styles.text}>due date</Text>
+              <Text style={styles.text}>DUE DATE</Text>
             </View>
             <View style={styles.textDate}>
               <Text style={{fontSize: 20.8}}>{standardDate(endDate.date).split('-').reverse().join('/')}</Text>
@@ -375,7 +375,7 @@ export default function EditIssueScreen({ route, navigation }) {
                   : myFont.white
               }]}>
             <View style={styles.label}>
-              <Text style={styles.text}>estimated time (h)</Text>
+              <Text style={styles.text}>ESTIMATED TIME (H)</Text>
             </View>
             <TextInput
               style={styles.textInput}
@@ -394,7 +394,7 @@ export default function EditIssueScreen({ route, navigation }) {
                 position: "relative",
               }]}>
             <View style={styles.label}>
-              <Text style={styles.text}>status *</Text>
+              <Text style={styles.text}>STATUS *</Text>
             </View>
             <View style={{flexDirection: 'row'}}>
               <Pressable
@@ -432,7 +432,7 @@ export default function EditIssueScreen({ route, navigation }) {
                 position: "relative",
               }]}>
             <View style={styles.label}>
-              <Text style={styles.text}>tracker *</Text>
+              <Text style={styles.text}>TRACKER *</Text>
             </View>
             <Pressable
               onPress={() => changeTrackerVisibility(true)}>
@@ -460,7 +460,7 @@ export default function EditIssueScreen({ route, navigation }) {
                 position: "relative",
               }]}>
             <View style={styles.label}>
-              <Text style={styles.text}>priority *</Text>
+              <Text style={styles.text}>PRIORITY *</Text>
             </View>
             <Pressable
               onPress={() => changePriorityVisibility(true)}>
@@ -493,7 +493,7 @@ export default function EditIssueScreen({ route, navigation }) {
                 position: "relative",
               }]}>
             <View style={styles.label}>
-              <Text style={styles.text}>% done</Text>
+              <Text style={styles.text}>% DONE</Text>
             </View>
             <Pressable
               onPress={() => changeDoneRatioVisibility(true)}>
@@ -520,7 +520,7 @@ export default function EditIssueScreen({ route, navigation }) {
                   : myFont.white
               }]}>
             <View style={styles.label}>
-              <Text style={styles.text}>private</Text>
+              <Text style={styles.text}>PRIVATE</Text>
             </View>
             <CheckBox
               disabled={false}
@@ -540,7 +540,7 @@ export default function EditIssueScreen({ route, navigation }) {
             }]}>
             <View style={styles.groupCell}>
               <View style={styles.label}>
-                <Text style={styles.text}>Attach files</Text>
+                <Text style={styles.text}>ATTACH FILES</Text>
               </View>
             </View>
           </Pressable>
@@ -598,12 +598,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  saveText: {
-    fontSize: 16,
-    color: myFont.white,
-    fontWeight: "700",
-    textTransform: "uppercase",
-  },
   backButton: {
     width: 50,
     height: 50,
@@ -647,7 +641,6 @@ const styles = StyleSheet.create({
     fontSize: myFont.fontAddScreenSize,
     color: myFont.fontAddScreenColor,
     fontWeight: "300",
-    textTransform: "uppercase"
   },
   label: {
     paddingTop: 10,
