@@ -492,7 +492,6 @@ export default function AddScreen({ route, navigation }) {
                   <Text style={styles.text}>is public</Text>
                 </View>
                 <CheckBox
-                  disabled={false}
                   value={isPublic}
                   onValueChange={(newValue) => setIsPublic(newValue)}
                   style={{marginLeft: 4}}
@@ -513,7 +512,6 @@ export default function AddScreen({ route, navigation }) {
                   <Text style={styles.text}>inherit members</Text>
                 </View>
                 <CheckBox
-                  disabled={false}
                   value={isInherit}
                   onValueChange={(newValue) => setIsInherit(newValue)}
                   style={{marginLeft: 4}}
@@ -889,32 +887,10 @@ export default function AddScreen({ route, navigation }) {
         }
       </ScrollView>
       <View style={styles.footer}>
-        <Pressable
-          onPress={() => navigation.goBack()}
-          style={({pressed}) => [
-            {
-              backgroundColor: pressed
-              ? myFont.buttonPressedColor
-              : myFont.footerBackgroundColor
-            },
-            styles.backButton
-          ]}
-        >
-          <Ionicons name="chevron-back" size={30} color={myFont.blue} />
-        </Pressable>
-        <Pressable
+        <Button
+          title="SAVE"
           onPress={() => saveData()}
-          style={({pressed}) => [
-            {
-              backgroundColor: pressed
-                ? myFont.buttonPressedColor
-                : myFont.addButtonColor
-            },
-            styles.saveButton
-          ]}
-        >
-          <Text style={styles.saveText}>save</Text>
-        </Pressable>
+          color={myFont.green}/>
       </View>
     </KeyboardAvoidingView>
   );
@@ -969,14 +945,13 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   footer: {
-    backgroundColor: myFont.footerBackgroundColor,
     borderTopColor: myFont.footerBorderColor,
-    width: "100%",
-    height: 50,
-    flexDirection: "row",
-    justifyContent: "space-between",
+    alignSelf: "flex-end",
+    justifyContent: "center",
+    alignItems: "center",
     position: "absolute",
     bottom: 0,
+    padding: 10,
   },
   halfCell: {
     width: "50%",

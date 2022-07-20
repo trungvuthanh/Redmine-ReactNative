@@ -18,7 +18,7 @@ export default function Phase(props) {
       return (
         <Pressable
           key={index}
-          onPress={() => props.navigateTo(issue)}
+          onPress={() => props.navigateToIssue(issue)}
           style={({pressed}) => [
             {
               width: "100%",

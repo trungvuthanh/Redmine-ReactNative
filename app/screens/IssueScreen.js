@@ -10,6 +10,7 @@ import {
   RefreshControl,
 } from 'react-native';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import ActionButton from 'react-native-action-button';
 
 import Header from "../components/Header";
@@ -23,16 +24,20 @@ export default function IssueScreen({ route, navigation }) {
   const [issues, setIssues] = useState([]);
 
   const getIssues = async () => {
-    fetch(localhost + 'issues.json?assigned_to_id=1&status_id=*')
-    .then((response) => response.json())
-    .then((json) => {
-      setIssueAmount(json.total_count);
-      setIssues(json.issues);
-    })
-    .catch((error) => {
-      console.error(error);
-    })
-    .finally(() => setLoading(false));
+    let u = await AsyncStorage.getItem('user');
+    if (u) {
+      let user = JSON.parse(u);
+      fetch(localhost + 'issues.json?assigned_to_id=' + user.id + '&status_id=*')
+      .then((response) => response.json())
+      .then((json) => {
+        setIssueAmount(json.total_count);
+        setIssues(json.issues);
+      })
+      .catch((error) => {
+        console.error(error);
+      })
+      .finally(() => setLoading(false));
+    }
   }
 
   useEffect(() => {

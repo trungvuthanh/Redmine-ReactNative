@@ -1,42 +1,81 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   View, 
   Text, 
   StyleSheet, 
-  Pressable
+  Pressable,
+  Button
 } from 'react-native';
 import Collapsible from 'react-native-collapsible';
 import CheckBox from '@react-native-community/checkbox';
 
+import AddMembership from './AddMembership';
 import myFont from '../config/myFont';
 
 export default function ProjectInformation(props) {
+  const user = props.user;
   const project = props.project;
-
   const members = props.members;
-  let managers = '', developers = '', reporters = '';
+  let isManagerPrivileged = false;
+
+  // Verify if user is manager of this project
   for (let member of members) {
-    for (let role of member.roles) {
-      if (role.name == 'Manager') {
-        if (managers == '') {
-          managers = member.user.name.trim();
-        } else {
-          managers += ', ' + member.user.name;
-        }
-      } else if (role.name == 'Developer') {
-        if (developers == '') {
-          developers = member.user.name.trim();
-        } else {
-          developers += ', ' + member.user.name;
-        }
-      } else if (role.name == 'Reporter') {
-        if (reporters == '') {
-          reporters = member.user.name.trim();
-        } else {
-          reporters += ', ' + member.user.name;
+    // Verify if user is member of this project
+    if (member.user.id == user.id) {
+      // Verify manager role
+      for (let role of member.roles) {
+        if (role.id == 3) {
+          isManagerPrivileged = true;
+          break;
         }
       }
+      if (isManagerPrivileged) break;
     }
+  }
+
+  members.sort((a, b) => {return (a.user.name > b.user.name) ? 1 : ((b.user.name > a.user.name) ? -1 : 0);})
+  const membershipList = members.map((membership, index) => {
+    let roles = [];
+    for (let role of membership.roles) {
+      roles.push(role.name);
+    }
+    return (
+      <View
+        key={index}
+        style={{
+          width: "100%",
+          flexDirection: "row",
+        }}>
+        <View
+          style={[
+            styles.label,
+            {width: "40%"}
+          ]}>
+          <Text style={{fontSize: 20.8}}>{membership.user.name.trim()}</Text>
+        </View>
+        <View
+          style={[
+            styles.label,
+            {width: "60%", paddingHorizontal: 7}
+          ]}>
+          <Text style={{fontSize: 20.8}}>{roles.join(', ')}</Text>
+        </View>
+      </View>
+    );
+  })
+
+  const [membershipCollapsed, setMembershipCollapsed] = useState(true)
+
+  const selectUser = (user) => {
+    props.selectUser(user);
+  }
+
+  const selectRoles = (roleIds) => {
+    props.selectRoles(roleIds);
+  }
+  
+  const saveTargetUser = () => {
+    props.saveTargetUser();
   }
   
   return (
@@ -55,7 +94,7 @@ export default function ProjectInformation(props) {
         >
           <View style={styles.groupCell}>
             <View style={styles.label}>
-              <Text style={styles.text}>identifier</Text>
+              <Text style={styles.text}>IDENTIFIER</Text>
             </View>
             <View style={styles.textDate}>
               <Text style={{fontSize: 20.8}}>{project.identifier}</Text>
@@ -75,7 +114,7 @@ export default function ProjectInformation(props) {
         >
           <View style={[styles.groupCell, {height: 137}]}>
             <View style={styles.label}>
-              <Text style={styles.text}>description</Text>
+              <Text style={styles.text}>DESCRIPTION</Text>
             </View>
             <View style={styles.textDate}>
               <Text style={{fontSize: 20.8}}>{project.description}</Text>
@@ -94,7 +133,7 @@ export default function ProjectInformation(props) {
         >
           <View style={styles.groupCell}>
             <View style={styles.label}>
-              <Text style={styles.text}>subproject of</Text>
+              <Text style={styles.text}>SUBPROJECT OF</Text>
             </View>
             {
               project.parent ?
@@ -111,90 +150,61 @@ export default function ProjectInformation(props) {
       <View
         style={{
           width: "100%",
-          paddingBottom: 1,
           borderStyle: "solid",
           borderBottomWidth: 1,
           borderBottomColor: myFont.itemBorderColor,
         }}>
         <Pressable
           style={({pressed}) => 
-          [{
-            backgroundColor: pressed
-              ? myFont.buttonPressedColor
-              : myFont.white,
-          }]
-        }
-        >
+            [{
+              backgroundColor: pressed
+                ? myFont.buttonPressedColor
+                : myFont.white,
+            }]}>
           <View style={styles.groupCell}>
-            <View style={styles.label}>
-              <Text style={styles.text}>members</Text>
-            </View>
             <View
               style={{
                 width: "100%",
                 flexDirection: "row",
-              }}
-            >
+              }}>
               <View
                 style={[
                   styles.label,
-                  {width: "33%"}
+                  {width: "40%"}
                 ]}>
-                <Text style={{fontSize: 20.8, fontStyle: 'italic'}}>Manager</Text>
+                <Text style={styles.text}>MEMBERS</Text>
               </View>
               <View
                 style={[
                   styles.label,
-                  {width: "66%"}
+                  {width: "60%", paddingHorizontal: 7}
                 ]}>
-                <Text style={{fontSize: 20.8}}>{managers}</Text>
-              </View>
-            </View>
-            <View
-              style={{
-                width: "100%",
-                flexDirection: "row",
-              }}
-            >
-              <View
-                style={[
-                  styles.label,
-                  {width: "33%"}
-                ]}>
-                <Text style={{fontSize: 20.8, fontStyle: 'italic'}}>Developer</Text>
-              </View>
-              <View
-                style={[
-                  styles.label,
-                  {width: "66%"}
-                ]}>
-                <Text style={{fontSize: 20.8}}>{developers}</Text>
+                <Text style={styles.text}>ROLES</Text>
               </View>
             </View>
-            <View
-              style={{
-                width: "100%",
-                flexDirection: "row",
-                height: 50,
-              }}
-            >
-              <View
-                style={[
-                  styles.label,
-                  {width: "33%"}
-                ]}>
-                <Text style={{fontSize: 20.8, fontStyle: 'italic'}}>Reporter</Text>
-              </View>
-              <View
-                style={[
-                  styles.label,
-                  {width: "66%"}
-                ]}>
-                <Text style={{fontSize: 20.8}}>{reporters}</Text>
-              </View>
-            </View>
+            {membershipList}
           </View>
         </Pressable>
+        {isManagerPrivileged ?
+          <>
+            <AddMembership
+              collapsed={membershipCollapsed}
+              selectUser={selectUser}
+              selectRoles={selectRoles}
+              saveTargetUser={saveTargetUser}
+              existUser={members} />
+            <View
+              style={{
+                flexDirection: "row",
+                padding: 10,
+              }}>
+              <Button
+                title={membershipCollapsed ? "NEW MEMBER" : "CLOSE"}
+                onPress={() => setMembershipCollapsed(!membershipCollapsed)}/>
+            </View>
+          </>
+          : <></>
+        }
       </View>
       <View
         style={[
@@ -213,7 +223,7 @@ export default function ProjectInformation(props) {
           ]}
         >
           <View style={styles.label}>
-            <Text style={styles.text}>is public</Text>
+            <Text style={styles.text}>IS PUBLIC</Text>
           </View>
           <CheckBox
             disabled={true}
@@ -232,7 +242,7 @@ export default function ProjectInformation(props) {
           ]}
         >
           <View style={styles.label}>
-            <Text style={styles.text}>inherit members</Text>
+            <Text style={styles.text}>INHERIT MEMBERS</Text>
           </View>
           <CheckBox
             disabled={true}
@@ -246,6 +256,14 @@ export default function ProjectInformation(props) {
 }
 
 const styles = StyleSheet.create({
+  addMemberButton: {
+    width: "100%",
+    height: 35,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 15,
+  },
   groupRow: {
     width: "100%",
     height: 74,
@@ -255,6 +273,7 @@ const styles = StyleSheet.create({
   },
   groupCell: {
     width: "100%",
+    paddingBottom: 10,
   },
   halfCell: {
     width: "50%",
@@ -286,7 +305,6 @@ const styles = StyleSheet.create({
     fontSize: myFont.fontAddScreenSize,
     color: myFont.fontAddScreenColor,
     fontWeight: "300",
-    textTransform: "uppercase"
   },
   textDate: {
     paddingVertical: 1,

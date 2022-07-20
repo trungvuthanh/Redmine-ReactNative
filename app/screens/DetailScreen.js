@@ -9,11 +9,11 @@ import {
   ScrollView, 
   RefreshControl, 
   Dimensions,
-  Alert
+  Alert,
+  Button
 } from 'react-native';
 import { Ionicons, Entypo } from '@expo/vector-icons';
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useIsFocused } from '@react-navigation/native';
 // import Collapsible from 'react-native-collapsible';
 
 import Phase from '../components/Phase';
@@ -35,8 +35,14 @@ export default function DetailScreen({ route, navigation }) {
     issue = route.params.issue;
   }
 
+  // user logged in app
   const [user, setUser] = useState(null);
+  // members of this project
   const [members, setMembers] = useState([]);
+  // user to be added into this project
+  const [targetUser, setTargetUser] = useState('');
+  // role ids of user to be added into this project
+  const [roleIds, setRoleIds] = useState([])
 
   // Sub issues
   const [issues, setIssues] = useState({issues: []});
@@ -50,14 +56,20 @@ export default function DetailScreen({ route, navigation }) {
   const [issueCount, setIssueCount] = useState(0);
   const [isLoading, setLoading] = useState(false);
 
-  const isFocused = useIsFocused();
-
   const getUserInfo = async () => {
     let user = await AsyncStorage.getItem('user');
     if (user) {
       let obj = JSON.parse(user);
       setUser(obj);
     }
+  }
+
+  const getMembership = async () => {
+    fetch(localhost + 'projects/' + project.id + '/memberships.json')
+    .then((response) => response.json())
+    .then((json) => {
+      setMembers(json.memberships);
+    })
   }
 
   // type === 'project'
@@ -89,11 +101,7 @@ export default function DetailScreen({ route, navigation }) {
       setIssueCount(count);
     })
     // Get memberships
-    fetch(localhost + 'projects/' + project.id + '/memberships.json')
-    .then((response) => response.json())
-    .then((json) => {
-      setMembers(json.memberships);
-    })
+    getMembership()
     .catch((error) => {
       console.error(error);
     })
@@ -138,37 +146,35 @@ export default function DetailScreen({ route, navigation }) {
 
   useEffect(() => {
     getUserInfo();
-    if (isFocused) {
-      if (type === 'project') {
-        getIssues();
-      } else {
-        fetch(localhost + 'issues.json?project_id=' + issue.project.id + '&status_id=*')
-        .then((response) => response.json())
-        .then((json) => {
-          setAllIssuesOfProject(json.issues);
-          let count = 0;
-          let issueList = [];
-          for (let iss of json.issues) {
-            if (iss.parent != undefined && iss.parent.id == issue.id) {
-              count += 1;
-              issueList.push(iss);
-            }
+    if (type === 'project') {
+      getIssues();
+    } else {
+      fetch(localhost + 'issues.json?project_id=' + issue.project.id + '&status_id=*')
+      .then((response) => response.json())
+      .then((json) => {
+        setAllIssuesOfProject(json.issues);
+        let count = 0;
+        let issueList = [];
+        for (let iss of json.issues) {
+          if (iss.parent != undefined && iss.parent.id == issue.id) {
+            count += 1;
+            issueList.push(iss);
           }
-          setIssues({issues: issueList});
-          setIssueCount(count);
-        })
-        fetch(localhost + 'issues/' + issue.id + '.json')
-        .then((response) => response.json())
-        .then((json) => {
-          issue = json.issue;
-        })
-        .catch((error) => {
-          console.error(error);
-        })
-        .finally(() => setLoading(false));
-      }
+        }
+        setIssues({issues: issueList});
+        setIssueCount(count);
+      })
+      fetch(localhost + 'issues/' + issue.id + '.json')
+      .then((response) => response.json())
+      .then((json) => {
+        issue = json.issue;
+      })
+      .catch((error) => {
+        console.error(error);
+      })
+      .finally(() => setLoading(false));
     }
-  }, [isFocused]);
+  }, []);
 
   const addSubProject = () => {
     navigation.push('AddScreen', { 
@@ -208,6 +214,74 @@ export default function DetailScreen({ route, navigation }) {
       type: 'issue', 
       issue: issue 
     });
+  }
+
+  const selectUser = (user) => {
+    setTargetUser(user);
+  }
+
+  const selectRoles = (roleIds) => {
+    setRoleIds(roleIds);
+  }
+
+  const addMemberToProject = async () => {
+    if (type === 'project') {
+      let body = JSON.stringify({
+        membership: {
+          user_id: targetUser,
+          role_ids: roleIds,
+        }
+      })
+      if (targetUser == 0) {
+        Alert.alert(
+          "Specify a user to be added",
+          "",
+        );
+      } else if (roleIds.length == 0) {
+        Alert.alert(
+          "Select roles to assign to new member",
+          "",
+        );
+      } else {
+        fetch(localhost + 'projects/' + project.id + '/memberships.json', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Redmine-API-Key': user.api_key,
+          },
+          body: body,
+        })
+        .then((response) => {
+          console.log(response.status);
+          if (response.status == 201) {
+            Alert.alert(
+              "New member added",
+              "",
+              [{
+                text: 'OK',
+                style: 'cancel',
+              }]
+            );
+          } else if (response.status == 422) {
+            console.log(response)
+            Alert.alert(
+              "User has already been taken",
+              "",
+            );
+          } else {
+            Alert.alert(
+              "Fail to add new member",
+              "",
+            );
+          }
+        })
+        getMembership()
+        .catch((error) => {
+          console.error(error);
+        })
+        .finally(() => setLoading(false));
+      }
+    }
   }
 
   const deleteItem = async () => {
@@ -333,7 +407,7 @@ export default function DetailScreen({ route, navigation }) {
               >
                 <View style={styles.halfCell}>
                   <View style={styles.label}>
-                    <Text style={styles.text}>create:</Text>
+                    <Text style={styles.text}>CREATE:</Text>
                   </View>
                   <View style={styles.textDate}>
                     <Text style={{fontSize: 20.8}}>{project.created_on.substring(0,10).split('-').reverse().join('/')}</Text>
@@ -341,7 +415,7 @@ export default function DetailScreen({ route, navigation }) {
                 </View>
                 <View style={styles.halfCell}>
                   <View style={styles.label}>
-                    <Text style={styles.text}>update:</Text>
+                    <Text style={styles.text}>UPDATE:</Text>
                   </View>
                   <View style={styles.textDate}>
                     <Text style={{fontSize: 20.8}}>{project.updated_on.substring(0,10).split('-').reverse().join('/')}</Text>
@@ -383,7 +457,7 @@ export default function DetailScreen({ route, navigation }) {
                   }
                 </View>
               </Pressable>
-              <Phase showPhase={showPhase} issues={issues.issues} addNewPhase={addNewPhase} navigateTo={navigateToSubIssue}/>
+              <Phase showPhase={showPhase} issues={issues.issues} addNewPhase={addNewPhase} navigateToIssue={navigateToSubIssue} />
               <Pressable
                 onPress={() => setshowInfo(!showInfo)}
               >
@@ -401,7 +475,14 @@ export default function DetailScreen({ route, navigation }) {
                   }
                 </View>
               </Pressable>
-              <ProjectInformation showInfo={showInfo} project={project} members={members} />
+              <ProjectInformation
+                showInfo={showInfo}
+                project={project}
+                members={members}
+                selectUser={selectUser}
+                selectRoles={selectRoles}
+                saveTargetUser={addMemberToProject}
+                user={user}/>
             </>
             : <>
               <View style={styles.nameHeader}>
@@ -434,7 +515,7 @@ export default function DetailScreen({ route, navigation }) {
               >
                 <View style={[styles.halfCell, {minWidth: 150, width: "35%"}]}>
                   <View style={styles.label}>
-                    <Text style={styles.text}>start date:</Text>
+                    <Text style={styles.text}>START DATE:</Text>
                   </View>
                   <View style={[styles.textDate, {alignSelf: "center"}]}>
                     <Text style={{fontSize: 20.8}}>{issue.start_date.substring(0,10).split('-').reverse().join('/')}</Text>
@@ -442,7 +523,7 @@ export default function DetailScreen({ route, navigation }) {
                 </View>
                 <View style={[styles.halfCell, {minWidth: 150, width: "35%"}]}>
                   <View style={styles.label}>
-                    <Text style={styles.text}>due date:</Text>
+                    <Text style={styles.text}>DUE DATE:</Text>
                   </View>
                   <View style={[styles.textDate, {alignSelf: "center"}]}>
                     <Text style={{fontSize: 20.8}}>
@@ -452,7 +533,7 @@ export default function DetailScreen({ route, navigation }) {
                 </View>
                 <View style={[styles.halfCell, {flex: 1}]}>
                   <View style={styles.label}>
-                    <Text style={styles.text}>done</Text>
+                    <Text style={styles.text}>DONE</Text>
                   </View>
                   <View style={[styles.textDate, {alignSelf: "center"}]}>
                     <Text style={{fontSize: 20.8}}>{issue.done_ratio} %</Text>
@@ -476,7 +557,7 @@ export default function DetailScreen({ route, navigation }) {
                   }
                 </View>
               </Pressable>
-              <SubPhase showPhase={showPhase} issues={issues.issues} addNewPhase={addNewPhase} navigateTo={navigateToSubIssue}/>
+              <SubPhase showPhase={showPhase} issues={issues.issues} addNewPhase={addNewPhase} navigateToIssue={navigateToSubIssue}/>
               <Pressable
                 onPress={() => setshowInfo(!showInfo)}
               >
@@ -513,32 +594,27 @@ export default function DetailScreen({ route, navigation }) {
               <Ionicons name="chevron-back" size={30} color={myFont.blue} />
             </Pressable>
             <View style={styles.footerGroupBtn}>
-              <Pressable
-                onPress={() => Alert.alert(
-                  "Are you sure you want to remove this item?",
-                  "",
-                  [
-                    {
-                      text: "Delete",
-                      onPress: () => deleteItem()
-                    },
-                    {
-                      text: "Cancel",
-                      style: "cancel"
-                    }
-                  ]
-                )}
-                style={({pressed}) => [
-                  {
-                    backgroundColor: pressed
-                    ? myFont.deleteButtonColorPressed
-                    : myFont.deleteButtonColor
-                  },
-                  styles.editButton
-                ]}>
-                <Text style={styles.editText}>delete</Text>
-              </Pressable>
-              <Pressable
+              <View style={{marginRight: 10}} >
+                <Button
+                  title="DELETE"
+                  onPress={() => Alert.alert(
+                    "Are you sure you want to remove this item?",
+                    "",
+                    [
+                      {
+                        text: "Delete",
+                        onPress: () => deleteItem()
+                      },
+                      {
+                        text: "Cancel",
+                        style: "cancel"
+                      }
+                    ]
+                  )}
+                  color="red"/>
+              </View>
+              <Button
+                title="EDIT"
                 onPress={() => {
                   if (type === 'project') {
                     navigation.push('EditProjectScreen', {
@@ -550,17 +626,7 @@ export default function DetailScreen({ route, navigation }) {
                       issues: allIssuesOfProject
                     })  
                   }
-                }}
-                style={({pressed}) => [
-                  {
-                    backgroundColor: pressed
-                    ? myFont.buttonPressedColor
-                    : myFont.addButtonColor
-                  },
-                  styles.editButton
-                ]}>
-                <Text style={styles.editText}>edit</Text>
-              </Pressable>
+                }}/>
             </View>
           </View>
         </>
@@ -646,7 +712,6 @@ const styles = StyleSheet.create({
     fontSize: myFont.fontAddScreenSize,
     color: myFont.fontAddScreenColor,
     fontWeight: "300",
-    textTransform: "uppercase"
   },
   textDate: {
     paddingVertical: 1,
@@ -706,6 +771,6 @@ const styles = StyleSheet.create({
   footerGroupBtn: {
     alignItems: "center",
     flexDirection: "row",
-    justifyContent: "space-between",
+    paddingRight: 10
   }
 })

@@ -30,6 +30,22 @@ export default users = [
     api_key: 'd07260d84ea2be13804f814ff35e810faa5b5e86',
     firstname: 'user',
     lastname: '1'
+  },
+  {
+    id: 9,
+    username: 'user2',
+    password: 'password',
+    api_key: '22b43588f619b1251a0f1102b1b1b808472beaef',
+    firstname: 'user',
+    lastname: '2'
+  },
+  {
+    id: 10,
+    username: 'user3',
+    password: 'password',
+    api_key: '70107db2c01734c18e3dd6c2ac6be977fa9938a3',
+    firstname: 'user',
+    lastname: '3'
   }
 ];
 

@@ -10,6 +10,7 @@ import {
   RefreshControl,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import Header from "../components/Header";
 import HomeTiles from "../components/HomeTiles";
@@ -53,35 +54,39 @@ export default function HomeScreen({ navigation }) {
   }
 
   const getIssues = async () => {
-    fetch(localhost + 'issues.json?status_id=*')
-    .then((response) => response.json())
-    .then((json) => {
-      let myIssueCount = 0;
-      let myIssuesArr = []
-      let overdueIssuesCount = 0;
-      let today = new Date();
-      for (let issue of json.issues) {
-        if (issue.assigned_to) {
-          myIssueCount += 1;
-          myIssuesArr.push(issue);
+    let u = await AsyncStorage.getItem('user');
+    if (u) {
+      let user = JSON.parse(u);
+      fetch(localhost + 'issues.json?assigned_to_id=' + user.id + '&status_id=*')
+      .then((response) => response.json())
+      .then((json) => {
+        let myIssueCount = 0;
+        let myIssuesArr = []
+        let overdueIssuesCount = 0;
+        let today = new Date();
+        for (let issue of json.issues) {
+          if (issue.assigned_to) {
+            myIssueCount += 1;
+            myIssuesArr.push(issue);
+          }
+          if (issue.due_date) {
+            let dueDate = new Date(issue.due_date);
+            if (dueDate < today) overdueIssuesCount += 1;
+          }
         }
-        if (issue.due_date) {
-          let dueDate = new Date(issue.due_date);
-          if (dueDate < today) overdueIssuesCount += 1;
-        }
-      }
-      // setIssueAmount(json.total_count);
-      // setIssues(json.issues);
-      setIssueAmount(myIssueCount);
-      setIssues(myIssuesArr);
-      setMyIssues(myIssuesArr);
-      setMyIssueAmount(myIssueCount);
-      setOverdueAmount(overdueIssuesCount);
-    })
-    .catch((error) => {
-      console.error(error);
-    })
-    .finally(() => setLoading(false));
+        // setIssueAmount(json.total_count);
+        // setIssues(json.issues);
+        setIssueAmount(myIssueCount);
+        setIssues(myIssuesArr);
+        setMyIssues(myIssuesArr);
+        setMyIssueAmount(myIssueCount);
+        setOverdueAmount(overdueIssuesCount);
+      })
+      .catch((error) => {
+        console.error(error);
+      })
+      .finally(() => setLoading(false));
+    }
   }
 
   useEffect(() => {

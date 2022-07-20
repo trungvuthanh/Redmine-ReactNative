@@ -7,7 +7,8 @@ import {
   SafeAreaView,
   ScrollView,
   Pressable,
-  RefreshControl
+  RefreshControl,
+  Button
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -128,19 +129,9 @@ export default function ProjectScreen({ route, navigation }) {
             >
               <Ionicons name="chevron-back" size={30} color={myFont.blue} />
             </Pressable>
-            <Pressable
-              onPress={() => navigation.push("AddScreen", { projects: projectList, type: 'project' })}
-              style={({pressed}) => [
-                {
-                  backgroundColor: pressed
-                    ? myFont.buttonPressedColor
-                    : myFont.addButtonColor
-                },
-                styles.backButton
-              ]}
-            >
-              <Ionicons name="add" size={40} color={myFont.white} />
-            </Pressable>
+            <Button
+              title="NEW PROJECT"
+              onPress={() => navigation.push("AddScreen", { projects: projectList, type: 'project' })}/>
           </View>
         </>
       }
@@ -196,7 +187,9 @@ const styles = StyleSheet.create({
     height: 50,
     flexDirection: "row",
     justifyContent: "space-between",
+    alignItems: "center",
     position: "absolute",
     bottom: 0,
+    paddingRight: 10,
   },
 });
