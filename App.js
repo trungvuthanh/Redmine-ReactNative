@@ -1,11 +1,8 @@
-// import { StatusBar } from 'expo-status-bar';
-import React, { useEffect, useReducer } from 'react';
+import React, { useReducer } from 'react';
 import {
   StyleSheet,
   StatusBar,
   Alert,
-  View,
-  ActivityIndicator,
 } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -313,35 +310,6 @@ export default function App() {
             "",
           );
         }
-        // let apiKey = null;
-        // fetch('http://' + username + ':' + password + '@192.168.1.50:80/redmine/users/current.json', {
-        //   headers: {
-        //     'X-Redmine-API-Key': '34dafb931f5817ecf25be180ceaf87029142915e',
-        //   },
-        // })
-        // .then((response) => {
-        //   if (response.status == 401) {
-        //     Alert.alert(
-        //       "username or password is incorrect",
-        //       "",
-        //     );
-        //   } else {
-        //     response.json()
-        //     .then(async (json) => {
-        //       try {
-        //         apiKey = json.user.api_key;
-        //         await AsyncStorage.setItem("apiKey", apiKey);
-        //       } catch (e) {
-        //         console.error(e);
-        //       }
-        //       dispatch({ type: "LOGIN", id: username, token: apiKey });
-        //       console.log("Signed in successfully");
-        //     })
-        //     .catch((error) => {
-        //       console.error(error);
-        //     });
-        //   }
-        // })
       },
       signOut: async () => {
         try {
@@ -355,14 +323,7 @@ export default function App() {
     }),
     []
   );
-
-  // if(loginState.isLoading) {
-  //   return(
-  //     <View style={{flex:1,justifyContent:'center',alignItems:'center'}}>
-  //       <ActivityIndicator size="large"/>
-  //     </View>
-  //   );
-  // }
+  
   return (
     <>
       <StatusBar
