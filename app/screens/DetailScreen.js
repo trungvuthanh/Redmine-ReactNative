@@ -14,14 +14,25 @@ import {
 } from 'react-native';
 import { Ionicons, Entypo } from '@expo/vector-icons';
 import AsyncStorage from "@react-native-async-storage/async-storage";
-// import Collapsible from 'react-native-collapsible';
+
+import { get_user } from '../api/user_api';
+import {
+  get_project,
+  get_projects,
+  get_issues_of_project
+} from '../api/project_api';
+import {
+  get_memberships,
+  add_membership
+} from '../api/membership_api';
+import { get_issue } from '../api/issue_api';
+import myFont from '../config/myFont';
 
 import Phase from '../components/Phase';
 import SubPhase from '../components/SubPhase';
 import SubProject from '../components/SubProject';
 import IssueInformation from '../components/IssueInformation';
 import ProjectInformation from '../components/ProjectInformation';
-import myFont from '../config/myFont';
 import { localhost } from '../config/configurations';
 
 const WIDTH = Dimensions.get('window').width;
@@ -51,61 +62,161 @@ export default function DetailScreen({ route, navigation }) {
   const [projects, setProjects] = useState({projects: []});
   const [collapseSubproject, setCollapseSubproject] = useState(true);
   const [collapseIssue, setCollapseIssue] = useState(true);
-  const [collapseDetail, setShowInfo] = useState(false);
+  const [collapseDetail, setCollapseDetail] = useState(false);
   const [projectCount, setProjectCount] = useState(0);
   const [issueCount, setIssueCount] = useState(0);
   const [isLoading, setLoading] = useState(false);
 
-  const getUserInfo = async () => {
-    let user = await AsyncStorage.getItem('user');
-    if (user) {
-      let obj = JSON.parse(user);
-      setUser(obj);
-    }
-  }
-
-  const getMembership = async () => {
-    fetch(localhost + 'projects/' + project.id + '/memberships.json')
-    .then((response) => response.json())
-    .then((json) => {
-      setMembers(json.memberships);
-    })
+  const syncUser = async () => {
+    get_user()
+      .then((data) => {
+        setUser(data);
+      })
+        .catch((error) => {
+            console.error(error);
+          })
+          .finally(() => {
+              setLoading(false);
+            });
   }
 
   // type === 'project'
-  const getIssues = async () => {
-    // Get subprojects of this project
-    fetch(localhost + 'projects.json')
-    .then((response) => response.json())
-    .then((json) => {
-      let projectList = [];
-      let count = 0;
-      for (let prj of json.projects) {
-        if (prj.parent != undefined && prj.parent.id == project.id) {
-          count += 1;
-          projectList.push(prj)
-        }
-      }
-      setProjectCount(count);
-      setProjects({projects: projectList});
-    })
-    // Get issues of this project
-    fetch(localhost + 'issues.json?project_id=' + project.id + '&status_id=*') 
-    .then((response) => response.json())
-    .then((json) => {
-      let count = 0;
-      for (let issue of json.issues) {
-        if (issue.parent == undefined) count += 1;
-      }
-      setIssues(json);
-      setIssueCount(count);
-    })
-    // Get memberships
-    getMembership()
-    .catch((error) => {
-      console.error(error);
-    })
-    .finally(() => setLoading(false));
+  const syncProject = async () => {
+    /*
+    Get data of project
+    */
+    get_project(project.id)
+      .then((data) => {
+        project = data;
+      })
+        .catch((error) => {
+            console.error(error);
+          })
+          .finally(() => {
+              setLoading(false);
+            });
+  }
+
+  // type === 'project'
+  const syncMemberships = async () => {
+    /*
+    Get memberships of this project
+    */
+    get_memberships(project.id)
+      .then((data) => {
+          setMembers(data.memberships);
+        })
+          .catch((error) => {
+              console.error(error);
+            })
+            .finally(() => setLoading(false));
+  }
+
+  // type === 'project'
+  const syncSubprojects = async () => {
+    /*
+    Get subprojects of this project
+    */
+    get_projects()
+      .then((data) => {
+          try {
+            let projectList = [];
+            let count = 0;
+            for (let prj of data.projects) {
+              if (prj.parent != undefined && prj.parent.id == project.id) {
+                count += 1;
+                projectList.push(prj)
+              }
+            }
+            setProjectCount(count);
+            setProjects({projects: projectList});
+          } catch (error) {
+            setProjectCount(0);
+            setProjects({projects: []});
+            console.error(error);
+            console.log('Server return no data')
+          }
+        })
+          .catch((error) => {
+              console.error(error);
+            })
+            .finally(() => setLoading(false));
+  }
+
+  // type === 'project'
+  const syncIssuesOfProject = async () => {
+    /*
+    Get root issues of this project
+    */
+    get_issues_of_project(project.id)
+      .then((data) => {
+          try {
+            let count = 0;
+            for (let iss of data.issues) {
+              if (iss.parent == undefined) count += 1;
+            }
+            setIssues(data);
+            setIssueCount(count);
+          } catch (error) {
+            setIssues({issues: []});
+            setIssueCount(0);
+            console.error(error);
+            console.log('Server return no data')
+          }
+        })
+          .catch((error) => {
+              console.error(error);
+            })
+            .finally(() => setLoading(false));
+  }
+
+  // type === 'issue'
+  const syncIssue = async () => {
+    /*
+    Get data of issue
+    */
+    get_issue(issue.id)
+      .then((data) => {
+        issue = data;
+      })
+        .catch((error) => {
+            console.error(error);
+          })
+          .finally(() => {
+              setLoading(false);
+            });
+  }
+
+  // type === 'issue'
+  const syncIssuesOfIssue = async () => {
+    /*
+    Get subtasks of an issue
+    */
+    get_issues_of_project(issue.project.id)
+      .then((data) => {
+          try {
+            setAllIssuesOfProject(data.issues);
+            let count = 0;
+            let issueList = [];
+            for (let iss of data.issues) {
+              if (iss.parent != undefined && iss.parent.id == issue.id) {
+                count += 1;
+                issueList.push(iss);
+              }
+            }
+            setIssues({issues: issueList});
+            setIssueCount(count);
+          } catch (error) {
+            setIssues({issues: []});
+            setIssueCount(0);
+            console.error(error);
+            console.log('Server return no data')
+          }
+        })
+          .catch((error) => {
+              console.error(error);
+            })
+            .finally(() => setLoading(false));
   }
 
   // pull to refresh function
@@ -113,66 +224,29 @@ export default function DetailScreen({ route, navigation }) {
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
     if (type === 'project') {
-      getIssues().then(() => {
-        setRefreshing(false);
-      });
+      syncUser()
+        // .then(syncProject())
+          .then(syncSubprojects())
+            .then(syncIssuesOfProject())
+              .then(syncMemberships())
+                .then(setRefreshing(false));
     } else {
-      fetch(localhost + 'issues.json?project_id=' + issue.project.id + '&status_id=*')
-      .then((response) => response.json())
-      .then((json) => {
-        // setIssues(json);
-        let count = 0;
-        let issueList = [];
-        for (let iss of json.issues) {
-          if (iss.parent != undefined && iss.parent.id == issue.id) {
-            count += 1;
-            issueList.push(iss);
-          }
-        }
-        setIssues({issues: issueList});
-        setIssueCount(count);
-      })
-      fetch(localhost + 'issues/' + issue.id + '.json')
-      .then((response) => response.json())
-      .then((json) => {
-        issue = json.issue;
-      })
-      .catch((error) => {
-        console.error(error);
-      })
-      .finally(() => setRefreshing(false));
+      syncUser()
+        // .then(syncIssue())
+          .then(syncIssuesOfIssue())
+            .then(setRefreshing(false));
     }
   }, []);
 
   useEffect(() => {
-    getUserInfo();
     if (type === 'project') {
-      getIssues();
+      syncUser()
+        .then(syncSubprojects())
+          .then(syncIssuesOfProject())
+            .then(syncMemberships());
     } else {
-      fetch(localhost + 'issues.json?project_id=' + issue.project.id + '&status_id=*')
-      .then((response) => response.json())
-      .then((json) => {
-        setAllIssuesOfProject(json.issues);
-        let count = 0;
-        let issueList = [];
-        for (let iss of json.issues) {
-          if (iss.parent != undefined && iss.parent.id == issue.id) {
-            count += 1;
-            issueList.push(iss);
-          }
-        }
-        setIssues({issues: issueList});
-        setIssueCount(count);
-      })
-      fetch(localhost + 'issues/' + issue.id + '.json')
-      .then((response) => response.json())
-      .then((json) => {
-        issue = json.issue;
-      })
-      .catch((error) => {
-        console.error(error);
-      })
-      .finally(() => setLoading(false));
+      syncUser()
+        .then(syncIssuesOfIssue());
     }
   }, []);
 
@@ -187,7 +261,7 @@ export default function DetailScreen({ route, navigation }) {
     });
   }
 
-  const addNewPhase = () => {
+  const addNewIssue = () => {
     type === 'project'
     ? navigation.push('AddScreen', { 
       type: 'issue', 
@@ -197,7 +271,7 @@ export default function DetailScreen({ route, navigation }) {
     : navigation.push('AddScreen', { 
       type: 'issue', 
       issues: issues.issues,
-      parent_id: issue.project.id,
+      parent_id: issue.project.id, // id of project that contains parent issue
       parent_issue: issue
     });
   }
@@ -205,14 +279,14 @@ export default function DetailScreen({ route, navigation }) {
   const navigateToSubProject = (project) => {
     navigation.push('DetailScreen', { 
       type: 'project', 
-      project: project 
+      project: project
     });
   }
 
   const navigateToSubIssue = (issue) => {
     navigation.push('DetailScreen', { 
       type: 'issue', 
-      issue: issue 
+      issue: issue
     });
   }
 
@@ -243,14 +317,7 @@ export default function DetailScreen({ route, navigation }) {
           "",
         );
       } else {
-        fetch(localhost + 'projects/' + project.id + '/memberships.json', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-Redmine-API-Key': user.api_key,
-          },
-          body: body,
-        })
+        add_membership(project.id, body)
         .then((response) => {
           console.log(response.status);
           if (response.status == 201) {
@@ -275,7 +342,7 @@ export default function DetailScreen({ route, navigation }) {
             );
           }
         })
-        getMembership()
+        .then(syncMemberships())
         .catch((error) => {
           console.error(error);
         })
@@ -285,66 +352,70 @@ export default function DetailScreen({ route, navigation }) {
   }
 
   const deleteItem = async () => {
-    if (type === 'project') {
-      fetch(localhost + 'projects/' + project.id + '.json', {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Redmine-API-Key': user.api_key,
-        },
-      })
-      .then((response) => {
-        console.log(response.status);
-        if (response.status == 204) {
-          Alert.alert(
-            "Project deleted successfully",
-            "",
-            [{
-              text: 'OK',
-              style: 'cancel',
-              onPress: () => navigation.goBack(),
-            }]
-          );  
-        } else {
-          Alert.alert(
-            "Fail to delete project",
-            "",
-          );
-        }
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-    } else {
-      fetch(localhost + 'issues/' + issue.id + '.json', {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Redmine-API-Key': user.api_key,
-        },
-      })
-      .then((response) => {
-        console.log(response.status);
-        if (response.status == 204) {
-          Alert.alert(
-            "Issue deleted successfully",
-            "",
-            [{
-              text: 'OK',
-              style: 'cancel',
-              onPress: () => navigation.goBack(),
-            }]
-          );  
-        } else {
-          Alert.alert(
-            "Fail to delete issue",
-            "",
-          );
-        }
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+    let u = await AsyncStorage.getItem('user');
+    if (u) {
+      let user = JSON.parse(u);
+      if (type === 'project') {
+        fetch(localhost + 'projects/' + project.id + '.json', {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Redmine-API-Key': user.api_key,
+          },
+        })
+        .then((response) => {
+          console.log(response.status);
+          if (response.status == 204) {
+            Alert.alert(
+              "Project deleted successfully",
+              "",
+              [{
+                text: 'OK',
+                style: 'cancel',
+                onPress: () => navigation.goBack(),
+              }]
+            );
+          } else {
+            Alert.alert(
+              "Fail to delete project",
+              "",
+            );
+          }
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+      } else {
+        fetch(localhost + 'issues/' + issue.id + '.json', {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Redmine-API-Key': user.api_key,
+          },
+        })
+        .then((response) => {
+          console.log(response.status);
+          if (response.status == 204) {
+            Alert.alert(
+              "Issue deleted successfully",
+              "",
+              [{
+                text: 'OK',
+                style: 'cancel',
+                onPress: () => navigation.goBack(),
+              }]
+            );
+          } else {
+            Alert.alert(
+              "Fail to delete issue",
+              "",
+            );
+          }
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+      }
     }
   }
 
@@ -457,9 +528,9 @@ export default function DetailScreen({ route, navigation }) {
                   }
                 </View>
               </Pressable>
-              <Phase collapseIssue={collapseIssue} issues={issues.issues} addNewPhase={addNewPhase} navigateToIssue={navigateToSubIssue} />
+              <Phase collapseIssue={collapseIssue} issues={issues.issues} addNewIssue={addNewIssue} navigateToIssue={navigateToSubIssue} />
               <Pressable
-                onPress={() => setShowInfo(!collapseDetail)}
+                onPress={() => setCollapseDetail(!collapseDetail)}
               >
                 <View
                   style={styles.tile}
@@ -483,6 +554,7 @@ export default function DetailScreen({ route, navigation }) {
                 selectRoles={selectRoles}
                 saveTargetUser={addMemberToProject}
                 user={user}/>
+              <View style={{height: 64}} />
             </>
             : <>
               <View style={styles.nameHeader}>
@@ -557,9 +629,9 @@ export default function DetailScreen({ route, navigation }) {
                   }
                 </View>
               </Pressable>
-              <SubPhase collapseIssue={collapseIssue} issues={issues.issues} addNewPhase={addNewPhase} navigateToIssue={navigateToSubIssue}/>
+              <SubPhase collapseIssue={collapseIssue} issues={issues.issues} addNewIssue={addNewIssue} navigateToIssue={navigateToSubIssue}/>
               <Pressable
-                onPress={() => setShowInfo(!collapseDetail)}
+                onPress={() => setCollapseDetail(!collapseDetail)}
               >
                 <View
                   style={styles.tile}
@@ -665,7 +737,7 @@ const styles = StyleSheet.create({
   },
   nameHeader: {
     width: "100%",
-		minHeight: 74,
+		height: 74,
 		backgroundColor: "#131924",
     flexDirection: "row",
     justifyContent: "flex-start",

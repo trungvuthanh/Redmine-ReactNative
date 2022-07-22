@@ -56,7 +56,7 @@ export default function SubPhase(props) {
         style={styles.addPhaseContainer}
       >
         <Pressable
-          onPress={() => props.addNewPhase()}
+          onPress={() => props.addNewIssue()}
           style={({pressed}) => [
             {
               backgroundColor: pressed

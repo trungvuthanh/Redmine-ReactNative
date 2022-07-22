@@ -42,7 +42,6 @@ export default function SubProject(props) {
         <View>
           <Text>{project.name}</Text>
           <Text>(#{project.id})</Text>
-          {/* {issue.parent ? <Text>Parent id: ({issue.parent.id})</Text> : <></>} */}
         </View>
       </Pressable>
     );

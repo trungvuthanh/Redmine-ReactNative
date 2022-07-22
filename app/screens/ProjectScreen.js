@@ -12,13 +12,10 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-import AddScreen from './AddScreen';
-import DetailScreen from './DetailScreen';
-import Header from "../components/Header";
-import ItemTiles from "../components/ItemTiles";
+import { get_projects } from '../api/project_api';
 import myFont from '../config/myFont';
-import Footer from "../components/Footer";
-import { localhost } from '../config/configurations';
+
+import ItemTiles from "../components/ItemTiles";
 
 export default function ProjectScreen({ route, navigation }) {
   const [amount, setAmount] = useState(0)
@@ -30,61 +27,66 @@ export default function ProjectScreen({ route, navigation }) {
   const [refreshing, setRefreshing] = React.useState(false);
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
-    getInfo().then(() => {
-      setRefreshing(false);
-    });
+    syncData()
+      .then(setRefreshing(false));
   }, []);
 
-  const getInfo = async () => {
-    fetch(localhost + 'projects.json')
-    .then((response) => response.json())
-    .then((json) => {
-      setProjectIdList(
-        json["projects"].map((project, index) => (
-          project.parent
-          ? {name: project.name, id: project.id, parent: project.parent}
-          : {name: project.name, id: project.id}
-        ))
-      );
-      let count = 0;
-      setMylist(
-        json["projects"].map((project, index) => {
-          if (project.id != 1 && project.parent == undefined) {
-            count += 1;
-            return (
-              <View key={index}>
-                <Pressable
-                  onPress={() => navigation.navigate("DetailScreen", { type: 'project' , project: project })}
-                  style={({pressed}) => 
-                    [{
-                      backgroundColor: pressed
-                        ? myFont.buttonPressedColor
-                        : myFont.white
-                    }]
-                  }
-                >
-                  <ItemTiles
-                    name={project.name}
-                    id={project.id}
-                    date={project.created_on.substring(0,10).split('-').reverse().join('/')}
-                    status={project.status - 1}
-                  />
-                </Pressable>
-              </View>  
-            );  
-          }
+  const syncData = async () => {
+    get_projects()
+      .then((data) => {
+          /*
+          Get list of project_id for creating a project
+          */
+          setProjectIdList(
+            data.projects.map((project, index) => (
+              project.parent
+              ? {name: project.name, id: project.id, parent: project.parent}
+              : {name: project.name, id: project.id}
+            ))
+          );
+          let count = 0;
+
+          /*
+          Get root projects
+          */
+          setMylist(
+            data.projects.map((project, index) => {
+              if (project.id != 1 && project.parent == undefined) {
+                count += 1;
+                return (
+                  <View key={index}>
+                    <Pressable
+                      onPress={() => navigation.navigate("DetailScreen", { type: 'project' , project: project })}
+                      style={({pressed}) => 
+                        [{
+                          backgroundColor: pressed
+                            ? myFont.buttonPressedColor
+                            : myFont.white
+                        }]
+                      }
+                    >
+                      <ItemTiles
+                        name={project.name}
+                        id={project.id}
+                        date={project.created_on.substring(0,10).split('-').reverse().join('/')}
+                        status={project.status - 1}
+                      />
+                    </Pressable>
+                  </View>  
+                );  
+              }
+            })
+          );
+          setAmount(count);
         })
-      );
-      setAmount(count);
-    })
-    .catch((error) => {
-      console.error(error);
-    })
-    .finally(() => setLoading(false));
+          .catch((error) => {
+              console.error(error);
+            })
+            .finally(() => setLoading(false));
   }
   
   useEffect(() => {
-    getInfo();
+    syncData();
   }, []);
 
 	return (
@@ -101,11 +103,10 @@ export default function ProjectScreen({ route, navigation }) {
               </View>
             </Pressable>
             <Text style={styles.textHeader}>
-              Open projects
+              Projects
               <Text style={{fontSize: 18.6, letterSpacing: myFont.letterSpace}}> ({amount})</Text>
             </Text>
           </View>
-          {/* <Header title="Open projects" amount={route.params.amount} /> */}
           <ScrollView 
             style={{marginBottom: 50}}
             refreshControl={
@@ -114,7 +115,6 @@ export default function ProjectScreen({ route, navigation }) {
           >
             {mylist}
           </ScrollView>
-          {/* <Footer/> */}
           <View style={styles.footer}>
             <Pressable
               onPress={() => navigation.goBack()}

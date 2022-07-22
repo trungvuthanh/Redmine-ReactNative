@@ -14,18 +14,22 @@ import {
   Alert,
   Button,
 } from 'react-native';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Ionicons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import CheckBox from '@react-native-community/checkbox';
 import DocumentPicker from 'react-native-document-picker';
 
+import { create_issue } from '../api/issue_api';
 import myFont from '../config/myFont';
+
 import TrackerPicker from '../components/TrackerPicker';
 import PriorityPicker from '../components/PriorityPicker';
 import StatusPicker from '../components/StatusPicker';
 import ParentProjectPicker from '../components/ParentProjectPicker';
 import ParentIssuePicker from '../components/ParentIssuePicker';
 import DoneRatioPicker from '../components/DoneRatioPicker';
+import AssignUserPicker from '../components/AssignUserPicker';
 import { localhost } from '../config/configurations';
 
 function dateInput() {
@@ -53,7 +57,6 @@ export default function AddScreen({ route, navigation }) {
   const type = route.params.type;
   let projects = [], issues = [];
   let parent_id; // parent project
-  let parent_issue; // parent issue
   if (type === 'project') {
     projects = route.params.projects
     if (route.params.parent != undefined) {
@@ -61,29 +64,33 @@ export default function AddScreen({ route, navigation }) {
     }
   } else if (type === 'issue') {
     issues = route.params.issues; // issues of parent project
-    parent_id = route.params.parent_id;
+    parent_id = route.params.parent_id; // id of parent project
     if (route.params.parent_issue != undefined) {
-      parent_issue = route.params.parent_issue;
       if (issues[0] != route.params.parent_issue) {
-        issues.splice(0, 0, route.params.parent_issue);
+        issues.splice(0, 0, route.params.parent_issue); // insert parent issue to issue_list for creating new issue
       }
     }
   }
-    
+
   // General
   const [name, onChangeName] = useState("");
   const [description, onChangeDescription] = useState("");
   const [subproject, onChangeSubProject] = useState(
     type === 'project'
-    ? {name: "", id: 0}
-    : route.params.parent_issue
-    ? {subject: route.params.parent_issue.subject, id: route.params.parent_issue.id}
-    : {subject: "", id: 0}
+    ? {
+        name: "",
+        id: 0
+      }
+    : route.params.parent_issue // type === 'issue'
+    ? {
+        subject: route.params.parent_issue.subject,
+        id: route.params.parent_issue.id
+      }
+    : {
+        subject: "",
+        id: 0
+      }
   );
-  const [isSubVisible, setIsSubVisible] = useState(false);
-  const changeSubVisibility = (bool) => {
-    setIsSubVisible(bool);
-  }
   const setSubProject = (option) => {
     onChangeSubProject(option);
   }
@@ -113,6 +120,11 @@ export default function AddScreen({ route, navigation }) {
   const [doneRatio, onChangeDoneRatio] = useState(0);
   const [isDoneRatioVisible, setIsDoneRatioVisible] = useState(false);
   const [isPrivate, setIsPrivate] = useState(false);
+  const [assignee, setAssignee] = useState();
+
+  const setAssignUser = (user_id) => {
+    setAssignee(user_id);
+  }
     
   const onChangeStart = (event, selectedDate) => {
     startDate.onChange(event, selectedDate);
@@ -199,138 +211,136 @@ export default function AddScreen({ route, navigation }) {
   }
 
   const createData = async () => {
-    if (type === 'project') {
-      let body;
-      if (parent_id == undefined) {
-        subproject.name == ""
+    let u = await AsyncStorage.getItem('user');
+    let user;
+    if (u) {
+      user = JSON.parse(u);
+      if (type === 'project') {
+        let body;
+        if (parent_id == undefined) {
+          subproject.name == ""
+          ? body = JSON.stringify({
+            project: {
+              name: name,
+              identifier: identifier,
+              description: description,
+              is_public: isPublic,
+              inherit_members: isInherit,
+            }
+          })
+          : body = JSON.stringify({
+            project: {
+              name: name,
+              identifier: identifier,
+              description: description,
+              is_public: isPublic,
+              parent_id: subproject.id,
+              inherit_members: isInherit,
+            }
+          });  
+        } else {
+          body = JSON.stringify({
+            project: {
+              name: name,
+              identifier: identifier,
+              description: description,
+              is_public: isPublic,
+              parent_id: parent_id.id,
+              inherit_members: isInherit,
+            }
+          });  
+        }
+        fetch(localhost + 'projects.json', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Redmine-API-Key': user.api_key,
+          },
+          body: body,
+        })
+        .then((response) => {
+          console.log(response.status);
+          if (response.status == 201) {
+            Alert.alert(
+              "Project was created",
+              "",
+              [{
+                text: 'OK',
+                style: 'cancel',
+                onPress: () => navigation.goBack(),
+              }]
+            );  
+          } else {
+            Alert.alert(
+              "Fail to create project",
+              "",
+            );
+          }
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+      } else if (type === 'issue') {
+        let estimated_hours;
+        duration == null ? estimated_hours = null : estimated_hours = parseInt(duration);
+        let body;
+        subproject.subject == ""
         ? body = JSON.stringify({
-          project: {
-            name: name,
-            identifier: identifier,
+          issue: {
+            project_id: parent_id,
+            tracker_id: tracker.id,
+            status_id: status,
+            priority_id: priority.id,
+            subject: name,
             description: description,
-            is_public: isPublic,
-            inherit_members: isInherit,
+            assigned_to_id: assignee,
+            is_private: isPrivate,
+            estimated_hours: estimated_hours,
+            start_date: standardDate(startDate.date),
+            due_date: standardDate(endDate.date),
+            done_ratio: doneRatio,
           }
         })
         : body = JSON.stringify({
-          project: {
-            name: name,
-            identifier: identifier,
+          issue: {
+            project_id: parent_id,
+            tracker_id: tracker.id,
+            status_id: status,
+            priority_id: priority.id,
+            subject: name,
             description: description,
-            is_public: isPublic,
-            parent_id: subproject.id,
-            inherit_members: isInherit,
+            parent_issue_id: subproject.id,
+            assigned_to_id: assignee,
+            is_private: isPrivate,
+            estimated_hours: estimated_hours,
+            start_date: standardDate(startDate.date),
+            due_date: standardDate(endDate.date),
+            done_ratio: doneRatio,
           }
-        });  
-      } else {
-        body = JSON.stringify({
-          project: {
-            name: name,
-            identifier: identifier,
-            description: description,
-            is_public: isPublic,
-            parent_id: parent_id.id,
-            inherit_members: isInherit,
+        });
+        create_issue(body)
+        .then((response) => {
+          if (response.status == 201) {
+            Alert.alert(
+              "Issue was added",
+              "",
+              [{
+                text: 'OK',
+                style: 'cancel',
+                onPress: () => navigation.goBack(),
+              }]
+            );  
+          } else {
+            Alert.alert(
+              "Fail to create issue",
+              "",
+            );
           }
-        });  
+        })
+        .catch((error) => {
+          console.error(error);
+        });
       }
-      fetch(localhost + 'projects.json', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Redmine-API-Key': '34dafb931f5817ecf25be180ceaf87029142915e',
-        },
-        body: body,
-      })
-      .then((response) => {
-        console.log(response.status);
-        if (response.status == 201) {
-          Alert.alert(
-            "Project was created",
-            "",
-            [{
-              text: 'OK',
-              style: 'cancel',
-              onPress: () => navigation.goBack(),
-            }]
-          );  
-        } else {
-          Alert.alert(
-            "Fail to create project",
-            "",
-          );
-        }
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-    } else if (type === 'issue') {
-      let estimated_hours;
-      duration == null ? estimated_hours = null : estimated_hours = parseInt(duration);
-      let body;
-      subproject.subject == ""
-      ? body = JSON.stringify({
-        issue: {
-          project_id: parent_id,
-          tracker_id: tracker.id,
-          status_id: status,
-          priority_id: priority.id,
-          subject: name,
-          description: description,
-          assigned_to_id: 1,
-          is_private: isPrivate,
-          estimated_hours: estimated_hours,
-          start_date: standardDate(startDate.date),
-          due_date: standardDate(endDate.date),
-          done_ratio: doneRatio,
-        }
-      })
-      : body = JSON.stringify({
-        issue: {
-          project_id: parent_id,
-          tracker_id: tracker.id,
-          status_id: status,
-          priority_id: priority.id,
-          subject: name,
-          description: description,
-          parent_issue_id: subproject.id,
-          assigned_to_id: 1,
-          is_private: isPrivate,
-          estimated_hours: estimated_hours,
-          start_date: standardDate(startDate.date),
-          due_date: standardDate(endDate.date),
-          done_ratio: doneRatio,
-        }
-      });
-      fetch(localhost + 'issues.json', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Redmine-API-Key': '34dafb931f5817ecf25be180ceaf87029142915e',
-        },
-        body: body,
-      })
-      .then((response) => {
-        if (response.status == 201) {
-          Alert.alert(
-            "Issue was added",
-            "",
-            [{
-              text: 'OK',
-              style: 'cancel',
-              onPress: () => navigation.goBack(),
-            }]
-          );  
-        } else {
-          Alert.alert(
-            "Fail to create issue",
-            "",
-          );
-        }
-      })
-      .catch((error) => {
-        console.error(error);
-      });
     }
   }
 
@@ -439,36 +449,15 @@ export default function AddScreen({ route, navigation }) {
               }
               >
                 <View style={styles.groupCell}>
-                  <View style={styles.label}>
+                  <View style={[styles.label, {justifyContent: "space-between"}]}>
                     <Text style={styles.text}>SUBPROJECT OF</Text>
-                    <Pressable
-                      onPress={() => onChangeSubProject({name: "", id: 0})}
-                      disabled={parent_id != undefined ? true : false}
-                    >
-                      <Text
-                        style={{color: myFont.blue}}
-                      >Clear</Text>
-                    </Pressable>
                   </View>
-                  <Pressable
-                    onPress={() => changeSubVisibility(true)}
-                    disabled={parent_id != undefined ? true : false}
-                  >
+                  {parent_id != undefined ?
                     <Text style={styles.textInput}>{parent_id != undefined ? parent_id.name : subproject.name}</Text>
-                  </Pressable>
-                  <View>
-                    <Modal
-                      transparent={true}
-                      visible={isSubVisible}
-                      onRequestClose={() => changeSubVisibility(false)}
-                    >
-                      <ParentProjectPicker
-                        changeSubVisibility={changeSubVisibility}
+                    : <ParentProjectPicker
                         setSub={setSubProject}
                         projectList={projects}
-                      />
-                    </Modal>
-                  </View>
+                      />}
                 </View>
               </Pressable>
             </View>
@@ -531,7 +520,7 @@ export default function AddScreen({ route, navigation }) {
               >
                 <View style={styles.groupCell}>
                   <View style={styles.label}>
-                    <Text style={styles.text}>subject *</Text>
+                    <Text style={styles.text}>SUBJECT *</Text>
                   </View>
                   <TextInput
                     style={styles.textInput}
@@ -556,7 +545,7 @@ export default function AddScreen({ route, navigation }) {
               >
                 <View style={[styles.groupCell, {height: 137}]}>
                   <View style={styles.label}>
-                    <Text style={styles.text}>description</Text>
+                    <Text style={styles.text}>DESCRIPTION</Text>
                   </View>
                   <TextInput 
                     style={[
@@ -583,33 +572,33 @@ export default function AddScreen({ route, navigation }) {
               >
                 <View style={styles.groupCell}>
                   <View style={styles.label}>
-                    <Text style={styles.text}>Parent task</Text>
-                    <Pressable
-                      onPress={() => onChangeSubProject({subject: "", id: 0})}
-                    >
-                      <Text
-                        style={{color: myFont.blue}}
-                      >Clear</Text>
-                    </Pressable>
+                    <Text style={styles.text}>PARENT TASK</Text>
                   </View>
-                  <Pressable
-                    onPress={() => changeSubVisibility(true)}
-                  >
-                    <Text style={styles.textInput}>{subproject.subject}</Text>
-                  </Pressable>
-                  <View>
-                    <Modal
-                      transparent={true}
-                      visible={isSubVisible}
-                      onRequestClose={() => changeSubVisibility(false)}
-                    >
-                      <ParentIssuePicker
-                        changeSubVisibility={changeSubVisibility}
-                        setSub={setSubProject}
-                        issueList={issues}
-                      />
-                    </Modal>
+                  <ParentIssuePicker
+                    setSub={setSubProject}
+                    issueList={issues}
+                  />
+                </View>
+              </Pressable>
+            </View>
+            <View style={styles.groupRow}>
+              <Pressable
+                style={({pressed}) => 
+                [{
+                  backgroundColor: pressed
+                    ? myFont.buttonPressedColor
+                    : myFont.white
+                }]
+              }
+              >
+                <View style={styles.groupCell}>
+                  <View style={styles.label}>
+                    <Text style={styles.text}>ASSIGNEE</Text>
                   </View>
+                  <AssignUserPicker
+                    setAssignUser={setAssignUser}
+                    defaultUser={0}
+                  />
                 </View>
               </Pressable>
             </View>
@@ -624,7 +613,7 @@ export default function AddScreen({ route, navigation }) {
                 style={styles.halfCell}
               >
                 <View style={styles.label}>
-                  <Text style={styles.text}>start date</Text>
+                  <Text style={styles.text}>START DATE</Text>
                 </View>
                 <View style={styles.textDate}>
                   <Text style={{fontSize: 20.8}}>{standardDate(startDate.date).split('-').reverse().join('/')}</Text>
@@ -648,7 +637,7 @@ export default function AddScreen({ route, navigation }) {
                 style={styles.halfCell}
               >
                 <View style={styles.label}>
-                  <Text style={styles.text}>due date</Text>
+                  <Text style={styles.text}>DUE DATE</Text>
                 </View>
                 <View style={styles.textDate}>
                   <Text style={{fontSize: 20.8}}>{standardDate(endDate.date).split('-').reverse().join('/')}</Text>
@@ -684,7 +673,7 @@ export default function AddScreen({ route, navigation }) {
                 ]}
               >
                 <View style={styles.label}>
-                  <Text style={styles.text}>estimated time (h)</Text>
+                  <Text style={styles.text}>ESTIMATED TIME (H)</Text>
                 </View>
                 <TextInput
                   style={styles.textInput}
@@ -705,7 +694,7 @@ export default function AddScreen({ route, navigation }) {
                 ]}
               >
                 <View style={styles.label}>
-                  <Text style={styles.text}>status *</Text>
+                  <Text style={styles.text}>STATUS *</Text>
                 </View>
                 <View style={{flexDirection: 'row'}}>
                   <Pressable
@@ -748,7 +737,7 @@ export default function AddScreen({ route, navigation }) {
                 ]}
               >
                 <View style={styles.label}>
-                  <Text style={styles.text}>tracker *</Text>
+                  <Text style={styles.text}>TRACKER *</Text>
                 </View>
                 <Pressable
                   onPress={() => changeTrackerVisibility(true)}
@@ -780,7 +769,7 @@ export default function AddScreen({ route, navigation }) {
                 ]}
               >
                 <View style={styles.label}>
-                  <Text style={styles.text}>priority *</Text>
+                  <Text style={styles.text}>PRIORITY *</Text>
                 </View>
                 <Pressable
                   onPress={() => changePriorityVisibility(true)}
@@ -819,7 +808,7 @@ export default function AddScreen({ route, navigation }) {
                 ]}
               >
                 <View style={styles.label}>
-                  <Text style={styles.text}>% done</Text>
+                  <Text style={styles.text}>% DONE</Text>
                 </View>
                 <Pressable
                   onPress={() => changeDoneRatioVisibility(true)}
@@ -850,7 +839,7 @@ export default function AddScreen({ route, navigation }) {
                 ]}
               >
                 <View style={styles.label}>
-                  <Text style={styles.text}>private</Text>
+                  <Text style={styles.text}>PRIVATE</Text>
                 </View>
                 <CheckBox
                   disabled={false}
@@ -949,7 +938,6 @@ const styles = StyleSheet.create({
   },
   halfCell: {
     width: "50%",
-    height: 73,
     borderStyle: "solid",
     borderRightWidth: 1,
     borderRightColor: myFont.itemBorderColor,
@@ -965,8 +953,7 @@ const styles = StyleSheet.create({
   },
   groupRow: {
     width: "100%",
-    height: 74,
-    marginBottom: 10,
+    minHeight: 74,
     borderStyle: "solid",
     borderBottomWidth: 1,
     borderBottomColor: myFont.itemBorderColor,

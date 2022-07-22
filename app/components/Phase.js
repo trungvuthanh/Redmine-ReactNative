@@ -58,7 +58,7 @@ export default function Phase(props) {
         style={styles.addPhaseContainer}
       >
         <Pressable
-          onPress={() => props.addNewPhase()}
+          onPress={() => props.addNewIssue()}
           style={({pressed}) => [
             {
               backgroundColor: pressed

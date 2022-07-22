@@ -19,13 +19,15 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import CheckBox from '@react-native-community/checkbox';
 import DocumentPicker from 'react-native-document-picker';
 
+import { update_issue } from '../api/issue_api';
 import myFont from '../config/myFont';
+
 import TrackerPicker from '../components/TrackerPicker';
 import PriorityPicker from '../components/PriorityPicker';
 import StatusPicker from '../components/StatusPicker';
 import ParentIssuePicker from '../components/ParentIssuePicker';
 import DoneRatioPicker from '../components/DoneRatioPicker';
-import { localhost } from '../config/configurations';
+import AssignUserPicker from '../components/AssignUserPicker';
 
 function dateInput(dateStr) {
   const [date, setDate] = useState(new Date(dateStr));
@@ -50,15 +52,15 @@ function dateInput(dateStr) {
 
 export default function EditIssueScreen({ route, navigation }) {
   let issue = route.params.issue
-  let issues = [];
+  let issues = route.params.issues; // issues of parent project
   let parentIssue = {subject: "", id: 0};
   
-  issues = route.params.issues; // issues of parent project
   if (issue.parent) {
     for (let iss of issues) {
       if (iss.id == issue.parent.id) {
         parentIssue.subject = iss.subject;
         parentIssue.id = iss.id;
+        break;
       }
     }
   }
@@ -67,10 +69,6 @@ export default function EditIssueScreen({ route, navigation }) {
   const [name, onChangeName] = useState(issue.subject);
   const [description, onChangeDescription] = useState(issue.description);
   const [subproject, onChangeSubProject] = useState(parentIssue);
-  const [isSubVisible, setIsSubVisible] = useState(false);
-  const changeSubVisibility = (bool) => {
-    setIsSubVisible(bool);
-  }
   const setSubProject = (option) => {
     onChangeSubProject(option);
   }
@@ -93,6 +91,11 @@ export default function EditIssueScreen({ route, navigation }) {
   const [isDoneRatioVisible, setIsDoneRatioVisible] = useState(false);
   const [isPrivate, setIsPrivate] = useState(issue.is_private);
   const statusLabels = ['New', 'In Progress', 'Resolved', 'Feedback', 'Closed', 'Rejected'];
+  const [assignee, setAssignee] = useState();
+
+  const setAssignUser = (user_id) => {
+    setAssignee(user_id);
+  }
     
   const onChangeStart = (event, selectedDate) => {
     startDate.onChange(event, selectedDate);
@@ -174,7 +177,7 @@ export default function EditIssueScreen({ route, navigation }) {
         subject: name,
         description: description,
         parent_issue_id: subproject.subject == '' ? null : subproject.id,
-        assigned_to_id: 1,
+        assigned_to_id: assignee,
         is_private: isPrivate,
         estimated_hours: duration ? null : parseInt(duration),
         start_date: standardDate(startDate.date),
@@ -182,19 +185,11 @@ export default function EditIssueScreen({ route, navigation }) {
         done_ratio: doneRatio,
       }
     });
-    fetch(localhost + 'issues/' + issue.id + '.json', {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Redmine-API-Key': '34dafb931f5817ecf25be180ceaf87029142915e',
-      },
-      body: body,
-    })
+    update_issue(issue.id, body)
     .then((response) => {
-      console.log(response.status);
       if (response.status == 204) {
         Alert.alert(
-          "Issue edited successfully",
+          "Issue updated successfully",
           "",
           [{
             text: 'OK',
@@ -203,6 +198,7 @@ export default function EditIssueScreen({ route, navigation }) {
           }]
         );  
       } else {
+        console.log(response.status)
         Alert.alert(
           "Fail to edit issue",
           "",
@@ -289,29 +285,32 @@ export default function EditIssueScreen({ route, navigation }) {
             <View style={styles.groupCell}>
               <View style={styles.label}>
                 <Text style={styles.text}>PARENT TASK</Text>
-                <Pressable
-                  onPress={() => onChangeSubProject({subject: "", id: 0})}>
-                  <Text
-                    style={{color: myFont.blue}}
-                  >Clear</Text>
-                </Pressable>
               </View>
-              <Pressable
-                onPress={() => changeSubVisibility(true)}>
-                <Text style={styles.textInput}>{subproject.subject}</Text>
-              </Pressable>
-              <View>
-                <Modal
-                  transparent={true}
-                  visible={isSubVisible}
-                  onRequestClose={() => changeSubVisibility(false)}>
-                  <ParentIssuePicker
-                    changeSubVisibility={changeSubVisibility}
-                    setSub={setSubProject}
-                    issueList={issues}
-                  />
-                </Modal>
+              <ParentIssuePicker
+                setSub={setSubProject}
+                issueList={issues}
+              />
+            </View>
+          </Pressable>
+        </View>
+        <View style={styles.groupRow}>
+          <Pressable
+            style={({pressed}) => 
+            [{
+              backgroundColor: pressed
+                ? myFont.buttonPressedColor
+                : myFont.white
+            }]
+          }
+          >
+            <View style={styles.groupCell}>
+              <View style={styles.label}>
+                <Text style={styles.text}>ASSIGNEE</Text>
               </View>
+              <AssignUserPicker
+                setAssignUser={setAssignUser}
+                defaultUser={issue.assigned_to.id}
+              />
             </View>
           </Pressable>
         </View>

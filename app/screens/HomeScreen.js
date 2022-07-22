@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { 
+import {
   ActivityIndicator, 
   StyleSheet, 
   Text, 
@@ -10,111 +10,97 @@ import {
   RefreshControl,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
-import Header from "../components/Header";
-import HomeTiles from "../components/HomeTiles";
+import { get_projects } from '../api/project_api';
+import { get_issues } from '../api/issue_api';
 import myFont from '../config/myFont';
-import { localhost } from '../config/configurations';
+
+import HomeTiles from "../components/HomeTiles";
 
 export default function HomeScreen({ navigation }) {
   const [isLoading, setLoading] = useState(true);
   const [overdueAmount, setOverdueAmount] = useState(0);
   const [issueAmount, setIssueAmount] = useState(0);
-  const [issues, setIssues] = useState([]);
-  const [myIssueAmount, setMyIssueAmount] = useState(0);
-  const [myIssues, setMyIssues] = useState([]);
   const [projectAmount, setProjectAmount] = useState(0);
-    
+
+  /*
+  Get number of root projects
+  */
+  const getProjectAmount = async () => {
+    get_projects()
+      .then((data) => {
+          let count = 0;
+          for (let project of data.projects) {
+            if (project.id != 1 && project.parent == undefined) count += 1;
+          }
+          setProjectAmount(count);
+        })
+          .catch((error) => {
+              console.error(error);
+            })
+              .finally(() => setLoading(false));
+  }
+
+  /*
+  Get number of assigned issues
+  */
+  const getIssueAmount = async () => {
+    get_issues()
+      .then((data) => {
+          let myIssueCount = 0;
+          let myIssuesArr = []
+          let overdueIssuesCount = 0;
+          let today = new Date();
+          for (let issue of data.issues) {
+            if (issue.assigned_to) {
+              myIssueCount += 1;
+              myIssuesArr.push(issue);
+            }
+            if (issue.due_date) {
+              let dueDate = new Date(issue.due_date);
+              if (dueDate < today) overdueIssuesCount += 1;
+            }
+          }
+          setIssueAmount(myIssueCount);
+          setOverdueAmount(overdueIssuesCount);
+        })
+          .catch((error) => {
+              console.error(error);
+            })
+              .finally(() => setLoading(false));
+  }
+
   // pull to refresh function
   const [refreshing, setRefreshing] = React.useState(false);
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
-    getProjects()
-    .then(getIssues())
-    .then(() => {
-      setRefreshing(false);
-    });
+    getProjectAmount()
+      .then(getIssueAmount())
+        .then(setRefreshing(false));
   }, []);
 
-  const getProjects = async () => {
-    try {
-      const response = await fetch(localhost + 'projects.json');
-      const json = await response.json();
-      let count = 0;
-      for (let project of json.projects) {
-        if (project.id != 1 && project.parent == undefined) count += 1;
-      }
-      setProjectAmount(count);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  const getIssues = async () => {
-    let u = await AsyncStorage.getItem('user');
-    if (u) {
-      let user = JSON.parse(u);
-      fetch(localhost + 'issues.json?assigned_to_id=' + user.id + '&status_id=*')
-      .then((response) => response.json())
-      .then((json) => {
-        let myIssueCount = 0;
-        let myIssuesArr = []
-        let overdueIssuesCount = 0;
-        let today = new Date();
-        for (let issue of json.issues) {
-          if (issue.assigned_to) {
-            myIssueCount += 1;
-            myIssuesArr.push(issue);
-          }
-          if (issue.due_date) {
-            let dueDate = new Date(issue.due_date);
-            if (dueDate < today) overdueIssuesCount += 1;
-          }
-        }
-        // setIssueAmount(json.total_count);
-        // setIssues(json.issues);
-        setIssueAmount(myIssueCount);
-        setIssues(myIssuesArr);
-        setMyIssues(myIssuesArr);
-        setMyIssueAmount(myIssueCount);
-        setOverdueAmount(overdueIssuesCount);
-      })
-      .catch((error) => {
-        console.error(error);
-      })
-      .finally(() => setLoading(false));
-    }
-  }
-
   useEffect(() => {
-    getProjects()
-    .then(getIssues());
+    getProjectAmount()
+      .then(getIssueAmount());
   }, []);
 
 	return (
 		<SafeAreaView style={styles.container}>
-      {isLoading? <ActivityIndicator/> : (
+      {isLoading? <ActivityIndicator/> :
         <>
           <View style={styles.header}>
             <Pressable
               onPress={() => navigation.toggleDrawer()}
-              style={styles.menuContainer}
-            >
+              style={styles.menuContainer}>
               <View>
                 <Ionicons name="ios-menu" size={myFont.menuIconSize} color="white" />
               </View>
             </Pressable>
             <Text style={styles.textHeader}>Redmine</Text>
           </View>
-          {/* <Header title="Redmine"/> */}
           <ScrollView
             refreshControl={
-              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-            }
-          >
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
             <Pressable
               onPress={() => {
                 navigation.navigate("OverdueStack")
@@ -125,9 +111,7 @@ export default function HomeScreen({ navigation }) {
                   backgroundColor: pressed
                     ? myFont.buttonPressedColor
                     : myFont.white
-                }
-              ]}
-            >
+                }]}>
               <HomeTiles redMark="yes" title="Overdue issues" amount={overdueAmount} />
             </Pressable>
             <Pressable
@@ -140,9 +124,7 @@ export default function HomeScreen({ navigation }) {
                   backgroundColor: pressed
                     ? myFont.buttonPressedColor
                     : myFont.white
-                }
-              ]}
-            >
+                }]}>
               <HomeTiles redMark="no" title="Issues" amount={issueAmount} />
             </Pressable>
             {/* <Pressable
@@ -160,25 +142,6 @@ export default function HomeScreen({ navigation }) {
             >
               <HomeTiles redMark="no" title="My Issues" amount={myIssueAmount} />
             </Pressable> */}
-
-            {/* "Forthcoming ends" tile for projects about to reach due date
-            <Pressable
-              onPress={() => {
-                navigation.navigate("Forthcoming")
-              }}
-              style={({ pressed }) => [
-                styles.tiles,
-                {
-                  backgroundColor: pressed
-                    ? myFont.buttonPressedColor
-                    : myFont.white
-                }
-              ]}
-            >
-              <HomeTiles redMark="no" title="Forthcoming ends" amount="1" />
-            </Pressable>
-            */}
-
             <Pressable
               onPress={() => {
                 navigation.navigate("ProjectStack")
@@ -189,14 +152,12 @@ export default function HomeScreen({ navigation }) {
                   backgroundColor: pressed
                     ? myFont.buttonPressedColor
                     : myFont.white
-                }
-              ]}
-            >
+                }]}>
               <HomeTiles redMark="no" title="Projects" amount={projectAmount} />
             </Pressable>
           </ScrollView>
         </>
-      )}
+      }
     </SafeAreaView>
 	);
 }

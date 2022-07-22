@@ -102,7 +102,7 @@ export default function ProjectInformation(props) {
           </View>
         </Pressable>
       </View>
-      <View style={[styles.groupRow, {height: 138}]}>
+      <View style={[styles.groupRow, {minHeight: 138}]}>
         <Pressable
           style={({pressed}) => [
             {
@@ -112,7 +112,7 @@ export default function ProjectInformation(props) {
             }
           ]}
         >
-          <View style={[styles.groupCell, {height: 137}]}>
+          <View style={[styles.groupCell, {minHeight: 137}]}>
             <View style={styles.label}>
               <Text style={styles.text}>DESCRIPTION</Text>
             </View>
@@ -139,7 +139,7 @@ export default function ProjectInformation(props) {
               project.parent ?
               <View style={styles.textDate}>
                 <Text style={{fontSize: 20.8}}>
-                  (#{project.parent.id}) {project.parent.name}
+                  #{project.parent.id} - {project.parent.name}
                 </Text>
               </View>
               : <></>

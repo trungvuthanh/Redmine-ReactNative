@@ -1,78 +1,39 @@
 import React, { useState } from 'react';
 import { 
-  Text, 
-  View, 
-  StyleSheet, 
-  TouchableOpacity, 
-  ScrollView, 
-  Pressable, 
-  Dimensions,
+  StyleSheet,
 } from 'react-native';
-
-const WIDTH = Dimensions.get('window').width;
-const HEIGHT = Dimensions.get('window').height;
+import { Picker } from '@react-native-picker/picker';
 
 export default function ParentIssuePicker(props) {
-  const OPTIONS = props.issueList;
+  const [targetIssue, setTargetIssue] = useState(0);
 
-  const onPressOption = (option) => {
-    props.changeSubVisibility(false);
-    props.setSub(option);
-  }
-
-  const options = OPTIONS.map((option, index) => {
+  let issueList = props.issueList.map((issue, index) => {
     return (
-      <Pressable
-        key={index}
-        onPress={() => onPressOption({subject: option.subject, id: option.id})}
-        style={styles.item}
-      >
-        <Text>
-          {option.parent
-          ? <Text>(#{option.parent.id}) {'>'} </Text>
-          : ''
-          }
-          (#{option.id}) {option.subject} 
-        </Text>
-      </Pressable>
+      <Picker.Item
+        label={'#' + issue.id + ' - ' + issue.subject}
+        value={issue.id}
+        style={{fontSize: 20}}
+        key={index} />
     );
   });
+  issueList.splice(0, 0, <Picker.Item label='Select an issue' value={0} style={{fontSize: 20}} key={0} enabled={false} />)
 
   return (
-    <TouchableOpacity
-      onPress={() => props.changeSubVisibility(false)}
-      style={styles.container}
-    >
-      <View style={styles.modal}>
-        <ScrollView>
-          {options}
-        </ScrollView>
-      </View>
-    </TouchableOpacity>
+    <Picker
+      selectedValue={targetIssue}
+      onValueChange={(itemValue, itemIndex) => {
+        setTargetIssue(itemValue);
+        props.setSub(props.issueList.find(issue => issue.id === itemValue))
+      }}
+      style={styles.issueDropdownList}>
+      {issueList}
+    </Picker>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    // alignItems: "flex-start",
-    // justifyContent: "flex-start",
-  },
-  modal: {
-    width: WIDTH * 0.75,
-    minHeight: 40,
-    maxHeight: 430,
-    backgroundColor: "#f7f7f8",
-    borderStyle: "solid",
-    borderWidth: 1,
-    borderColor: "#cccccc80",
-    left: 10,
-    top: HEIGHT * 0.5 + 6,
-  },
-  item: {
-    paddingVertical: 10,
-    paddingHorizontal: 5,
-    flexDirection: "row",
-    alignItems: "center",
+  issueDropdownList: {
+    height: 30,
+    marginLeft: 2
   },
 })

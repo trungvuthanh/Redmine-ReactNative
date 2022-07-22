@@ -1,76 +1,39 @@
 import React, { useState } from 'react';
 import { 
-  Text, 
-  View, 
-  StyleSheet, 
-  TouchableOpacity, 
-  ScrollView, 
-  Pressable, 
-  Dimensions,
+  StyleSheet,
 } from 'react-native';
-
-const WIDTH = Dimensions.get('window').width;
+import { Picker } from '@react-native-picker/picker';
 
 export default function ParentProjectPicker(props) {
-  const OPTIONS = props.projectList;
+  const [targetProject, setTargetProject] = useState(0)
 
-  const onPressOption = (option) => {
-    props.changeSubVisibility(false);
-    props.setSub(option);
-  }
-
-  const options = OPTIONS.map((option, index) => {
+  let projectList = props.projectList.map((project, index) => {
     return (
-      <Pressable
-        key={index}
-        onPress={() => onPressOption(option)}
-        style={styles.item}
-      >
-        <Text>
-          {option.parent
-          ? <Text>(#{option.parent.id}) {'>'} </Text>
-          : ''
-          }
-          (#{option.id}) {option.name} 
-        </Text>
-      </Pressable>
+      <Picker.Item
+        label={'#' + project.id + ' - ' + project.name}
+        value={project.id}
+        style={{fontSize: 20}}
+        key={index} />
     );
   });
+  projectList.splice(0, 0, <Picker.Item label='Select a project' value={0} style={{fontSize: 20}} key={0} />)
 
   return (
-    <TouchableOpacity
-      onPress={() => props.changeSubVisibility(false)}
-      style={styles.container}
-    >
-      <View style={styles.modal}>
-        <ScrollView>
-          {options}
-        </ScrollView>
-      </View>
-    </TouchableOpacity>
+    <Picker
+      selectedValue={targetProject}
+      onValueChange={(itemValue, itemIndex) => {
+        setTargetProject(itemValue);
+        props.setSub(props.projectList.find(project => project.id === itemValue))
+      }}
+      style={styles.projectDropdownList}>
+      {projectList}
+    </Picker>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "flex-start",
-    justifyContent: "flex-end",
-  },
-  modal: {
-    width: WIDTH * 0.75,
-    maxHeight: 430,
-    backgroundColor: "#f7f7f8",
-    borderStyle: "solid",
-    borderWidth: 1,
-    borderColor: "#cccccc80",
-    left: 10,
-    bottom: 147,
-  },
-  item: {
-    paddingVertical: 10,
-    paddingHorizontal: 5,
-    flexDirection: "row",
-    alignItems: "center",
+  projectDropdownList: {
+    height: 30,
+    marginLeft: 2
   },
 })

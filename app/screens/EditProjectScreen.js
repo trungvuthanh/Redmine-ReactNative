@@ -17,31 +17,11 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import CheckBox from '@react-native-community/checkbox';
 
+import { update_project } from '../api/project_api';
 import myFont from '../config/myFont';
-import { localhost } from '../config/configurations';
 
 export default function EditProjectScreen({ route, navigation }) {
   let project = route.params.project;
-
-  const type = route.params.type;
-  let projects = [], issues = [];
-  let parent_id; // parent project
-  let parent_issue; // parent issue
-  if (type === 'project') {
-    projects = route.params.projects
-    if (route.params.parent != undefined) {
-      parent_id = route.params.parent;
-    }
-  } else if (type === 'issue') {
-    issues = route.params.issues; // issues of parent project
-    parent_id = route.params.parent_id;
-    if (route.params.parent_issue != undefined) {
-      parent_issue = route.params.parent_issue;
-      if (issues[0] != route.params.parent_issue) {
-        issues.splice(0, 0, route.params.parent_issue);
-      }
-    }
-  }
     
   // General
   const [name, onChangeName] = useState(project.name);
@@ -82,19 +62,12 @@ export default function EditProjectScreen({ route, navigation }) {
         inherit_members: isInherit,
       }
     });
-    fetch(localhost + 'projects/' + project.id + '.json', {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Redmine-API-Key': '34dafb931f5817ecf25be180ceaf87029142915e',
-      },
-      body: body,
-    })
+    update_project(project.id, body)
     .then((response) => {
       console.log(response.status);
       if (response.status == 204) {
         Alert.alert(
-          "Project edited successfully",
+          "Project updated successfully",
           "",
           [{
             text: 'OK',
@@ -195,6 +168,25 @@ export default function EditProjectScreen({ route, navigation }) {
             </View>
           </Pressable>
         </View>
+        {project.parent ?
+          <View style={styles.groupRow}>
+            <Pressable
+              style={({pressed}) => 
+                [{
+                  backgroundColor: pressed
+                    ? myFont.buttonPressedColor
+                    : myFont.white
+                }]}>
+              <View style={styles.groupCell}>
+                <View style={styles.label}>
+                  <Text style={styles.text}>SUBPROJECT OF *</Text>
+                </View>
+                <Text style={styles.textInput}>{project.parent.name}</Text>
+              </View>
+            </Pressable>
+          </View>
+          : <></>
+        }
         <View 
           style={[
             styles.groupRow,
