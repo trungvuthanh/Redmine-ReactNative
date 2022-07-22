@@ -78,3 +78,23 @@ export const update_issue = async (issue_id, body) => {
     console.error(error);
   }
 }
+
+/*
+Delete an issue
+*/
+export const delete_issue = async (issue_id) => {
+  try {
+    let user = await get_user();
+    let response = await fetch(localhost + 'issues/' + issue_id + '.json', {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Redmine-API-Key': user.api_key,
+      },
+      body: body
+    });
+    return response;
+  } catch (error) {
+    console.error(error);
+  }
+}

@@ -19,13 +19,17 @@ import { get_user } from '../api/user_api';
 import {
   get_project,
   get_projects,
-  get_issues_of_project
+  get_issues_of_project,
+  delete_project
 } from '../api/project_api';
 import {
   get_memberships,
   add_membership
 } from '../api/membership_api';
-import { get_issue } from '../api/issue_api';
+import {
+  get_issue,
+  delete_issue
+} from '../api/issue_api';
 import myFont from '../config/myFont';
 
 import Phase from '../components/Phase';
@@ -352,70 +356,55 @@ export default function DetailScreen({ route, navigation }) {
   }
 
   const deleteItem = async () => {
-    let u = await AsyncStorage.getItem('user');
-    if (u) {
-      let user = JSON.parse(u);
-      if (type === 'project') {
-        fetch(localhost + 'projects/' + project.id + '.json', {
-          method: 'DELETE',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-Redmine-API-Key': user.api_key,
-          },
-        })
-        .then((response) => {
-          console.log(response.status);
-          if (response.status == 204) {
-            Alert.alert(
-              "Project deleted successfully",
-              "",
-              [{
-                text: 'OK',
-                style: 'cancel',
-                onPress: () => navigation.goBack(),
-              }]
-            );
-          } else {
-            Alert.alert(
-              "Fail to delete project",
-              "",
-            );
-          }
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-      } else {
-        fetch(localhost + 'issues/' + issue.id + '.json', {
-          method: 'DELETE',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-Redmine-API-Key': user.api_key,
-          },
-        })
-        .then((response) => {
-          console.log(response.status);
-          if (response.status == 204) {
-            Alert.alert(
-              "Issue deleted successfully",
-              "",
-              [{
-                text: 'OK',
-                style: 'cancel',
-                onPress: () => navigation.goBack(),
-              }]
-            );
-          } else {
-            Alert.alert(
-              "Fail to delete issue",
-              "",
-            );
-          }
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-      }
+    let user = JSON.parse(u);
+    if (type === 'project') {
+      delete_project(project.id)
+      .then((response) => {
+        console.log(response.status);
+        if (response.status == 204) {
+          Alert.alert(
+            "Project deleted successfully",
+            "",
+            [{
+              text: 'OK',
+              style: 'cancel',
+              onPress: () => navigation.goBack(),
+            }]
+          );
+        } else {
+          Alert.alert(
+            "Fail to delete project",
+            "",
+          );
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+    } else {
+      delete_issue(issue.id)
+      .then((response) => {
+        console.log(response.status);
+        if (response.status == 204) {
+          Alert.alert(
+            "Issue deleted successfully",
+            "",
+            [{
+              text: 'OK',
+              style: 'cancel',
+              onPress: () => navigation.goBack(),
+            }]
+          );
+        } else {
+          Alert.alert(
+            "Fail to delete issue",
+            "",
+          );
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+      });
     }
   }
 
