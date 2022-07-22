@@ -91,7 +91,6 @@ export const delete_issue = async (issue_id) => {
         'Content-Type': 'application/json',
         'X-Redmine-API-Key': user.api_key,
       },
-      body: body
     });
     return response;
   } catch (error) {
