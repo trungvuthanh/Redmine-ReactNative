@@ -190,6 +190,24 @@ export default function IssueInformation(props) {
             style={{marginLeft: 4}}
           />
         </Pressable>
+        <Pressable
+          style={({pressed}) => [
+            styles.halfCell,
+            {
+              backgroundColor: pressed
+                ? myFont.buttonPressedColor
+                : myFont.white,
+              position: "relative",
+            }
+          ]}
+        >
+          <View style={styles.label}>
+            <Text style={styles.text}>CREATED BY</Text>
+          </View>
+          <View style={styles.textDate}>
+            <Text style={{fontSize: 20.8}}>{issue.author.name.trim()}</Text>
+          </View>
+        </Pressable>
       </View>
     </Collapsible>    
   );

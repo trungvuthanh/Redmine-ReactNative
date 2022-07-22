@@ -12,7 +12,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 
 import { get_projects } from '../api/project_api';
-import { get_issues } from '../api/issue_api';
+import { get_issues_assigned_to_user } from '../api/issue_api';
 import myFont from '../config/myFont';
 
 import HomeTiles from "../components/HomeTiles";
@@ -45,7 +45,7 @@ export default function HomeScreen({ navigation }) {
   Get number of assigned issues
   */
   const getIssueAmount = async () => {
-    get_issues()
+    get_issues_assigned_to_user()
       .then((data) => {
           let myIssueCount = 0;
           let myIssuesArr = []

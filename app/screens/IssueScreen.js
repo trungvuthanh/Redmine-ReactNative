@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 
-import { get_issues } from '../api/issue_api';
+import { get_issues_assigned_to_user } from '../api/issue_api';
 import myFont from '../config/myFont';
 
 export default function IssueScreen({ route, navigation }) {
@@ -20,7 +20,7 @@ export default function IssueScreen({ route, navigation }) {
   const [issues, setIssues] = useState([]);
 
   const getIssues = async () => {
-    get_issues()
+    get_issues_assigned_to_user()
     .then((data) => {
       setIssueAmount(data.total_count);
       setIssues(data.issues);

@@ -21,10 +21,14 @@ export const get_issue = async (issue_id) => {
 }
 
 /*
+Get all issues
+*/
+
+/*
 Get all issues assigned to user
 Use api_key to get private issues
 */
-export const get_issues = async () => {
+export const get_issues_assigned_to_user = async () => {
   try {
     let user = await get_user();
     let response = await fetch(localhost + 'issues.json?assigned_to_id=' + user.id + '&status_id=*', {
