@@ -10,6 +10,7 @@ import Collapsible from 'react-native-collapsible';
 import CheckBox from '@react-native-community/checkbox';
 
 import AddMembership from './AddMembership';
+import RemoveMembership from './RemoveMembership';
 import myFont from '../config/myFont';
 
 export default function ProjectInformation(props) {
@@ -65,6 +66,7 @@ export default function ProjectInformation(props) {
   })
 
   const [membershipCollapsed, setMembershipCollapsed] = useState(true)
+  const [removeMemberCollapsed, setRemoveMemberCollapsed] = useState(true)
 
   const selectUser = (user) => {
     props.selectUser(user);
@@ -76,6 +78,9 @@ export default function ProjectInformation(props) {
   
   const saveTargetUser = () => {
     props.saveTargetUser();
+  }
+  const saveUserToRemove = () => {
+    props.saveUserToRemove();
   }
   
   return (
@@ -185,26 +190,44 @@ export default function ProjectInformation(props) {
             {membershipList}
           </View>
         </Pressable>
-        {isManagerPrivileged ?
-          <>
-            <AddMembership
-              collapsed={membershipCollapsed}
-              selectUser={selectUser}
-              selectRoles={selectRoles}
-              saveTargetUser={saveTargetUser}
-              existUser={members} />
+        <AddMembership
+          collapsed={membershipCollapsed}
+          selectUser={selectUser}
+          selectRoles={selectRoles}
+          saveTargetUser={saveTargetUser}
+          existUser={members} />
+        <RemoveMembership
+          collapsed={removeMemberCollapsed}
+          selectUser={selectUser}
+          saveUserToRemove={saveUserToRemove}
+          existUser={members} />
+        <View style={{flexDirection: "row"}} >
+          <View
+            style={{
+              margin: 10,
+            }}>
+            <Button
+              title={membershipCollapsed ? "NEW MEMBER" : "CLOSE"}
+              onPress={() => {
+                setMembershipCollapsed(!membershipCollapsed);
+                setRemoveMemberCollapsed(true);
+              }}/>
+          </View>
+          {isManagerPrivileged ?
             <View
               style={{
-                flexDirection: "row",
                 margin: 10,
               }}>
               <Button
-                title={membershipCollapsed ? "NEW MEMBER" : "CLOSE"}
-                onPress={() => setMembershipCollapsed(!membershipCollapsed)}/>
-            </View>
-          </>
-          : <></>
-        }
+                title={removeMemberCollapsed ? "REMOVE MEMBER" : "CLOSE"}
+                onPress={() => {
+                  setRemoveMemberCollapsed(!removeMemberCollapsed);
+                  setMembershipCollapsed(true);
+                }}
+                color="red"/>
+            </View> : <></>
+          }
+        </View>
       </View>
       <View
         style={[

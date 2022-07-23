@@ -199,4 +199,4 @@ const styles = StyleSheet.create({
     color: myFont.fontAddScreenColor,
     fontWeight: "300",
   },
-})
+});

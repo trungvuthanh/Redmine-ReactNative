@@ -13,7 +13,6 @@ import {
   Button
 } from 'react-native';
 import { Ionicons, Entypo } from '@expo/vector-icons';
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { get_user } from '../api/user_api';
 import {
@@ -24,13 +23,15 @@ import {
 } from '../api/project_api';
 import {
   get_memberships,
-  add_membership
+  add_membership,
+  delete_membership
 } from '../api/membership_api';
 import {
   get_issue,
   delete_issue
 } from '../api/issue_api';
 import myFont from '../config/myFont';
+import users from '../config/configurations';
 
 import Phase from '../components/Phase';
 import SubPhase from '../components/SubPhase';
@@ -54,10 +55,10 @@ export default function DetailScreen({ route, navigation }) {
   const [user, setUser] = useState(null);
   // members of this project
   const [members, setMembers] = useState([]);
-  // user to be added into this project
-  const [targetUser, setTargetUser] = useState('');
+  // user to be added/removed into this project
+  let targetUser = 0;
   // role ids of user to be added into this project
-  const [roleIds, setRoleIds] = useState([])
+  let roleIds = [];
 
   // Sub issues
   const [issues, setIssues] = useState({issues: []});
@@ -295,11 +296,11 @@ export default function DetailScreen({ route, navigation }) {
   }
 
   const selectUser = (user) => {
-    setTargetUser(user);
+    targetUser = user;
   }
 
-  const selectRoles = (roleIds) => {
-    setRoleIds(roleIds);
+  const selectRoles = (role_ids) => {
+    roleIds = role_ids;
   }
 
   const addMemberToProject = async () => {
@@ -346,7 +347,7 @@ export default function DetailScreen({ route, navigation }) {
             );
           }
         })
-        .then(syncMemberships())
+        .then(onRefresh())
         .catch((error) => {
           console.error(error);
         })
@@ -355,8 +356,61 @@ export default function DetailScreen({ route, navigation }) {
     }
   }
 
+  const removeMemberOfProject = async () => {
+    if (type === 'project') {
+      if (targetUser == 0) {
+        Alert.alert(
+          "Specify a user to be removed",
+          "",
+        );
+      } else {
+        let userToRemove = users.find(user => user.id == targetUser);
+        let fullname = userToRemove.firstname.concat(' ', userToRemove.lastname).trim();
+        get_memberships(project.id)
+        .then((data) => {
+          let membership_id;
+          for (let membership of data.memberships) {
+            if (membership.project.id == project.id && membership.user.id == targetUser) {
+              membership_id = membership.id;
+              break;
+            }
+          }
+          delete_membership(membership_id)
+          .then((response) => {
+            console.log(response.status);
+            if (response.status == 204) {
+              Alert.alert(
+                fullname + " was removed from project",
+                "",
+                [{
+                  text: 'OK',
+                  style: 'cancel',
+                }]
+              );
+            } else if (response.status == 422) {
+              console.log(response)
+              Alert.alert(
+                "User has already been taken",
+                "",
+              );
+            } else {
+              Alert.alert(
+                "Fail to add new member",
+                "",
+              );
+            }
+          })
+          .then(onRefresh())
+          .catch((error) => {
+            console.error(error);
+          })
+          .finally(() => setLoading(false));
+        });
+      }
+    }
+  }
+
   const deleteItem = async () => {
-    let user = JSON.parse(u);
     if (type === 'project') {
       delete_project(project.id)
       .then((response) => {
@@ -542,6 +596,7 @@ export default function DetailScreen({ route, navigation }) {
                 selectUser={selectUser}
                 selectRoles={selectRoles}
                 saveTargetUser={addMemberToProject}
+                saveUserToRemove={removeMemberOfProject}
                 user={user}/>
               <View style={{height: 64}} />
             </>

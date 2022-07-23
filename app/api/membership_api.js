@@ -38,3 +38,22 @@ export const add_membership = async (project_id, body) => {
     console.error(error);
   }
 }
+
+/*
+Delete a member of project
+*/
+export const delete_membership = async (membership_id) => {
+  try {
+    let user = await get_user();
+    let response = await fetch(localhost + 'memberships/' + membership_id + '.json', {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Redmine-API-Key': user.api_key,
+      },
+    });
+    return response;
+  } catch (error) {
+    console.error(error);
+  }
+}
