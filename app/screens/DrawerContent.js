@@ -51,7 +51,7 @@ export default function DrawerContent(props) {
             )}
           </Pressable>
           <Pressable
-            onPress={() => props.navigation.navigate("OpenProjectStack")}
+            onPress={() => props.navigation.navigate("ProjectStack")}
             style={({pressed}) => [
               styles.drawerItem,
               {
