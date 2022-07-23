@@ -20,8 +20,8 @@ import ItemTiles from "../components/ItemTiles";
 export default function ProjectScreen({ route, navigation }) {
   const [amount, setAmount] = useState(0)
   const [isLoading, setLoading] = useState(true);
-  const [projectList, setProjectIdList] = useState([]);
-  const [mylist, setMylist] = useState([])
+  const [projectIdList, setProjectIdList] = useState([]);
+  const [projectList, setProjectList] = useState([])
 
   // pull to refresh function
   const [refreshing, setRefreshing] = React.useState(false);
@@ -49,7 +49,7 @@ export default function ProjectScreen({ route, navigation }) {
           /*
           Get root projects
           */
-          setMylist(
+          setProjectList(
             data.projects.map((project, index) => {
               if (project.id != 1 && project.parent == undefined) {
                 count += 1;
@@ -73,7 +73,7 @@ export default function ProjectScreen({ route, navigation }) {
                       />
                     </Pressable>
                   </View>  
-                );  
+                );
               }
             })
           );
@@ -113,25 +113,12 @@ export default function ProjectScreen({ route, navigation }) {
               <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
             }
           >
-            {mylist}
+            {projectList}
           </ScrollView>
           <View style={styles.footer}>
-            <Pressable
-              onPress={() => navigation.goBack()}
-              style={({pressed}) => [
-                {
-                  backgroundColor: pressed
-                    ? myFont.buttonPressedColor
-                    : myFont.footerBackgroundColor
-                },
-                styles.backButton
-              ]}
-            >
-              <Ionicons name="chevron-back" size={30} color={myFont.blue} />
-            </Pressable>
             <Button
               title="NEW PROJECT"
-              onPress={() => navigation.push("AddScreen", { projects: projectList, type: 'project' })}/>
+              onPress={() => navigation.push("AddScreen", { projects: projectIdList, type: 'project' })}/>
           </View>
         </>
       }
@@ -143,8 +130,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
-    // alignItems: "center",
-    // justifyContent: "center",
   },
   header: {
 		width: "100%",
@@ -169,27 +154,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
     letterSpacing: myFont.letterSpace,
   },
-  addButton: {
-    width: 50,
-    height: 50,
-    backgroundColor: myFont.addButtonColor,
-  },
-  backButton: {
-    width: 50,
-    height: 50,
-    alignItems: "center",
-    justifyContent: "center",
-  },
   footer: {
-    backgroundColor: myFont.footerBackgroundColor,
-    borderTopColor: myFont.footerBorderColor,
-    width: "100%",
-    height: 50,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    alignSelf: "flex-end",
     position: "absolute",
     bottom: 0,
-    paddingRight: 10,
+    padding: 10,
   },
 });

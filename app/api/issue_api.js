@@ -21,17 +21,34 @@ export const get_issue = async (issue_id) => {
 }
 
 /*
-Get all issues
+Get all issues (includes OPEN and CLOSED)
+Sort by PRIORITY from IMMEDIATE -> LOW
+Use api_key to get private issues
 */
+export const get_issues = async () => {
+  try {
+    let user = await get_user();
+    let response = await fetch(localhost + 'issues.json?sort=priority:desc&status_id=*', {
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Redmine-API-Key': user.api_key,
+      },
+    });
+    return response.json();
+  } catch (error) {
+    console.error(error);
+  }
+}
 
 /*
 Get all issues assigned to user
+Sort by PRIORITY from IMMEDIATE -> LOW
 Use api_key to get private issues
 */
 export const get_issues_assigned_to_user = async () => {
   try {
     let user = await get_user();
-    let response = await fetch(localhost + 'issues.json?assigned_to_id=' + user.id + '&status_id=*', {
+    let response = await fetch(localhost + 'issues.json?assigned_to_id=' + user.id + '&sort=priority:desc&status_id=*', {
       headers: {
         'Content-Type': 'application/json',
         'X-Redmine-API-Key': user.api_key,

@@ -309,7 +309,7 @@ export default function EditIssueScreen({ route, navigation }) {
               </View>
               <AssignUserPicker
                 setAssignUser={setAssignUser}
-                defaultUser={issue.assigned_to.id}
+                defaultUser={issue.assigned_to ? issue.assigned_to.id : 0}
               />
             </View>
           </Pressable>

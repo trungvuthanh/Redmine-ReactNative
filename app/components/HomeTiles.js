@@ -6,16 +6,16 @@ import myFont from '../config/myFont';
 export default function HomeTiles(props) {
   return (
     <>
-      {props.redMark == "yes"
-        ? <View style={styles.redMark} />
-        : <View style={[styles.redMark, {backgroundColor: myFont.whiteMarkColor}]} />}
+      {props.isClosed == "yes"
+        ? <View style={styles.isClosed} />
+        : <View style={[styles.isClosed, {backgroundColor: myFont.whiteMarkColor}]} />}
       <View style={styles.textBox}>
         <Text style={styles.text} >{props.title}</Text>
         <Text style={[
           styles.amount,
-          {color: props.redMark == "no"
+          {color: props.isClosed == "no"
             ? myFont.black
-            : "#d30202"}]}>
+            : myFont.statusColor[4]}]}>
             {props.amount}
         </Text>
       </View>
@@ -29,10 +29,10 @@ const styles = StyleSheet.create({
     fontWeight: myFont.fontWeight,
     color: myFont.black,
   },
-  redMark: {
+  isClosed: {
     width: 12,
     height: 44,
-    backgroundColor: myFont.redMarkColor,
+    backgroundColor: myFont.statusColor[4],
     position: "absolute",
   },
   text: {

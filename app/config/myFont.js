@@ -7,6 +7,7 @@ export default {
   white: "#fff",
   buttonPressedColor: "#ace7ff",
   gray: "#898c91",
+  red: "#ff0000",
   
   // Header
   fontHomeHeaderSize: 22.4,
@@ -23,20 +24,23 @@ export default {
   redMarkColor: "#d30202",
   whiteMarkColor: "#f7f7f8",
 
+  // Priority
+  priorityColor: [
+    "#ffff00", // Low
+    "#00ff00", // Normal
+    "#00fffb", // High
+    "#ffa500", // Urgent
+    "#ff5500", // Immediate
+  ],
+
   // Status
   statusColor: [
-    "#88e05f",
-    "#fdb826",
-    "#ffe100",
-    "#2098e2",
-    "#7a44a0",
-    "#c4bac4",
-    // statusNew: "#88e05f",
-    // statusProgress: "#fdb826",
-    // statusResolve: "#ffe100",
-    // statusFeedback: "#2098e2",
-    // statusClose: "#7a44a0",
-    // statusReject: "#c4bac4",
+    "#88e05f", // statusNew
+    "#fdb826", // statusProgress
+    "#ffe100", // statusResolve
+    "#2098e2", // statusFeedback
+    "#7a44a0", // statusClose
+    "#c4bac4", // statusReject
   ],
 
   // Footer

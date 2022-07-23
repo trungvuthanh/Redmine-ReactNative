@@ -14,7 +14,7 @@ import users from './app/config/configurations';
 import LoginScreen from './app/screens/LoginScreen';
 import DrawerContent from './app/screens/DrawerContent';
 import HomeScreen from './app/screens/HomeScreen';
-import OverdueScreen from './app/screens/OverdueScreen';
+import ClosedScreen from './app/screens/ClosedScreen';
 import ExpToDoScreen from './app/screens/ExpToDoScreen';
 import IssueScreen from './app/screens/IssueScreen';
 import MyIssueScreen from './app/screens/MyIssueScreen';
@@ -28,7 +28,7 @@ import { AuthContext } from "./app/components/Context";
 
 const Drawer = createDrawerNavigator();
 const HomeStack = createStackNavigator();
-const OverdueStack = createStackNavigator();
+const ClosedStack = createStackNavigator();
 const IssueStack = createStackNavigator();
 const MyIssueStack = createStackNavigator();
 const ProjectStack = createStackNavigator();
@@ -63,8 +63,8 @@ const HomeStackScreen = () => (
       }}
     />
     <HomeStack.Screen
-      name="OverdueStack"
-      component={OverdueStackScreen}
+      name="ClosedStack"
+      component={ClosedStackScreen}
       options={{
         headerShown: false,
       }}
@@ -100,37 +100,37 @@ const HomeStackScreen = () => (
   </HomeStack.Navigator>
 );
 
-const OverdueStackScreen = () => (
-  <OverdueStack.Navigator initialRouteName='OverdueScreen'>
-    <OverdueStack.Screen
-      name="OverdueScreen"
-      component={OverdueScreen}
+const ClosedStackScreen = () => (
+  <ClosedStack.Navigator initialRouteName='ClosedScreen'>
+    <ClosedStack.Screen
+      name="ClosedScreen"
+      component={ClosedScreen}
       options={{
         headerShown: false,
       }}
     />
-    <OverdueStack.Screen
+    <ClosedStack.Screen
       name="DetailScreen"
       component={DetailScreen}
       options={{
         headerShown: false,
       }}
     />
-    <OverdueStack.Screen
+    <ClosedStack.Screen
       name="AddScreen"
       component={AddScreen}
       options={{
         headerShown: false,
       }}
     />
-    <OverdueStack.Screen
+    <ClosedStack.Screen
       name="EditIssueScreen"
       component={EditIssueScreen}
       options={{
         headerShown: false,
       }}
     />
-  </OverdueStack.Navigator>
+  </ClosedStack.Navigator>
 )
 
 const IssueStackScreen = () => (

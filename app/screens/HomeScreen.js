@@ -11,22 +11,24 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
+import { get_user } from '../api/user_api';
 import { get_projects } from '../api/project_api';
-import { get_issues_assigned_to_user } from '../api/issue_api';
+import { get_issues } from '../api/issue_api';
 import myFont from '../config/myFont';
 
 import HomeTiles from "../components/HomeTiles";
 
 export default function HomeScreen({ navigation }) {
   const [isLoading, setLoading] = useState(true);
-  const [overdueAmount, setOverdueAmount] = useState(0);
+  const [closedAmount, setClosedAmount] = useState(0);
   const [issueAmount, setIssueAmount] = useState(0);
+  const [assignedIssueAmount, setAssignedIssueAmount] = useState(0);
   const [projectAmount, setProjectAmount] = useState(0);
 
   /*
   Get number of root projects
   */
-  const getProjectAmount = async () => {
+  const syncProjectAmount = async () => {
     get_projects()
       .then((data) => {
           let count = 0;
@@ -44,25 +46,24 @@ export default function HomeScreen({ navigation }) {
   /*
   Get number of assigned issues
   */
-  const getIssueAmount = async () => {
-    get_issues_assigned_to_user()
+  const syncIssueAmount = async () => {
+    let user = await get_user();
+    get_issues()
       .then((data) => {
-          let myIssueCount = 0;
-          let myIssuesArr = []
-          let overdueIssuesCount = 0;
-          let today = new Date();
+          let assignedIssuesCount = 0, closedIssuesCount = 0;
           for (let issue of data.issues) {
             if (issue.assigned_to) {
-              myIssueCount += 1;
-              myIssuesArr.push(issue);
+              if (issue.assigned_to.id == user.id) {
+                assignedIssuesCount += 1;
+              }
             }
-            if (issue.due_date) {
-              let dueDate = new Date(issue.due_date);
-              if (dueDate < today) overdueIssuesCount += 1;
+            if (issue.status.id == 5) {
+              closedIssuesCount += 1;
             }
           }
-          setIssueAmount(myIssueCount);
-          setOverdueAmount(overdueIssuesCount);
+          setIssueAmount(data.total_count);
+          setAssignedIssueAmount(assignedIssuesCount);
+          setClosedAmount(closedIssuesCount);
         })
           .catch((error) => {
               console.error(error);
@@ -74,14 +75,14 @@ export default function HomeScreen({ navigation }) {
   const [refreshing, setRefreshing] = React.useState(false);
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
-    getProjectAmount()
-      .then(getIssueAmount())
+    syncProjectAmount()
+      .then(syncIssueAmount())
         .then(setRefreshing(false));
   }, []);
 
   useEffect(() => {
-    getProjectAmount()
-      .then(getIssueAmount());
+    syncProjectAmount()
+      .then(syncIssueAmount());
   }, []);
 
 	return (
@@ -103,7 +104,7 @@ export default function HomeScreen({ navigation }) {
               <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
             <Pressable
               onPress={() => {
-                navigation.navigate("OverdueStack")
+                navigation.navigate("ProjectStack")
               }}
               style={({ pressed }) => [
                 styles.tiles,
@@ -112,7 +113,7 @@ export default function HomeScreen({ navigation }) {
                     ? myFont.buttonPressedColor
                     : myFont.white
                 }]}>
-              <HomeTiles redMark="yes" title="Overdue issues" amount={overdueAmount} />
+              <HomeTiles isClosed="no" title="Projects" amount={projectAmount} />
             </Pressable>
             <Pressable
               onPress={() => {
@@ -125,9 +126,9 @@ export default function HomeScreen({ navigation }) {
                     ? myFont.buttonPressedColor
                     : myFont.white
                 }]}>
-              <HomeTiles redMark="no" title="Issues" amount={issueAmount} />
+              <HomeTiles isClosed="no" title="Issues" amount={issueAmount} />
             </Pressable>
-            {/* <Pressable
+            <Pressable
               onPress={() => {
                 navigation.navigate("MyIssueStack")
               }}
@@ -140,11 +141,11 @@ export default function HomeScreen({ navigation }) {
                 }
               ]}
             >
-              <HomeTiles redMark="no" title="My Issues" amount={myIssueAmount} />
-            </Pressable> */}
+              <HomeTiles isClosed="no" title="Assigned Issues" amount={assignedIssueAmount} />
+            </Pressable>
             <Pressable
               onPress={() => {
-                navigation.navigate("ProjectStack")
+                navigation.navigate("ClosedStack")
               }}
               style={({ pressed }) => [
                 styles.tiles,
@@ -153,7 +154,7 @@ export default function HomeScreen({ navigation }) {
                     ? myFont.buttonPressedColor
                     : myFont.white
                 }]}>
-              <HomeTiles redMark="no" title="Projects" amount={projectAmount} />
+              <HomeTiles isClosed="yes" title="Closed issues" amount={closedAmount} />
             </Pressable>
           </ScrollView>
         </>
@@ -196,12 +197,6 @@ const styles = StyleSheet.create({
     fontSize: myFont.fontDashboardSize,
     fontWeight: myFont.fontWeight,
     color: myFont.black,
-  },
-  redMark: {
-    width: 12,
-    height: 44,
-    backgroundColor: myFont.redMarkColor,
-    position: "absolute",
   },
   text: {
     fontSize: myFont.fontDashboardSize,
