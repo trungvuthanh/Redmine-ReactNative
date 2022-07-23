@@ -38,7 +38,6 @@ import SubPhase from '../components/SubPhase';
 import SubProject from '../components/SubProject';
 import IssueInformation from '../components/IssueInformation';
 import ProjectInformation from '../components/ProjectInformation';
-import { localhost } from '../config/configurations';
 
 const WIDTH = Dimensions.get('window').width;
 
@@ -739,7 +738,8 @@ export default function DetailScreen({ route, navigation }) {
                   } else {
                     navigation.push('EditIssueScreen', {
                       issue: issue,
-                      issues: allIssuesOfProject
+                      issues: allIssuesOfProject,
+                      project_id: issue.project.id,
                     })  
                   }
                 }}/>

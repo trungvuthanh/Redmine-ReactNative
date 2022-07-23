@@ -86,8 +86,8 @@ export default function MyIssueScreen({ route, navigation }) {
                   </View>
                 </View>
               </Pressable>
-            </View>  
-          );      
+            </View>
+          );
         })
       );
     })

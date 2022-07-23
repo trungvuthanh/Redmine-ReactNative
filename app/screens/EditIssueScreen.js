@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -19,7 +19,9 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import CheckBox from '@react-native-community/checkbox';
 import DocumentPicker from 'react-native-document-picker';
 
+import { get_memberships } from '../api/membership_api';
 import { update_issue } from '../api/issue_api';
+import { get_user } from '../api/user_api';
 import myFont from '../config/myFont';
 
 import TrackerPicker from '../components/TrackerPicker';
@@ -53,6 +55,7 @@ function dateInput(dateStr) {
 export default function EditIssueScreen({ route, navigation }) {
   let issue = route.params.issue
   let issues = route.params.issues; // issues of parent project
+  let project_id = route.params.project_id;
   let parentIssue = {subject: "", id: 0};
   
   if (issue.parent) {
@@ -92,6 +95,8 @@ export default function EditIssueScreen({ route, navigation }) {
   const [isPrivate, setIsPrivate] = useState(issue.is_private);
   const statusLabels = ['New', 'In Progress', 'Resolved', 'Feedback', 'Closed', 'Rejected'];
   const [assignee, setAssignee] = useState();
+  // members of this project
+  const [members, setMembers] = useState([]);
 
   const setAssignUser = (user_id) => {
     setAssignee(user_id);
@@ -168,6 +173,13 @@ export default function EditIssueScreen({ route, navigation }) {
   }
 
   const updateData = async () => {
+    let author_id;
+    if (assignee == -1) {
+      let user = await get_user();
+      author_id = user.id;
+    } else {
+      author_id = assignee;
+    }
     let body = JSON.stringify({
       issue: {
         project_id: issue.project.id,
@@ -177,9 +189,9 @@ export default function EditIssueScreen({ route, navigation }) {
         subject: name,
         description: description,
         parent_issue_id: subproject.subject == '' ? null : subproject.id,
-        assigned_to_id: assignee,
+        assigned_to_id: author_id,
         is_private: isPrivate,
-        estimated_hours: duration ? null : parseInt(duration),
+        estimated_hours: duration == null ? null : parseInt(duration),
         start_date: standardDate(startDate.date),
         due_date: standardDate(endDate.date),
         done_ratio: doneRatio,
@@ -209,6 +221,24 @@ export default function EditIssueScreen({ route, navigation }) {
       console.error(error);
     });
   }
+
+  // type === 'project'
+  const syncMemberships = async () => {
+    /*
+    Get memberships of this project
+    */
+    get_memberships(project_id)
+    .then((data) => {
+      setMembers(data.memberships);
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+  }
+
+  useEffect(() => {
+    syncMemberships();
+  }, [])
 
   return (
     <KeyboardAvoidingView
@@ -310,6 +340,7 @@ export default function EditIssueScreen({ route, navigation }) {
               <AssignUserPicker
                 setAssignUser={setAssignUser}
                 defaultUser={issue.assigned_to ? issue.assigned_to.id : 0}
+                userList={members}
               />
             </View>
           </Pressable>

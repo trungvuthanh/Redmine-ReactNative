@@ -34,19 +34,11 @@ export default function ClosedScreen({ route, navigation }) {
       setClosedIssues(
         closedIssuesArr.map((issue, index) => {
           return (
-            <View key={index}>
+            <View style={styles.contentView} key={index}>
               <Pressable
                 onPress={() => navigation.navigate("DetailScreen", { type: 'issue' , issue: issue })}
                 style={({pressed}) => [
-                  {
-                    width: "100%",
-                    height: 74,
-                    borderStyle: "solid",
-                    borderBottomWidth: 1,
-                    borderBottomColor: myFont.itemBorderColor,
-                    alignItems: "center",
-                    flexDirection: "row",
-                  },
+                  styles.tile,
                   {
                     backgroundColor: pressed
                     ? myFont.buttonPressedColor
@@ -54,17 +46,55 @@ export default function ClosedScreen({ route, navigation }) {
                   }
                 ]}
               >
-                <View style={styles.statusContainer}>
-                  <View
-                    style={[styles.status, {backgroundColor: myFont.statusColor[issue.status.id - 1]}]}
-                  />
+                <View
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center"}}>
+                  <View style={[
+                    styles.statusContainer,
+                    {backgroundColor: myFont.statusColor[issue.status.id - 1]}
+                    ]}/>
+                  <View>
+                    <Text
+                      style={{
+                        fontWeight: "700",
+                        fontSize: 20}}>
+                        {issue.subject}</Text>
+                    <Text>#{issue.id}</Text>
+                  </View>
                 </View>
-                <View>
-                  <Text>{issue.subject}</Text>
-                  <Text>(#{issue.id})</Text>
+                <View style={{alignItems: "center", width: "21%", marginRight: 10}} >
+                  <View
+                    style={{
+                      width: "100%",
+                      borderRadius: 5,
+                      padding: 1,
+                      marginBottom: 5,
+                      backgroundColor: myFont.priorityColor[issue.priority.id - 1],
+                      alignItems: "center"}}>
+                    <Text
+                      style={{
+                        color: myFont.black,
+                        fontWeight: "700"
+                      }}>
+                        {issue.priority.name}</Text>
+                  </View>
+                  <View
+                    style={{
+                      width: "100%",
+                      borderRadius: 5,
+                      padding: 1,
+                      backgroundColor: myFont.white,
+                      alignItems: "center"}}>
+                    <Text
+                      style={{
+                        fontWeight: "700",
+                        color: myFont.statusColor[issue.status.id - 1]}}>
+                          {issue.status.name}</Text>
+                  </View>
                 </View>
               </Pressable>
-            </View>  
+            </View>
           );
         })
       );
@@ -123,7 +153,11 @@ export default function ClosedScreen({ route, navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: "#ecedee",
+  },
+  contentView: {
+    alignItems: "center",
+    padding: 7,
   },
   header: {
 		width: "100%",
@@ -148,10 +182,21 @@ const styles = StyleSheet.create({
     alignItems: "center",
     letterSpacing: myFont.letterSpace,
   },
+  tile: {
+    width: "100%",
+    height: 74,
+    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    borderRadius: 5,
+  },
   statusContainer: {
-    width: 50,
-    height: 50,
+    width: 10,
+    height: 74,
+    marginRight: 10,
     alignItems: "center",
     justifyContent: "center",
+    borderTopLeftRadius: 5,
+    borderBottomLeftRadius: 5,
   },
 });

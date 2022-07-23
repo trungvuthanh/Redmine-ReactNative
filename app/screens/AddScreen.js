@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -14,13 +14,15 @@ import {
   Alert,
   Button,
 } from 'react-native';
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Ionicons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import CheckBox from '@react-native-community/checkbox';
 import DocumentPicker from 'react-native-document-picker';
 
+import { get_memberships } from '../api/membership_api';
+import { create_project } from '../api/project_api';
 import { create_issue } from '../api/issue_api';
+import { get_user } from '../api/user_api';
 import myFont from '../config/myFont';
 
 import TrackerPicker from '../components/TrackerPicker';
@@ -30,7 +32,6 @@ import ParentProjectPicker from '../components/ParentProjectPicker';
 import ParentIssuePicker from '../components/ParentIssuePicker';
 import DoneRatioPicker from '../components/DoneRatioPicker';
 import AssignUserPicker from '../components/AssignUserPicker';
-import { localhost } from '../config/configurations';
 
 function dateInput() {
   const [date, setDate] = useState(new Date());
@@ -121,6 +122,8 @@ export default function AddScreen({ route, navigation }) {
   const [isDoneRatioVisible, setIsDoneRatioVisible] = useState(false);
   const [isPrivate, setIsPrivate] = useState(false);
   const [assignee, setAssignee] = useState();
+  // members of this project
+  const [members, setMembers] = useState([]);
 
   const setAssignUser = (user_id) => {
     setAssignee(user_id);
@@ -211,138 +214,151 @@ export default function AddScreen({ route, navigation }) {
   }
 
   const createData = async () => {
-    let u = await AsyncStorage.getItem('user');
-    let user;
-    if (u) {
-      user = JSON.parse(u);
-      if (type === 'project') {
-        let body;
-        if (parent_id == undefined) {
-          subproject.name == ""
-          ? body = JSON.stringify({
-            project: {
-              name: name,
-              identifier: identifier,
-              description: description,
-              is_public: isPublic,
-              inherit_members: isInherit,
-            }
-          })
-          : body = JSON.stringify({
-            project: {
-              name: name,
-              identifier: identifier,
-              description: description,
-              is_public: isPublic,
-              parent_id: subproject.id,
-              inherit_members: isInherit,
-            }
-          });  
-        } else {
-          body = JSON.stringify({
-            project: {
-              name: name,
-              identifier: identifier,
-              description: description,
-              is_public: isPublic,
-              parent_id: parent_id.id,
-              inherit_members: isInherit,
-            }
-          });  
-        }
-        fetch(localhost + 'projects.json', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-Redmine-API-Key': user.api_key,
-          },
-          body: body,
-        })
-        .then((response) => {
-          console.log(response.status);
-          if (response.status == 201) {
-            Alert.alert(
-              "Project was created",
-              "",
-              [{
-                text: 'OK',
-                style: 'cancel',
-                onPress: () => navigation.goBack(),
-              }]
-            );  
-          } else {
-            Alert.alert(
-              "Fail to create project",
-              "",
-            );
-          }
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-      } else if (type === 'issue') {
-        let estimated_hours;
-        duration == null ? estimated_hours = null : estimated_hours = parseInt(duration);
-        let body;
-        subproject.subject == ""
+    if (type === 'project') {
+      let body;
+      if (parent_id == undefined) {
+        subproject.name == ""
         ? body = JSON.stringify({
-          issue: {
-            project_id: parent_id,
-            tracker_id: tracker.id,
-            status_id: status,
-            priority_id: priority.id,
-            subject: name,
+          project: {
+            name: name,
+            identifier: identifier,
             description: description,
-            assigned_to_id: assignee,
-            is_private: isPrivate,
-            estimated_hours: estimated_hours,
-            start_date: standardDate(startDate.date),
-            due_date: standardDate(endDate.date),
-            done_ratio: doneRatio,
+            is_public: isPublic,
+            inherit_members: isInherit,
           }
         })
         : body = JSON.stringify({
-          issue: {
-            project_id: parent_id,
-            tracker_id: tracker.id,
-            status_id: status,
-            priority_id: priority.id,
-            subject: name,
+          project: {
+            name: name,
+            identifier: identifier,
             description: description,
-            parent_issue_id: subproject.id,
-            assigned_to_id: assignee,
-            is_private: isPrivate,
-            estimated_hours: estimated_hours,
-            start_date: standardDate(startDate.date),
-            due_date: standardDate(endDate.date),
-            done_ratio: doneRatio,
+            is_public: isPublic,
+            parent_id: subproject.id,
+            inherit_members: isInherit,
           }
-        });
-        create_issue(body)
-        .then((response) => {
-          if (response.status == 201) {
-            Alert.alert(
-              "Issue was added",
-              "",
-              [{
-                text: 'OK',
-                style: 'cancel',
-                onPress: () => navigation.goBack(),
-              }]
-            );  
-          } else {
-            Alert.alert(
-              "Fail to create issue",
-              "",
-            );
+        });  
+      } else {
+        body = JSON.stringify({
+          project: {
+            name: name,
+            identifier: identifier,
+            description: description,
+            is_public: isPublic,
+            parent_id: parent_id.id,
+            inherit_members: isInherit,
           }
-        })
-        .catch((error) => {
-          console.error(error);
-        });
+        });  
       }
+      create_project(body)
+      .then((response) => {
+        console.log(response.status);
+        if (response.status == 201) {
+          Alert.alert(
+            "Project was created",
+            "",
+            [{
+              text: 'OK',
+              style: 'cancel',
+              onPress: () => navigation.goBack(),
+            }]
+          );  
+        } else {
+          Alert.alert(
+            "Fail to create project",
+            "",
+          );
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+    } else if (type === 'issue') {
+      let estimated_hours = duration == null ? null : parseInt(duration);
+      let author_id;
+      if (assignee == -1) {
+        let user = await get_user();
+        author_id = user.id;
+      } else {
+        author_id = assignee;
+      }
+      let body;
+      subproject.subject == ""
+      ? body = JSON.stringify({
+        issue: {
+          project_id: parent_id,
+          tracker_id: tracker.id,
+          status_id: status,
+          priority_id: priority.id,
+          subject: name,
+          description: description,
+          assigned_to_id: author_id,
+          is_private: isPrivate,
+          estimated_hours: estimated_hours,
+          start_date: standardDate(startDate.date),
+          due_date: standardDate(endDate.date),
+          done_ratio: doneRatio,
+        }
+      })
+      : body = JSON.stringify({
+        issue: {
+          project_id: parent_id,
+          tracker_id: tracker.id,
+          status_id: status,
+          priority_id: priority.id,
+          subject: name,
+          description: description,
+          parent_issue_id: subproject.id,
+          assigned_to_id: author_id,
+          is_private: isPrivate,
+          estimated_hours: estimated_hours,
+          start_date: standardDate(startDate.date),
+          due_date: standardDate(endDate.date),
+          done_ratio: doneRatio,
+        }
+      });
+      create_issue(body)
+      .then((response) => {
+        console.log(response.status);
+        if (response.status == 201) {
+          Alert.alert(
+            "Issue was added",
+            "",
+            [{
+              text: 'OK',
+              style: 'cancel',
+              onPress: () => navigation.goBack(),
+            }]
+          );  
+        } else {
+          Alert.alert(
+            "Fail to create issue",
+            "",
+          );
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+      });
     }
   }
+
+  // type === 'project'
+  const syncMemberships = async () => {
+    /*
+    Get memberships of this project
+    */
+    get_memberships(parent_id)
+    .then((data) => {
+      setMembers(data.memberships);
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+  }
+
+  useEffect(() => {
+    syncMemberships();
+  }, [])
 
   return (
     <KeyboardAvoidingView
@@ -598,6 +614,7 @@ export default function AddScreen({ route, navigation }) {
                   <AssignUserPicker
                     setAssignUser={setAssignUser}
                     defaultUser={0}
+                    userList={members}
                   />
                 </View>
               </Pressable>
