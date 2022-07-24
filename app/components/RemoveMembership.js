@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
-import { 
-  View, 
-  Text, 
-  StyleSheet, 
-  Pressable,
+import {
+  View,
+  Text,
+  StyleSheet,
   Button
 } from 'react-native';
 import Collapsible from 'react-native-collapsible';
@@ -20,21 +19,20 @@ export default function AddMembership(props) {
       <Picker.Item
         label={user.user.name.trim()}
         value={user.user.id}
-        style={{fontSize: 20}}
+        style={{ fontSize: 20 }}
         key={index} />
     )
   });
-  userList.splice(0, 0, <Picker.Item label={'Select a user'} value={0} style={{fontSize: 20}} key={0} />)
+  userList.splice(0, 0, <Picker.Item label={'Select a user'} value={0} style={{ fontSize: 20 }} key={0} />)
 
   const saveUserToRemove = () => {
     props.saveUserToRemove();
   }
 
   return (
-    <Collapsible 
+    <Collapsible
       collapsed={props.collapsed}
-      style={{backgroundColor: myFont.white}}
-    >
+      style={{ backgroundColor: myFont.white }}>
       <View style={{
         width: "80%",
         alignSelf: "center",
@@ -43,8 +41,8 @@ export default function AddMembership(props) {
         borderBottomColor: myFont.itemBorderColor,
         marginBottom: 5,
       }} />
-      <View style={{width: "100%", flexDirection: "row"}} >
-        <View style={[styles.label, {width: "40%"}]}>
+      <View style={{ width: "100%", flexDirection: "row" }} >
+        <View style={[styles.label, { width: "40%" }]}>
           <Text style={styles.textLabel}>SELECT USER</Text>
         </View>
         <Picker
@@ -53,17 +51,16 @@ export default function AddMembership(props) {
             (itemValue, itemIndex) => {
               setTargetUser(itemValue);
               props.selectUser(itemValue);
-            }
-          }
+            }}
           style={styles.userDropdownList}>
           {userList}
         </Picker>
       </View>
-      <View style={{width: "100%", flexDirection: "row", justifyContent: "flex-end"}} >
+      <View style={{ width: "100%", flexDirection: "row", justifyContent: "flex-end" }} >
         <View
           style={[
             styles.roleRow,
-            {paddingHorizontal: 10}]}>
+            { paddingHorizontal: 10 }]}>
           <Button
             title="Remove"
             onPress={() => saveUserToRemove()}
@@ -71,7 +68,7 @@ export default function AddMembership(props) {
           />
         </View>
       </View>
-    </Collapsible>    
+    </Collapsible>
   );
 }
 

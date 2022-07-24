@@ -3,14 +3,11 @@ import {
   View,
   Text,
   StyleSheet,
-  SafeAreaView,
   Pressable,
   ScrollView,
   TextInput,
   KeyboardAvoidingView,
-  ActivityIndicator,
   Platform,
-  Modal,
   Alert,
   Button,
 } from 'react-native';
@@ -56,8 +53,8 @@ export default function EditIssueScreen({ route, navigation }) {
   let issue = route.params.issue
   let issues = route.params.issues; // issues of parent project
   let project_id = route.params.project_id;
-  let parentIssue = {subject: "", id: 0};
-  
+  let parentIssue = { subject: "", id: 0 };
+
   if (issue.parent) {
     for (let iss of issues) {
       if (iss.id == issue.parent.id) {
@@ -67,7 +64,7 @@ export default function EditIssueScreen({ route, navigation }) {
       }
     }
   }
-    
+
   // General
   const [name, onChangeName] = useState(issue.subject);
   const [description, onChangeDescription] = useState(issue.description);
@@ -81,8 +78,8 @@ export default function EditIssueScreen({ route, navigation }) {
   const endDate = dateInput(issue.due_date);
   const [duration, onChangeDuration] = useState(
     issue.estimated_hours
-    ? issue.estimated_hours.toString()
-    : ''
+      ? issue.estimated_hours.toString()
+      : ''
   );
   const [status, onChangeStatus] = useState(issue.status.id);
   const [tracker, onChangeTracker] = useState(issue.tracker.id);
@@ -96,7 +93,7 @@ export default function EditIssueScreen({ route, navigation }) {
   const setAssignUser = (user_id) => {
     setAssignee(user_id);
   }
-    
+
   const onChangeStart = (event, selectedDate) => {
     startDate.onChange(event, selectedDate);
   }
@@ -116,23 +113,23 @@ export default function EditIssueScreen({ route, navigation }) {
       const results = await DocumentPicker.pickMultiple({
         type: [DocumentPicker.types.images],
       })
-      .then(() => {
-        if (results != null) {
-          for (const res of results) {
-            console.log(
-              res.uri,
-              res.type, // mime type
-              res.name,
-              res.size,
-            )
-          }  
-        } else {
-          console.log('Error')
-        }
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+        .then(() => {
+          if (results != null) {
+            for (const res of results) {
+              console.log(
+                res.uri,
+                res.type, // mime type
+                res.name,
+                res.size,
+              )
+            }
+          } else {
+            console.log('Error')
+          }
+        })
+        .catch((error) => {
+          console.error(error);
+        });
     } catch (err) {
       if (DocumentPicker.isCancel(err)) {
         // User cancelled the picker, exit any dialogs or menus and move on
@@ -144,15 +141,15 @@ export default function EditIssueScreen({ route, navigation }) {
 
   const saveData = () => {
     name != ""
-    ? updateData()
-    : Alert.alert(
-      "Name cannot be blank",
-      "",
-      [{
-        text: "OK",
-        style: "cancel",
-      }]
-    );
+      ? updateData()
+      : Alert.alert(
+        "Name cannot be blank",
+        "",
+        [{
+          text: "OK",
+          style: "cancel",
+        }]
+      );
   }
 
   const updateData = async () => {
@@ -181,28 +178,28 @@ export default function EditIssueScreen({ route, navigation }) {
       }
     });
     update_issue(issue.id, body)
-    .then((response) => {
-      if (response.status == 204) {
-        Alert.alert(
-          "Issue updated successfully",
-          "",
-          [{
-            text: 'OK',
-            style: 'cancel',
-            onPress: () => navigation.goBack(),
-          }]
-        );  
-      } else {
-        console.log(response.status)
-        Alert.alert(
-          "Fail to edit issue",
-          "",
-        );
-      }
-    })
-    .catch((error) => {
-      console.error(error);
-    });
+      .then((response) => {
+        if (response.status == 204) {
+          Alert.alert(
+            "Issue updated successfully",
+            "",
+            [{
+              text: 'OK',
+              style: 'cancel',
+              onPress: () => navigation.goBack(),
+            }]
+          );
+        } else {
+          console.log(response.status)
+          Alert.alert(
+            "Fail to edit issue",
+            "",
+          );
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   }
 
   // type === 'project'
@@ -211,12 +208,12 @@ export default function EditIssueScreen({ route, navigation }) {
     Get memberships of this project
     */
     get_memberships(project_id)
-    .then((data) => {
-      setMembers(data.memberships);
-    })
-    .catch((error) => {
-      console.error(error);
-    });
+      .then((data) => {
+        setMembers(data.memberships);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   }
 
   useEffect(() => {
@@ -238,15 +235,15 @@ export default function EditIssueScreen({ route, navigation }) {
         </Pressable>
         <Text style={styles.textHeader}>Edit issue</Text>
       </View>
-      <ScrollView style={{marginBottom: 50}}>
+      <ScrollView style={{ marginBottom: 50 }}>
         <View style={styles.groupRow}>
           <Pressable
-            style={({pressed}) => 
-            [{
-              backgroundColor: pressed
-                ? myFont.buttonPressedColor
-                : myFont.white
-            }]}>
+            style={({ pressed }) =>
+              [{
+                backgroundColor: pressed
+                  ? myFont.buttonPressedColor
+                  : myFont.white
+              }]}>
             <View style={styles.groupCell}>
               <View style={styles.label}>
                 <Text style={styles.text}>SUBJECT *</Text>
@@ -262,24 +259,30 @@ export default function EditIssueScreen({ route, navigation }) {
             </View>
           </Pressable>
         </View>
-        <View style={[styles.groupRow, {height: 138}]}>
+        <View
+          style={[
+            styles.groupRow,
+            { height: 138 }]}>
           <Pressable
-            style={({pressed}) => [
+            style={({ pressed }) => [
               {
                 backgroundColor: pressed
                   ? myFont.buttonPressedColor
                   : myFont.white
               }]}>
-            <View style={[styles.groupCell, {height: 137}]}>
+            <View
+              style={[
+                styles.groupCell,
+                { height: 137 }]}>
               <View style={styles.label}>
                 <Text style={styles.text}>DESCRIPTION</Text>
               </View>
-              <TextInput 
+              <TextInput
                 style={[
                   styles.textInput,
-                  {minHeight: 100},
-                ]} 
-                multiline={true} 
+                  { minHeight: 100 },
+                ]}
+                multiline={true}
                 textAlignVertical="top"
                 value={description}
                 onChangeText={(text) => onChangeDescription(text)}
@@ -289,12 +292,12 @@ export default function EditIssueScreen({ route, navigation }) {
         </View>
         <View style={styles.groupRow}>
           <Pressable
-            style={({pressed}) => 
-            [{
-              backgroundColor: pressed
-                ? myFont.buttonPressedColor
-                : myFont.white
-            }]}>
+            style={({ pressed }) =>
+              [{
+                backgroundColor: pressed
+                  ? myFont.buttonPressedColor
+                  : myFont.white
+              }]}>
             <View style={styles.groupCell}>
               <View style={styles.label}>
                 <Text style={styles.text}>PARENT TASK</Text>
@@ -308,14 +311,12 @@ export default function EditIssueScreen({ route, navigation }) {
         </View>
         <View style={styles.groupRow}>
           <Pressable
-            style={({pressed}) => 
-            [{
-              backgroundColor: pressed
-                ? myFont.buttonPressedColor
-                : myFont.white
-            }]
-          }
-          >
+            style={({ pressed }) =>
+              [{
+                backgroundColor: pressed
+                  ? myFont.buttonPressedColor
+                  : myFont.white
+              }]}>
             <View style={styles.groupCell}>
               <View style={styles.label}>
                 <Text style={styles.text}>ASSIGNEE</Text>
@@ -328,10 +329,10 @@ export default function EditIssueScreen({ route, navigation }) {
             </View>
           </Pressable>
         </View>
-        <View 
+        <View
           style={[
             styles.groupRow,
-            {flexDirection: "row"}]}>
+            { flexDirection: "row" }]}>
           <Pressable
             onPress={startDate.showDatepicker}
             style={styles.halfCell}>
@@ -339,7 +340,7 @@ export default function EditIssueScreen({ route, navigation }) {
               <Text style={styles.text}>START DATE</Text>
             </View>
             <View style={styles.textDate}>
-              <Text style={{fontSize: 20.8}}>{standardDate(startDate.date).split('-').reverse().join('/')}</Text>
+              <Text style={{ fontSize: 20.8 }}>{standardDate(startDate.date).split('-').reverse().join('/')}</Text>
               <View style={styles.dateIcon}>
                 <Ionicons name="calendar-sharp" size={24} color={myFont.blue} />
               </View>
@@ -350,7 +351,7 @@ export default function EditIssueScreen({ route, navigation }) {
                 value={startDate.date}
                 mode="date"
                 is24Hour={true}
-                onChange={onChangeStart}/>)}
+                onChange={onChangeStart} />)}
           </Pressable>
           <Pressable
             onPress={endDate.showDatepicker}
@@ -359,7 +360,7 @@ export default function EditIssueScreen({ route, navigation }) {
               <Text style={styles.text}>DUE DATE</Text>
             </View>
             <View style={styles.textDate}>
-              <Text style={{fontSize: 20.8}}>{standardDate(endDate.date).split('-').reverse().join('/')}</Text>
+              <Text style={{ fontSize: 20.8 }}>{standardDate(endDate.date).split('-').reverse().join('/')}</Text>
               <View style={styles.dateIcon}>
                 <Ionicons name="calendar-sharp" size={24} color={myFont.blue} />
               </View>
@@ -375,12 +376,12 @@ export default function EditIssueScreen({ route, navigation }) {
             )}
           </Pressable>
         </View>
-        <View 
+        <View
           style={[
             styles.groupRow,
-            {flexDirection: "row"}]}>
+            { flexDirection: "row" }]}>
           <Pressable
-            style={({pressed}) => [
+            style={({ pressed }) => [
               styles.halfCell,
               {
                 backgroundColor: pressed
@@ -398,7 +399,7 @@ export default function EditIssueScreen({ route, navigation }) {
             />
           </Pressable>
           <Pressable
-            style={({pressed}) => [
+            style={({ pressed }) => [
               styles.halfCell,
               {
                 backgroundColor: pressed
@@ -419,9 +420,9 @@ export default function EditIssueScreen({ route, navigation }) {
         <View
           style={[
             styles.groupRow,
-            {flexDirection: "row"}]}>
+            { flexDirection: "row" }]}>
           <Pressable
-            style={({pressed}) => [
+            style={({ pressed }) => [
               styles.halfCell,
               {
                 backgroundColor: pressed
@@ -438,7 +439,7 @@ export default function EditIssueScreen({ route, navigation }) {
             />
           </Pressable>
           <Pressable
-            style={({pressed}) => [
+            style={({ pressed }) => [
               styles.halfCell,
               {
                 backgroundColor: pressed
@@ -458,9 +459,9 @@ export default function EditIssueScreen({ route, navigation }) {
         <View
           style={[
             styles.groupRow,
-            {flexDirection: "row"}]}>
+            { flexDirection: "row" }]}>
           <Pressable
-            style={({pressed}) => [
+            style={({ pressed }) => [
               styles.halfCell,
               {
                 backgroundColor: pressed
@@ -477,7 +478,7 @@ export default function EditIssueScreen({ route, navigation }) {
             />
           </Pressable>
           <Pressable
-            style={({pressed}) => [
+            style={({ pressed }) => [
               styles.halfCell,
               {
                 backgroundColor: pressed
@@ -491,25 +492,25 @@ export default function EditIssueScreen({ route, navigation }) {
               disabled={false}
               value={isPrivate}
               onValueChange={(newValue) => setIsPrivate(newValue)}
-              style={{marginLeft: 4}}
+              style={{ marginLeft: 4 }}
             />
           </Pressable>
         </View>
         <View style={styles.groupRow}>
           <Pressable
-            style={({pressed}) => 
-            [{
-              backgroundColor: pressed
-                ? myFont.buttonPressedColor
-                : myFont.white
-            }]}>
+            style={({ pressed }) =>
+              [{
+                backgroundColor: pressed
+                  ? myFont.buttonPressedColor
+                  : myFont.white
+              }]}>
             <View style={styles.groupCell}>
               <View style={styles.label}>
                 <Text style={styles.text}>ATTACH FILES</Text>
               </View>
             </View>
           </Pressable>
-          <View style={{width: "50%", alignSelf: "center"}}>
+          <View style={{ width: "50%", alignSelf: "center" }}>
             <Button
               title="Upload files"
               onPress={() => uploadFile()}
@@ -521,7 +522,7 @@ export default function EditIssueScreen({ route, navigation }) {
         <Button
           title="SAVE"
           onPress={() => saveData()}
-          color={myFont.green}/>
+          color={myFont.green} />
       </View>
     </KeyboardAvoidingView>
   );
@@ -535,13 +536,13 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   header: {
-		width: "100%",
-		height: 60,
-		backgroundColor: "#4d5360",
+    width: "100%",
+    height: 60,
+    backgroundColor: "#4d5360",
     flexDirection: "row",
     justifyContent: "flex-start",
     alignItems: "center",
-	},
+  },
   closeBtn: {
     width: 60,
     height: 60,
@@ -551,7 +552,7 @@ const styles = StyleSheet.create({
   textHeader: {
     color: myFont.white,
     fontSize: myFont.fontHomeHeaderSize,
-		fontWeight: "300",
+    fontWeight: "300",
     flexDirection: "row",
     justifyContent: "flex-start",
     alignItems: "center",

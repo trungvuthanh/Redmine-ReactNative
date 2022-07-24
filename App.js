@@ -16,7 +16,6 @@ import LoginScreen from './app/screens/LoginScreen';
 import DrawerContent from './app/screens/DrawerContent';
 import HomeScreen from './app/screens/HomeScreen';
 import ClosedScreen from './app/screens/ClosedScreen';
-import ExpToDoScreen from './app/screens/ExpToDoScreen';
 import IssueScreen from './app/screens/IssueScreen';
 import MyIssueScreen from './app/screens/MyIssueScreen';
 import ProjectScreen from './app/screens/ProjectScreen';
@@ -42,15 +41,15 @@ const DrawerScreen = ({ fullname }) => (
     <Drawer.Screen
       name="Dashboard"
       component={HomeStackScreen}
-      options={{headerShown: false}}/>
+      options={{ headerShown: false }} />
     <Drawer.Screen
       name="ProjectStack"
       component={ProjectStackScreen}
-      options={{headerShown: false}}/>
+      options={{ headerShown: false }} />
     <Drawer.Screen
       name="IssueStack"
       component={IssueStackScreen}
-      options={{headerShown: false}}/>
+      options={{ headerShown: false }} />
   </Drawer.Navigator>
 );
 
@@ -59,44 +58,27 @@ const HomeStackScreen = () => (
     <HomeStack.Screen
       name="Home"
       component={HomeScreen}
-      options={{
-        headerShown: false,
-      }}
+      options={{ headerShown: false }}
     />
     <HomeStack.Screen
       name="ClosedStack"
       component={ClosedStackScreen}
-      options={{
-        headerShown: false,
-      }}
-    />
-    <HomeStack.Screen
-      name="Expired"
-      component={ExpToDoScreen}
-      options={{
-        headerShown: false,
-      }}
+      options={{ headerShown: false }}
     />
     <HomeStack.Screen
       name="IssueStack"
       component={IssueStackScreen}
-      options={{
-        headerShown: false,
-      }}
+      options={{ headerShown: false }}
     />
     <HomeStack.Screen
       name="MyIssueStack"
       component={MyIssueStackScreen}
-      options={{
-        headerShown: false,
-      }}
+      options={{ headerShown: false }}
     />
     <HomeStack.Screen
       name="ProjectStack"
       component={ProjectStackScreen}
-      options={{
-        headerShown: false,
-      }}
+      options={{ headerShown: false }}
     />
   </HomeStack.Navigator>
 );
@@ -106,30 +88,22 @@ const ClosedStackScreen = () => (
     <ClosedStack.Screen
       name="ClosedScreen"
       component={ClosedScreen}
-      options={{
-        headerShown: false,
-      }}
+      options={{ headerShown: false }}
     />
     <ClosedStack.Screen
       name="DetailScreen"
       component={DetailScreen}
-      options={{
-        headerShown: false,
-      }}
+      options={{ headerShown: false }}
     />
     <ClosedStack.Screen
       name="AddScreen"
       component={AddScreen}
-      options={{
-        headerShown: false,
-      }}
+      options={{ headerShown: false }}
     />
     <ClosedStack.Screen
       name="EditIssueScreen"
       component={EditIssueScreen}
-      options={{
-        headerShown: false,
-      }}
+      options={{ headerShown: false }}
     />
   </ClosedStack.Navigator>
 )
@@ -139,30 +113,22 @@ const IssueStackScreen = () => (
     <IssueStack.Screen
       name="Issue"
       component={IssueScreen}
-      options={{
-        headerShown: false,
-      }}
+      options={{ headerShown: false }}
     />
     <IssueStack.Screen
       name="DetailScreen"
       component={DetailScreen}
-      options={{
-        headerShown: false,
-      }}
+      options={{ headerShown: false }}
     />
     <IssueStack.Screen
       name="AddScreen"
       component={AddScreen}
-      options={{
-        headerShown: false,
-      }}
+      options={{ headerShown: false }}
     />
     <IssueStack.Screen
       name="EditIssueScreen"
       component={EditIssueScreen}
-      options={{
-        headerShown: false,
-      }}
+      options={{ headerShown: false }}
     />
   </IssueStack.Navigator>
 )
@@ -172,30 +138,22 @@ const MyIssueStackScreen = () => (
     <MyIssueStack.Screen
       name="MyIssue"
       component={MyIssueScreen}
-      options={{
-        headerShown: false,
-      }}
+      options={{ headerShown: false }}
     />
     <MyIssueStack.Screen
       name="DetailScreen"
       component={DetailScreen}
-      options={{
-        headerShown: false,
-      }}
+      options={{ headerShown: false }}
     />
     <MyIssueStack.Screen
       name="AddScreen"
       component={AddScreen}
-      options={{
-        headerShown: false,
-      }}
+      options={{ headerShown: false }}
     />
     <MyIssueStack.Screen
       name="EditIssueScreen"
       component={EditIssueScreen}
-      options={{
-        headerShown: false,
-      }}
+      options={{ headerShown: false }}
     />
   </MyIssueStack.Navigator>
 )
@@ -205,37 +163,27 @@ const ProjectStackScreen = () => (
     <ProjectStack.Screen
       name="Project"
       component={ProjectScreen}
-      options={{
-        headerShown: false,
-      }}
+      options={{ headerShown: false }}
     />
     <ProjectStack.Screen
       name="AddScreen"
       component={AddScreen}
-      options={{
-        headerShown: false,
-      }}
+      options={{ headerShown: false }}
     />
     <ProjectStack.Screen
       name="DetailScreen"
       component={DetailScreen}
-      options={{
-        headerShown: false,
-      }}
+      options={{ headerShown: false }}
     />
     <ProjectStack.Screen
       name="EditIssueScreen"
       component={EditIssueScreen}
-      options={{
-        headerShown: false,
-      }}
+      options={{ headerShown: false }}
     />
     <ProjectStack.Screen
       name="EditProjectScreen"
       component={EditProjectScreen}
-      options={{
-        headerShown: false,
-      }}
+      options={{ headerShown: false }}
     />
   </ProjectStack.Navigator>
 );
@@ -292,35 +240,34 @@ export default function App() {
       signIn: async (username, password) => {
         let apiKey = null;
         sign_in(username, password)
-        .then((response) => {
-          if (response.status == 401) {
-            Alert.alert(
-              "username or password is incorrect",
-              "",
-            );
-          } else {
-            response.json()
-            .then(async (data) => {
-              console.log(data)
-              try {
-                apiKey = data.user.api_key;
-                await AsyncStorage.setItem("apiKey", apiKey);
-              } catch (e) {
-                console.error(e);
-              }
-              dispatch({
-                type: "LOGIN",
-                id: username,
-                fullname: data.user.firstname.concat(' ', data.user.lastname).trim(),
-                token: apiKey
-              });
-              console.log("Signed in successfully");
-            })
-            .catch((error) => {
-              console.error(error);
-            });
-          }
-        });
+          .then((response) => {
+            if (response.status == 401) {
+              Alert.alert(
+                "username or password is incorrect",
+                "",
+              );
+            } else {
+              response.json()
+                .then(async (data) => {
+                  try {
+                    apiKey = data.user.api_key;
+                    await AsyncStorage.setItem("apiKey", apiKey);
+                  } catch (e) {
+                    console.error(e);
+                  }
+                  dispatch({
+                    type: "LOGIN",
+                    id: username,
+                    fullname: data.user.firstname.concat(' ', data.user.lastname).trim(),
+                    token: apiKey
+                  });
+                  console.log("Signed in successfully");
+                })
+                .catch((error) => {
+                  console.error(error);
+                });
+            }
+          });
       },
       signOut: async () => {
         try {
@@ -334,7 +281,7 @@ export default function App() {
     }),
     []
   );
-  
+
   return (
     <>
       <StatusBar
@@ -344,7 +291,7 @@ export default function App() {
       />
       <AuthContext.Provider value={authContext}>
         <NavigationContainer>
-          {loginState.apiKey ? <DrawerScreen fullname={{fullname: loginState.fullname}} /> : <LoginScreen/>}
+          {loginState.apiKey ? <DrawerScreen fullname={{ fullname: loginState.fullname }} /> : <LoginScreen />}
         </NavigationContainer>
       </AuthContext.Provider>
     </>
@@ -355,4 +302,4 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-})
+});

@@ -15,7 +15,7 @@ export default function PriorityPicker(props) {
       <Picker.Item
         label={option}
         value={index + 1}
-        style={{fontSize: 20}}
+        style={{ fontSize: 20 }}
         key={index} />
     );
   });

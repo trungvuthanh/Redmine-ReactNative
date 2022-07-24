@@ -345,13 +345,11 @@ export default function AddScreen({ route, navigation }) {
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={styles.container}
-      keyboardVerticalOffset={styles.header.height}
-    >
+      keyboardVerticalOffset={styles.header.height}>
       <View style={styles.header}>
         <Pressable
           onPress={() => navigation.pop()}
-          style={styles.closeBtn}
-        >
+          style={styles.closeBtn}>
           <View>
             <Ionicons name="close-sharp" size={myFont.menuIconSize} color="white" />
           </View>
@@ -360,7 +358,6 @@ export default function AddScreen({ route, navigation }) {
           ? <Text style={styles.textHeader}>Add project</Text> 
           : <Text style={styles.textHeader}>Add issue</Text>}
       </View>
-
       <ScrollView style={{marginBottom: 50}}>
         {type === 'project'
         ? <>
@@ -371,9 +368,7 @@ export default function AddScreen({ route, navigation }) {
                   backgroundColor: pressed
                     ? myFont.buttonPressedColor
                     : myFont.white
-                }]
-              }
-              >
+                }]}>
                 <View style={styles.groupCell}>
                   <View style={styles.label}>
                     <Text style={styles.text}>NAME *</Text>
@@ -397,9 +392,7 @@ export default function AddScreen({ route, navigation }) {
                     backgroundColor: pressed
                       ? myFont.buttonPressedColor
                       : myFont.white
-                  }]
-                }
-              >
+                  }]}>
                 <View style={styles.groupCell}>
                   <View style={styles.label}>
                     <Text style={styles.text}>IDENTIFIER *</Text>
@@ -415,9 +408,7 @@ export default function AddScreen({ route, navigation }) {
                     backgroundColor: pressed
                       ? myFont.buttonPressedColor
                       : myFont.white
-                  }
-                ]}
-              >
+                  }]}>
                 <View style={[styles.groupCell, {height: 137}]}>
                   <View style={styles.label}>
                     <Text style={styles.text}>DESCRIPTION</Text>
@@ -442,9 +433,7 @@ export default function AddScreen({ route, navigation }) {
                   backgroundColor: pressed
                     ? myFont.buttonPressedColor
                     : myFont.white
-                }]
-              }
-              >
+                }]}>
                 <View style={styles.groupCell}>
                   <View style={[styles.label, {justifyContent: "space-between"}]}>
                     <Text style={styles.text}>SUBPROJECT OF</Text>
@@ -462,8 +451,7 @@ export default function AddScreen({ route, navigation }) {
               style={[
                 styles.groupRow,
                 {flexDirection: "row"}
-              ]}
-            >
+              ]}>
               <Pressable
                 style={({pressed}) => [
                   styles.halfCell,
@@ -471,9 +459,7 @@ export default function AddScreen({ route, navigation }) {
                     backgroundColor: pressed
                       ? myFont.buttonPressedColor
                       : myFont.white
-                  }
-                ]}
-              >
+                  }]}>
                 <View style={styles.label}>
                   <Text style={styles.text}>IS PUBLIC</Text>
                 </View>
@@ -491,9 +477,7 @@ export default function AddScreen({ route, navigation }) {
                       ? myFont.buttonPressedColor
                       : myFont.white,
                     position: "relative",
-                  }
-                ]}
-              >
+                  }]}>
                 <View style={styles.label}>
                   <Text style={styles.text}>INHERIT MEMBERS</Text>
                 </View>
@@ -513,8 +497,7 @@ export default function AddScreen({ route, navigation }) {
                   backgroundColor: pressed
                     ? myFont.buttonPressedColor
                     : myFont.white
-                }]}
-              >
+                }]}>
                 <View style={styles.groupCell}>
                   <View style={styles.label}>
                     <Text style={styles.text}>SUBJECT *</Text>
@@ -537,9 +520,7 @@ export default function AddScreen({ route, navigation }) {
                     backgroundColor: pressed
                       ? myFont.buttonPressedColor
                       : myFont.white
-                  }
-                ]}
-              >
+                  }]}>
                 <View style={[styles.groupCell, {height: 137}]}>
                   <View style={styles.label}>
                     <Text style={styles.text}>DESCRIPTION</Text>
@@ -564,9 +545,7 @@ export default function AddScreen({ route, navigation }) {
                   backgroundColor: pressed
                     ? myFont.buttonPressedColor
                     : myFont.white
-                }]
-              }
-              >
+                }]}>
                 <View style={styles.groupCell}>
                   <View style={styles.label}>
                     <Text style={styles.text}>PARENT TASK</Text>
@@ -585,9 +564,7 @@ export default function AddScreen({ route, navigation }) {
                   backgroundColor: pressed
                     ? myFont.buttonPressedColor
                     : myFont.white
-                }]
-              }
-              >
+                }]}>
                 <View style={styles.groupCell}>
                   <View style={styles.label}>
                     <Text style={styles.text}>ASSIGNEE</Text>
@@ -604,12 +581,10 @@ export default function AddScreen({ route, navigation }) {
               style={[
                 styles.groupRow,
                 {flexDirection: "row"}
-              ]}
-            >
+              ]}>
               <Pressable
                 onPress={startDate.showDatepicker}
-                style={styles.halfCell}
-              >
+                style={styles.halfCell}>
                 <View style={styles.label}>
                   <Text style={styles.text}>START DATE</Text>
                 </View>
@@ -632,8 +607,7 @@ export default function AddScreen({ route, navigation }) {
               </Pressable>
               <Pressable
                 onPress={endDate.showDatepicker}
-                style={styles.halfCell}
-              >
+                style={styles.halfCell}>
                 <View style={styles.label}>
                   <Text style={styles.text}>DUE DATE</Text>
                 </View>
@@ -658,8 +632,7 @@ export default function AddScreen({ route, navigation }) {
               style={[
                 styles.groupRow,
                 {flexDirection: "row"}
-              ]}
-            >
+              ]}>
               <Pressable
                 style={({pressed}) => [
                   styles.halfCell,
@@ -667,9 +640,7 @@ export default function AddScreen({ route, navigation }) {
                     backgroundColor: pressed
                       ? myFont.buttonPressedColor
                       : myFont.white
-                  },
-                ]}
-              >
+                  }]}>
                 <View style={styles.label}>
                   <Text style={styles.text}>ESTIMATED TIME (H)</Text>
                 </View>
@@ -688,9 +659,7 @@ export default function AddScreen({ route, navigation }) {
                       ? myFont.buttonPressedColor
                       : myFont.white,
                     position: "relative",
-                  }
-                ]}
-              >
+                  }]}>
                 <View style={styles.label}>
                   <Text style={styles.text}>STATUS *</Text>
                 </View>
@@ -704,8 +673,7 @@ export default function AddScreen({ route, navigation }) {
               style={[
                 styles.groupRow,
                 {flexDirection: "row"}
-              ]}
-            >
+              ]}>
               <Pressable
                 style={({pressed}) => [
                   styles.halfCell,
@@ -714,9 +682,7 @@ export default function AddScreen({ route, navigation }) {
                       ? myFont.buttonPressedColor
                       : myFont.white,
                     position: "relative",
-                  }
-                ]}
-              >
+                  }]}>
                 <View style={styles.label}>
                   <Text style={styles.text}>TRACKER *</Text>
                 </View>
@@ -732,9 +698,7 @@ export default function AddScreen({ route, navigation }) {
                       ? myFont.buttonPressedColor
                       : myFont.white,
                     position: "relative",
-                  }
-                ]}
-              >
+                  }]}>
                 <View style={styles.label}>
                   <Text style={styles.text}>PRIORITY *</Text>
                 </View>
@@ -747,8 +711,7 @@ export default function AddScreen({ route, navigation }) {
               style={[
                 styles.groupRow,
                 {flexDirection: "row"}
-              ]}
-            >
+              ]}>
               <Pressable
                 style={({pressed}) => [
                   styles.halfCell,
@@ -757,9 +720,7 @@ export default function AddScreen({ route, navigation }) {
                       ? myFont.buttonPressedColor
                       : myFont.white,
                     position: "relative",
-                  }
-                ]}
-              >
+                  }]}>
                 <View style={styles.label}>
                   <Text style={styles.text}>% DONE</Text>
                 </View>
@@ -774,9 +735,7 @@ export default function AddScreen({ route, navigation }) {
                     backgroundColor: pressed
                       ? myFont.buttonPressedColor
                       : myFont.white
-                  }
-                ]}
-              >
+                  }]}>
                 <View style={styles.label}>
                   <Text style={styles.text}>PRIVATE</Text>
                 </View>
@@ -795,9 +754,7 @@ export default function AddScreen({ route, navigation }) {
                   backgroundColor: pressed
                     ? myFont.buttonPressedColor
                     : myFont.white
-                }]
-              }
-              >
+                }]}>
                 <View style={styles.groupCell}>
                   <View style={styles.label}>
                     <Text style={styles.text}>Attach files</Text>

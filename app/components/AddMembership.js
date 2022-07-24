@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
-import { 
-  View, 
-  Text, 
-  StyleSheet, 
-  Pressable,
+import {
+  View,
+  Text,
+  StyleSheet,
   Button
 } from 'react-native';
 import Collapsible from 'react-native-collapsible';
@@ -28,12 +27,12 @@ export default function AddMembership(props) {
   }
 
   let userList = []
-  userList.splice(0, 0, <Picker.Item label={'Select a user'} value={0} style={{fontSize: 20}} key={0} />)
+  userList.splice(0, 0, <Picker.Item label={'Select a user'} value={0} style={{ fontSize: 20 }} key={0} />)
   let index = 1;
   for (let user of users) {
     let fullname = user.firstname.concat(' ', user.lastname).trim();
     if (!arrOfExistUser.includes(fullname)) {
-      userList.push(<Picker.Item label={fullname} value={user.id} style={{fontSize: 20}} key={index} />);
+      userList.push(<Picker.Item label={fullname} value={user.id} style={{ fontSize: 20 }} key={index} />);
       index++;
     }
   }
@@ -50,10 +49,9 @@ export default function AddMembership(props) {
   }
 
   return (
-    <Collapsible 
+    <Collapsible
       collapsed={props.collapsed}
-      style={{backgroundColor: myFont.white}}
-    >
+      style={{ backgroundColor: myFont.white }}>
       <View style={{
         width: "80%",
         alignSelf: "center",
@@ -62,8 +60,12 @@ export default function AddMembership(props) {
         borderBottomColor: myFont.itemBorderColor,
         marginBottom: 5,
       }} />
-      <View style={{width: "100%", flexDirection: "row"}} >
-        <View style={[styles.label, {width: "40%"}]}>
+      <View
+        style={{
+          width: "100%",
+          flexDirection: "row"
+        }}>
+        <View style={[styles.label, { width: "40%" }]}>
           <Text style={styles.textLabel}>SELECT USER</Text>
         </View>
         <Picker
@@ -78,12 +80,12 @@ export default function AddMembership(props) {
           {userList}
         </Picker>
       </View>
-      <View style={{width: "100%", flexDirection: "row"}} >
-        <View style={[styles.label, {width: "40%"}]}>
+      <View style={{ width: "100%", flexDirection: "row" }} >
+        <View style={[styles.label, { width: "40%" }]}>
           <Text style={styles.textLabel}>SELECT ROLE</Text>
         </View>
         <View
-          style={{width: "60%"}}>
+          style={{ width: "60%" }}>
           <View
             style={styles.roleRow}>
             <CheckBox
@@ -93,7 +95,7 @@ export default function AddMembership(props) {
                 setIsManager(newValue);
                 updateSelectedRoles(3);
               }}
-              style={{marginRight: 10}}
+              style={{ marginRight: 10 }}
             />
             <Text style={styles.roleText}>Manager</Text>
           </View>
@@ -106,7 +108,7 @@ export default function AddMembership(props) {
                 setIsDeveloper(newValue);
                 updateSelectedRoles(4);
               }}
-              style={{marginRight: 10}}
+              style={{ marginRight: 10 }}
             />
             <Text style={styles.roleText}>Developer</Text>
           </View>
@@ -119,14 +121,14 @@ export default function AddMembership(props) {
                 setIsReporter(newValue);
                 updateSelectedRoles(5);
               }}
-              style={{marginRight: 10}}
+              style={{ marginRight: 10 }}
             />
             <Text style={styles.roleText}>Reporter</Text>
           </View>
           <View
             style={[
               styles.roleRow,
-              {justifyContent: "flex-end", paddingHorizontal: 10}]}>
+              { justifyContent: "flex-end", paddingHorizontal: 10 }]}>
             <Button
               title="Save"
               onPress={() => saveTargetUser()}
@@ -135,7 +137,7 @@ export default function AddMembership(props) {
           </View>
         </View>
       </View>
-    </Collapsible>    
+    </Collapsible>
   );
 }
 

@@ -1,16 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  View, 
-  Text, 
-  StyleSheet, 
-  SafeAreaView, 
-  Pressable, 
-  ActivityIndicator, 
-  ScrollView, 
-  RefreshControl, 
+import {
+  View,
+  Text,
+  StyleSheet,
+  SafeAreaView,
+  Pressable,
+  ActivityIndicator,
+  ScrollView,
+  RefreshControl,
   Dimensions,
   Alert,
-  Button
 } from 'react-native';
 import { Ionicons, Entypo } from '@expo/vector-icons';
 
@@ -60,10 +59,10 @@ export default function DetailScreen({ route, navigation }) {
   let roleIds = [];
 
   // Sub issues
-  const [issues, setIssues] = useState({issues: []});
+  const [issues, setIssues] = useState({ issues: [] });
   const [allIssuesOfProject, setAllIssuesOfProject] = useState([]);
   // Sub projects
-  const [projects, setProjects] = useState({projects: []});
+  const [projects, setProjects] = useState({ projects: [] });
   const [collapseSubproject, setCollapseSubproject] = useState(true);
   const [collapseIssue, setCollapseIssue] = useState(true);
   const [collapseDetail, setCollapseDetail] = useState(false);
@@ -76,12 +75,12 @@ export default function DetailScreen({ route, navigation }) {
       .then((data) => {
         setUser(data);
       })
-        .catch((error) => {
-            console.error(error);
-          })
-          .finally(() => {
-              setLoading(false);
-            });
+      .catch((error) => {
+        console.error(error);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   }
 
   // type === 'project'
@@ -93,12 +92,12 @@ export default function DetailScreen({ route, navigation }) {
       .then((data) => {
         project = data;
       })
-        .catch((error) => {
-            console.error(error);
-          })
-          .finally(() => {
-              setLoading(false);
-            });
+      .catch((error) => {
+        console.error(error);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   }
 
   // type === 'project'
@@ -108,12 +107,12 @@ export default function DetailScreen({ route, navigation }) {
     */
     get_memberships(project.id)
       .then((data) => {
-          setMembers(data.memberships);
-        })
-          .catch((error) => {
-              console.error(error);
-            })
-            .finally(() => setLoading(false));
+        setMembers(data.memberships);
+      })
+      .catch((error) => {
+        console.error(error);
+      })
+      .finally(() => setLoading(false));
   }
 
   // type === 'project'
@@ -123,28 +122,28 @@ export default function DetailScreen({ route, navigation }) {
     */
     get_projects()
       .then((data) => {
-          try {
-            let projectList = [];
-            let count = 0;
-            for (let prj of data.projects) {
-              if (prj.parent != undefined && prj.parent.id == project.id) {
-                count += 1;
-                projectList.push(prj)
-              }
+        try {
+          let projectList = [];
+          let count = 0;
+          for (let prj of data.projects) {
+            if (prj.parent != undefined && prj.parent.id == project.id) {
+              count += 1;
+              projectList.push(prj)
             }
-            setProjectCount(count);
-            setProjects({projects: projectList});
-          } catch (error) {
-            setProjectCount(0);
-            setProjects({projects: []});
-            console.error(error);
-            console.log('Server return no data')
           }
-        })
-          .catch((error) => {
-              console.error(error);
-            })
-            .finally(() => setLoading(false));
+          setProjectCount(count);
+          setProjects({ projects: projectList });
+        } catch (error) {
+          setProjectCount(0);
+          setProjects({ projects: [] });
+          console.error(error);
+          console.log('Server return no data')
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+      })
+      .finally(() => setLoading(false));
   }
 
   // type === 'project'
@@ -154,24 +153,24 @@ export default function DetailScreen({ route, navigation }) {
     */
     get_issues_of_project(project.id)
       .then((data) => {
-          try {
-            let count = 0;
-            for (let iss of data.issues) {
-              if (iss.parent == undefined) count += 1;
-            }
-            setIssues(data);
-            setIssueCount(count);
-          } catch (error) {
-            setIssues({issues: []});
-            setIssueCount(0);
-            console.error(error);
-            console.log('Server return no data')
+        try {
+          let count = 0;
+          for (let iss of data.issues) {
+            if (iss.parent == undefined) count += 1;
           }
-        })
-          .catch((error) => {
-              console.error(error);
-            })
-            .finally(() => setLoading(false));
+          setIssues(data);
+          setIssueCount(count);
+        } catch (error) {
+          setIssues({ issues: [] });
+          setIssueCount(0);
+          console.error(error);
+          console.log('Server return no data')
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+      })
+      .finally(() => setLoading(false));
   }
 
   // type === 'issue'
@@ -183,12 +182,12 @@ export default function DetailScreen({ route, navigation }) {
       .then((data) => {
         issue = data;
       })
-        .catch((error) => {
-            console.error(error);
-          })
-          .finally(() => {
-              setLoading(false);
-            });
+      .catch((error) => {
+        console.error(error);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   }
 
   // type === 'issue'
@@ -198,29 +197,29 @@ export default function DetailScreen({ route, navigation }) {
     */
     get_issues_of_project(issue.project.id)
       .then((data) => {
-          try {
-            setAllIssuesOfProject(data.issues);
-            let count = 0;
-            let issueList = [];
-            for (let iss of data.issues) {
-              if (iss.parent != undefined && iss.parent.id == issue.id) {
-                count += 1;
-                issueList.push(iss);
-              }
+        try {
+          setAllIssuesOfProject(data.issues);
+          let count = 0;
+          let issueList = [];
+          for (let iss of data.issues) {
+            if (iss.parent != undefined && iss.parent.id == issue.id) {
+              count += 1;
+              issueList.push(iss);
             }
-            setIssues({issues: issueList});
-            setIssueCount(count);
-          } catch (error) {
-            setIssues({issues: []});
-            setIssueCount(0);
-            console.error(error);
-            console.log('Server return no data')
           }
-        })
-          .catch((error) => {
-              console.error(error);
-            })
-            .finally(() => setLoading(false));
+          setIssues({ issues: issueList });
+          setIssueCount(count);
+        } catch (error) {
+          setIssues({ issues: [] });
+          setIssueCount(0);
+          console.error(error);
+          console.log('Server return no data')
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+      })
+      .finally(() => setLoading(false));
   }
 
   // pull to refresh function
@@ -230,15 +229,15 @@ export default function DetailScreen({ route, navigation }) {
     if (type === 'project') {
       syncUser()
         // .then(syncProject())
-          .then(syncSubprojects())
-            .then(syncIssuesOfProject())
-              .then(syncMemberships())
-                .then(setRefreshing(false));
+        .then(syncSubprojects())
+        .then(syncIssuesOfProject())
+        .then(syncMemberships())
+        .then(setRefreshing(false));
     } else {
       syncUser()
         // .then(syncIssue())
-          .then(syncIssuesOfIssue())
-            .then(setRefreshing(false));
+        .then(syncIssuesOfIssue())
+        .then(setRefreshing(false));
     }
   }, []);
 
@@ -246,8 +245,8 @@ export default function DetailScreen({ route, navigation }) {
     if (type === 'project') {
       syncUser()
         .then(syncSubprojects())
-          .then(syncIssuesOfProject())
-            .then(syncMemberships());
+        .then(syncIssuesOfProject())
+        .then(syncMemberships());
     } else {
       syncUser()
         .then(syncIssuesOfIssue());
@@ -255,41 +254,41 @@ export default function DetailScreen({ route, navigation }) {
   }, []);
 
   const addSubProject = () => {
-    navigation.push('AddScreen', { 
-      type: 'project', 
-      projects: projects.projects, 
-      parent: { 
-        name: project.name, 
-        id: project.id 
+    navigation.push('AddScreen', {
+      type: 'project',
+      projects: projects.projects,
+      parent: {
+        name: project.name,
+        id: project.id
       }
     });
   }
 
   const addNewIssue = () => {
     type === 'project'
-    ? navigation.push('AddScreen', { 
-      type: 'issue', 
-      issues: issues.issues, 
-      parent_id: project.id
-    })
-    : navigation.push('AddScreen', { 
-      type: 'issue', 
-      issues: issues.issues,
-      parent_id: issue.project.id, // id of project that contains parent issue
-      parent_issue: issue
-    });
+      ? navigation.push('AddScreen', {
+        type: 'issue',
+        issues: issues.issues,
+        parent_id: project.id
+      })
+      : navigation.push('AddScreen', {
+        type: 'issue',
+        issues: issues.issues,
+        parent_id: issue.project.id, // id of project that contains parent issue
+        parent_issue: issue
+      });
   }
 
   const navigateToSubProject = (project) => {
-    navigation.push('DetailScreen', { 
-      type: 'project', 
+    navigation.push('DetailScreen', {
+      type: 'project',
       project: project
     });
   }
 
   const navigateToSubIssue = (issue) => {
-    navigation.push('DetailScreen', { 
-      type: 'issue', 
+    navigation.push('DetailScreen', {
+      type: 'issue',
       issue: issue
     });
   }
@@ -322,64 +321,11 @@ export default function DetailScreen({ route, navigation }) {
         );
       } else {
         add_membership(project.id, body)
-        .then((response) => {
-          console.log(response.status);
-          if (response.status == 201) {
-            Alert.alert(
-              "New member added",
-              "",
-              [{
-                text: 'OK',
-                style: 'cancel',
-              }]
-            );
-          } else if (response.status == 422) {
-            console.log(response)
-            Alert.alert(
-              "User has already been taken",
-              "",
-            );
-          } else {
-            Alert.alert(
-              "Fail to add new member",
-              "",
-            );
-          }
-        })
-        .then(onRefresh())
-        .catch((error) => {
-          console.error(error);
-        })
-        .finally(() => setLoading(false));
-      }
-    }
-  }
-
-  const removeMemberOfProject = async () => {
-    if (type === 'project') {
-      if (targetUser == 0) {
-        Alert.alert(
-          "Specify a user to be removed",
-          "",
-        );
-      } else {
-        let userToRemove = users.find(user => user.id == targetUser);
-        let fullname = userToRemove.firstname.concat(' ', userToRemove.lastname).trim();
-        get_memberships(project.id)
-        .then((data) => {
-          let membership_id;
-          for (let membership of data.memberships) {
-            if (membership.project.id == project.id && membership.user.id == targetUser) {
-              membership_id = membership.id;
-              break;
-            }
-          }
-          delete_membership(membership_id)
           .then((response) => {
             console.log(response.status);
-            if (response.status == 204) {
+            if (response.status == 201) {
               Alert.alert(
-                fullname + " was removed from project",
+                "New member added",
                 "",
                 [{
                   text: 'OK',
@@ -404,7 +350,60 @@ export default function DetailScreen({ route, navigation }) {
             console.error(error);
           })
           .finally(() => setLoading(false));
-        });
+      }
+    }
+  }
+
+  const removeMemberOfProject = async () => {
+    if (type === 'project') {
+      if (targetUser == 0) {
+        Alert.alert(
+          "Specify a user to be removed",
+          "",
+        );
+      } else {
+        let userToRemove = users.find(user => user.id == targetUser);
+        let fullname = userToRemove.firstname.concat(' ', userToRemove.lastname).trim();
+        get_memberships(project.id)
+          .then((data) => {
+            let membership_id;
+            for (let membership of data.memberships) {
+              if (membership.project.id == project.id && membership.user.id == targetUser) {
+                membership_id = membership.id;
+                break;
+              }
+            }
+            delete_membership(membership_id)
+              .then((response) => {
+                console.log(response.status);
+                if (response.status == 204) {
+                  Alert.alert(
+                    fullname + " was removed from project",
+                    "",
+                    [{
+                      text: 'OK',
+                      style: 'cancel',
+                    }]
+                  );
+                } else if (response.status == 422) {
+                  console.log(response)
+                  Alert.alert(
+                    "User has already been taken",
+                    "",
+                  );
+                } else {
+                  Alert.alert(
+                    "Fail to add new member",
+                    "",
+                  );
+                }
+              })
+              .then(onRefresh())
+              .catch((error) => {
+                console.error(error);
+              })
+              .finally(() => setLoading(false));
+          });
       }
     }
   }
@@ -412,64 +411,63 @@ export default function DetailScreen({ route, navigation }) {
   const deleteItem = async () => {
     if (type === 'project') {
       delete_project(project.id)
-      .then((response) => {
-        console.log(response.status);
-        if (response.status == 204) {
-          Alert.alert(
-            "Project deleted successfully",
-            "",
-            [{
-              text: 'OK',
-              style: 'cancel',
-              onPress: () => navigation.goBack(),
-            }]
-          );
-        } else {
-          Alert.alert(
-            "Fail to delete project",
-            "",
-          );
-        }
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+        .then((response) => {
+          console.log(response.status);
+          if (response.status == 204) {
+            Alert.alert(
+              "Project deleted successfully",
+              "",
+              [{
+                text: 'OK',
+                style: 'cancel',
+                onPress: () => navigation.goBack(),
+              }]
+            );
+          } else {
+            Alert.alert(
+              "Fail to delete project",
+              "",
+            );
+          }
+        })
+        .catch((error) => {
+          console.error(error);
+        });
     } else {
       delete_issue(issue.id)
-      .then((response) => {
-        console.log(response.status);
-        if (response.status == 204) {
-          Alert.alert(
-            "Issue deleted successfully",
-            "",
-            [{
-              text: 'OK',
-              style: 'cancel',
-              onPress: () => navigation.goBack(),
-            }]
-          );
-        } else {
-          Alert.alert(
-            "Fail to delete issue",
-            "",
-          );
-        }
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+        .then((response) => {
+          console.log(response.status);
+          if (response.status == 204) {
+            Alert.alert(
+              "Issue deleted successfully",
+              "",
+              [{
+                text: 'OK',
+                style: 'cancel',
+                onPress: () => navigation.goBack(),
+              }]
+            );
+          } else {
+            Alert.alert(
+              "Fail to delete issue",
+              "",
+            );
+          }
+        })
+        .catch((error) => {
+          console.error(error);
+        });
     }
   }
 
   return (
     <SafeAreaView style={styles.container}>
-      {isLoading? <ActivityIndicator/> :
+      {isLoading ? <ActivityIndicator /> :
         <>
           <View style={styles.header}>
             <Pressable
               onPress={() => navigation.toggleDrawer()}
-              style={styles.menuContainer}
-            >
+              style={styles.menuContainer}>
               <View>
                 <Ionicons name="ios-menu" size={myFont.menuIconSize} color="white" />
               </View>
@@ -477,273 +475,212 @@ export default function DetailScreen({ route, navigation }) {
             <Text style={styles.textHeader}>
               {
                 type === 'project'
-                ? 'Project'
-                : 'Issue'
+                  ? 'Project'
+                  : 'Issue'
               }
             </Text>
           </View>
           <ScrollView
-            style={{marginBottom: 50}}
+            style={{ marginBottom: 50 }}
             refreshControl={
-              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-            }
-          >
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
             {type === 'project'
-            ? <>
-              <View style={styles.nameHeader}>
-                <View style={styles.statusContainer}>
+              ? <>
+                <View style={styles.nameHeader}>
                   <View
-                    style={[styles.status, {backgroundColor: myFont.statusColor[project.status - 1]}]}
-                  />
-                </View>
-                <View
-                  style={{alignItems: "flex-start", paddingVertical: 10, paddingRight: 5, width: WIDTH - 50}}
-                >
-                  <Text 
                     style={{
-                      fontSize: 20, 
-                      color: myFont.white,
-                      fontWeight: myFont.fontWeight,  
-                    }}
-                    ellipsizeMode="clip"
-                  >{project.name}</Text>
-                  <Text
-                    style={{fontSize: 16, color: "#898c91"}}
-                  >#{project.id}</Text>
-                </View>
-              </View>
-              <View 
-                style={styles.groupRow}
-              >
-                <View style={styles.halfCell}>
-                  <View style={styles.label}>
-                    <Text style={styles.text}>CREATE:</Text>
-                  </View>
-                  <View style={styles.textDate}>
-                    <Text style={{fontSize: 20.8}}>{project.created_on.substring(0,10).split('-').reverse().join('/')}</Text>
+                      paddingVertical: 10,
+                      paddingHorizontal: 20,
+                      paddingRight: 5,
+                      height: 74
+                    }}>
+                    <Text
+                      style={{
+                        fontSize: 20,
+                        color: myFont.white,
+                        fontWeight: "700"
+                      }}
+                      ellipsizeMode="clip"
+                    >{project.name}</Text>
+                    <Text
+                      style={{ fontSize: 16, color: myFont.white }}
+                    >#{project.id}</Text>
                   </View>
                 </View>
-                <View style={styles.halfCell}>
-                  <View style={styles.label}>
-                    <Text style={styles.text}>UPDATE:</Text>
+                <View style={styles.groupRow}>
+                  <View style={styles.halfCell}>
+                    <View style={styles.label}>
+                      <Text style={styles.text}>CREATE:</Text>
+                    </View>
+                    <View style={styles.textDate}>
+                      <Text style={{ fontSize: 20.8 }}>{project.created_on.substring(0, 10).split('-').reverse().join('/')}</Text>
+                    </View>
                   </View>
-                  <View style={styles.textDate}>
-                    <Text style={{fontSize: 20.8}}>{project.updated_on.substring(0,10).split('-').reverse().join('/')}</Text>
+                  <View style={styles.halfCell}>
+                    <View style={styles.label}>
+                      <Text style={styles.text}>UPDATE:</Text>
+                    </View>
+                    <View style={styles.textDate}>
+                      <Text style={{ fontSize: 20.8 }}>{project.updated_on.substring(0, 10).split('-').reverse().join('/')}</Text>
+                    </View>
                   </View>
                 </View>
-              </View>
-              <Pressable
-                onPress={() => setCollapseSubproject(!collapseSubproject)}
-              >
-                <View
-                  style={styles.tile}
-                >
-                  <Text style={[
-                    styles.title,
-                    {fontWeight: collapseSubproject ? "300" : "700"}
-                  ]}
-                  >Subprojects ({projectCount})</Text>
-                  {collapseSubproject
-                    ? <Entypo name="chevron-down" size={myFont.menuIconSize} color="#d2d4d7" />
-                    : <Entypo name="chevron-up" size={myFont.menuIconSize} color="#d2d4d7" />
-                  }
+                <View style={{ borderColor: myFont.itemBorderColor, borderTopWidth: 1, borderBottomWidth: 1 }} >
+                  <Pressable
+                    onPress={() => setCollapseSubproject(!collapseSubproject)}>
+                    <View
+                      style={styles.tile}>
+                      <Text
+                        style={[
+                          styles.title,
+                          { fontWeight: collapseSubproject ? "300" : "700" }]}>
+                        Subprojects ({projectCount})</Text>
+                      {collapseSubproject
+                        ? <Entypo name="chevron-down" size={myFont.menuIconSize} color="#d2d4d7" />
+                        : <Entypo name="chevron-up" size={myFont.menuIconSize} color="#d2d4d7" />}
+                    </View>
+                  </Pressable>
+                  <SubProject collapseSubproject={collapseSubproject} projects={projects.projects} addSubProject={addSubProject} navigateTo={navigateToSubProject} />
+                </View>  
+                <View style={{ borderColor: myFont.itemBorderColor, borderTopWidth: 1, borderBottomWidth: 1 }} >
+                  <Pressable
+                    onPress={() => setCollapseIssue(!collapseIssue)}>
+                    <View
+                      style={styles.tile}>
+                      <Text
+                        style={[
+                          styles.title,
+                          { fontWeight: collapseIssue ? "300" : "700" }]}>
+                        Issues ({issueCount})</Text>
+                      {collapseIssue
+                        ? <Entypo name="chevron-down" size={myFont.menuIconSize} color="#d2d4d7" />
+                        : <Entypo name="chevron-up" size={myFont.menuIconSize} color="#d2d4d7" />}
+                    </View>
+                  </Pressable>
+                  <Phase collapseIssue={collapseIssue} issues={issues.issues} addNewIssue={addNewIssue} navigateToIssue={navigateToSubIssue} />
+                </View>  
+                <View style={{ borderColor: myFont.itemBorderColor, borderTopWidth: 1, borderBottomWidth: 1 }} >
+                  <Pressable
+                    onPress={() => setCollapseDetail(!collapseDetail)}>
+                    <View
+                      style={styles.tile}>
+                      <Text
+                        style={[
+                          styles.title,
+                          { fontWeight: collapseDetail ? "300" : "700" }]}>
+                        Detail</Text>
+                      {collapseDetail
+                        ? <Entypo name="chevron-down" size={myFont.menuIconSize} color="#d2d4d7" />
+                        : <Entypo name="chevron-up" size={myFont.menuIconSize} color="#d2d4d7" />}
+                    </View>
+                  </Pressable>
+                  <ProjectInformation
+                    collapseDetail={collapseDetail}
+                    project={project}
+                    members={members}
+                    selectUser={selectUser}
+                    selectRoles={selectRoles}
+                    saveTargetUser={addMemberToProject}
+                    saveUserToRemove={removeMemberOfProject}
+                    user={user} />
                 </View>
-              </Pressable>
-              <SubProject collapseSubproject={collapseSubproject} projects={projects.projects} addSubProject={addSubProject} navigateTo={navigateToSubProject}/>
-              <Pressable
-                onPress={() => setCollapseIssue(!collapseIssue)}
-              >
-                <View
-                  style={styles.tile}
-                >
-                  <Text style={[
-                    styles.title,
-                    {fontWeight: collapseIssue ? "300" : "700"}
-                  ]}
-                  >Issues ({issueCount})</Text>
-                  {collapseIssue
-                    ? <Entypo name="chevron-down" size={myFont.menuIconSize} color="#d2d4d7" />
-                    : <Entypo name="chevron-up" size={myFont.menuIconSize} color="#d2d4d7" />
-                  }
-                </View>
-              </Pressable>
-              <Phase collapseIssue={collapseIssue} issues={issues.issues} addNewIssue={addNewIssue} navigateToIssue={navigateToSubIssue} />
-              <Pressable
-                onPress={() => setCollapseDetail(!collapseDetail)}
-              >
-                <View
-                  style={styles.tile}
-                >
-                  <Text style={[
-                    styles.title,
-                    {fontWeight: collapseDetail ? "300" : "700"}
-                  ]}
-                  >Detail</Text>
-                  {collapseDetail
-                    ? <Entypo name="chevron-down" size={myFont.menuIconSize} color="#d2d4d7" />
-                    : <Entypo name="chevron-up" size={myFont.menuIconSize} color="#d2d4d7" />
-                  }
-                </View>
-              </Pressable>
-              <ProjectInformation
-                collapseDetail={collapseDetail}
-                project={project}
-                members={members}
-                selectUser={selectUser}
-                selectRoles={selectRoles}
-                saveTargetUser={addMemberToProject}
-                saveUserToRemove={removeMemberOfProject}
-                user={user}/>
-              <View style={{height: 64}} />
-            </>
-            : <>
-              <View style={styles.nameHeader}>
-                <View style={[styles.statusContainer, {backgroundColor: myFont.priorityColor[issue.priority.id - 1]}]}/>
-                <View
-                  style={{
-                    alignItems: "flex-start",
-                    justifyContent: "center",
-                    paddingHorizontal: 10,
-                    width: WIDTH - 20,
-                    height: 74,
-                    backgroundColor: "white"}}>
-                  <Text 
+              </>
+              : <>
+                <View style={styles.nameHeader}>
+                  <View
+                    style={
+                      [styles.statusContainer,
+                      { backgroundColor: myFont.priorityColor[issue.priority.id - 1] }]} />
+                  <View
                     style={{
-                      fontSize: 20, 
-                      color: myFont.black,
-                      fontWeight: "700",  
-                    }}
-                    ellipsizeMode="clip"
-                  >{issue.subject}</Text>
-                  <Text
-                    style={{fontSize: 16, color: myFont.black}}
-                  >#{issue.id}</Text>
-                </View>
-              </View>
-              <View 
-                style={styles.groupRow}
-              >
-                <View style={[styles.halfCell, {minWidth: 150, width: "35%"}]}>
-                  <View style={styles.label}>
-                    <Text style={styles.text}>START DATE:</Text>
-                  </View>
-                  <View style={[styles.textDate, {alignSelf: "center"}]}>
-                    <Text style={{fontSize: 20.8}}>{issue.start_date.substring(0,10).split('-').reverse().join('/')}</Text>
+                      alignItems: "flex-start",
+                      justifyContent: "center",
+                      paddingHorizontal: 10,
+                      width: WIDTH - 20,
+                      height: 74,
+                      backgroundColor: "white"
+                    }}>
+                    <Text
+                      style={{
+                        fontSize: 20,
+                        color: myFont.black,
+                        fontWeight: "700"
+                      }}
+                      ellipsizeMode="clip">
+                      {issue.subject}</Text>
+                    <Text
+                      style={{ fontSize: 16, color: myFont.black }}>
+                      #{issue.id}</Text>
                   </View>
                 </View>
-                <View style={[styles.halfCell, {minWidth: 150, width: "35%"}]}>
-                  <View style={styles.label}>
-                    <Text style={styles.text}>DUE DATE:</Text>
+                <View style={styles.groupRow}>
+                  <View style={[styles.halfCell, { minWidth: 150, width: "35%" }]}>
+                    <View style={styles.label}>
+                      <Text style={styles.text}>START DATE:</Text>
+                    </View>
+                    <View style={[styles.textDate, { alignSelf: "center" }]}>
+                      <Text style={{ fontSize: 20.8 }}>{issue.start_date.substring(0, 10).split('-').reverse().join('/')}</Text>
+                    </View>
                   </View>
-                  <View style={[styles.textDate, {alignSelf: "center"}]}>
-                    <Text style={{fontSize: 20.8}}>
-                      {issue.due_date ? issue.due_date.substring(0,10).split('-').reverse().join('/') : ''}
-                    </Text>
+                  <View style={[styles.halfCell, { minWidth: 150, width: "35%" }]}>
+                    <View style={styles.label}>
+                      <Text style={styles.text}>DUE DATE:</Text>
+                    </View>
+                    <View style={[styles.textDate, { alignSelf: "center" }]}>
+                      <Text style={{ fontSize: 20.8 }}>
+                        {issue.due_date ? issue.due_date.substring(0, 10).split('-').reverse().join('/') : ''}
+                      </Text>
+                    </View>
+                  </View>
+                  <View style={[styles.halfCell, { flex: 1 }]}>
+                    <View style={styles.label}>
+                      <Text style={styles.text}>DONE</Text>
+                    </View>
+                    <View style={[styles.textDate, { alignSelf: "center" }]}>
+                      <Text style={{ fontSize: 20.8 }}>{issue.done_ratio} %</Text>
+                    </View>
                   </View>
                 </View>
-                <View style={[styles.halfCell, {flex: 1}]}>
-                  <View style={styles.label}>
-                    <Text style={styles.text}>DONE</Text>
-                  </View>
-                  <View style={[styles.textDate, {alignSelf: "center"}]}>
-                    <Text style={{fontSize: 20.8}}>{issue.done_ratio} %</Text>
-                  </View>
+                <View style={{ borderColor: myFont.itemBorderColor, borderTopWidth: 1, borderBottomWidth: 1 }} >
+                  <Pressable
+                    onPress={() => setCollapseIssue(!collapseIssue)}>
+                    <View
+                      style={styles.tile}>
+                      <Text 
+                        style={[
+                          styles.title,
+                          { fontWeight: collapseIssue ? "300" : "700" }
+                        ]}>
+                        Subtasks ({issueCount})</Text>
+                      {collapseIssue
+                        ? <Entypo name="chevron-down" size={myFont.menuIconSize} color="#d2d4d7" />
+                        : <Entypo name="chevron-up" size={myFont.menuIconSize} color="#d2d4d7" />}
+                    </View>
+                  </Pressable>
+                  <SubPhase collapseIssue={collapseIssue} issues={issues.issues} addNewIssue={addNewIssue} navigateToIssue={navigateToSubIssue} />
                 </View>
-              </View>
-              <View style={{borderColor: myFont.itemBorderColor, borderTopWidth: 1, borderBottomWidth: 1}} >
-                <Pressable
-                  onPress={() => setCollapseIssue(!collapseIssue)}
-                >
-                  <View
-                    style={styles.tile}
-                  >
-                    <Text style={[
-                      styles.title,
-                      {fontWeight: collapseIssue ? "300" : "700"}
-                    ]}
-                    >Subtasks ({issueCount})</Text>
-                    {collapseIssue
-                      ? <Entypo name="chevron-down" size={myFont.menuIconSize} color="#d2d4d7" />
-                      : <Entypo name="chevron-up" size={myFont.menuIconSize} color="#d2d4d7" />
-                    }
-                  </View>
-                </Pressable>
-                <SubPhase collapseIssue={collapseIssue} issues={issues.issues} addNewIssue={addNewIssue} navigateToIssue={navigateToSubIssue}/>
-              </View>
-              <View style={{borderColor: myFont.itemBorderColor, borderTopWidth: 1, borderBottomWidth: 1}} >
-                <Pressable
-                  onPress={() => setCollapseDetail(!collapseDetail)}
-                >
-                  <View
-                    style={styles.tile}
-                  >
-                    <Text style={[
-                      styles.title,
-                      {fontWeight: collapseDetail ? "300" : "700"}
-                    ]}
-                    >Detail</Text>
-                    {collapseDetail
-                      ? <Entypo name="chevron-down" size={myFont.menuIconSize} color="#d2d4d7" />
-                      : <Entypo name="chevron-up" size={myFont.menuIconSize} color="#d2d4d7" />
-                    }
-                  </View>
-                </Pressable>
-                <IssueInformation collapseDetail={collapseDetail} issue={issue} />
-              </View>
-            </>
+                <View style={{ borderColor: myFont.itemBorderColor, borderTopWidth: 1, borderBottomWidth: 1 }} >
+                  <Pressable
+                    onPress={() => setCollapseDetail(!collapseDetail)}>
+                    <View
+                      style={styles.tile}>
+                      <Text
+                        style={[
+                          styles.title,
+                          { fontWeight: collapseDetail ? "300" : "700" }
+                        ]}>
+                        Detail</Text>
+                      {collapseDetail
+                        ? <Entypo name="chevron-down" size={myFont.menuIconSize} color="#d2d4d7" />
+                        : <Entypo name="chevron-up" size={myFont.menuIconSize} color="#d2d4d7" />}
+                    </View>
+                  </Pressable>
+                  <IssueInformation collapseDetail={collapseDetail} issue={issue} />
+                </View>
+              </>
             }
           </ScrollView>
-          <View style={styles.footer}>
-            <Pressable
-              onPress={() => navigation.goBack()}
-              style={({pressed}) => [
-                {
-                  backgroundColor: pressed
-                  ? myFont.buttonPressedColor
-                  : myFont.footerBackgroundColor
-                },
-                styles.backButton
-              ]}
-            >
-              <Ionicons name="chevron-back" size={30} color={myFont.blue} />
-            </Pressable>
-            <View style={styles.footerGroupBtn}>
-              <View style={{marginRight: 10}} >
-                <Button
-                  title="DELETE"
-                  onPress={() => Alert.alert(
-                    "Are you sure you want to remove this item?",
-                    "",
-                    [
-                      {
-                        text: "Delete",
-                        onPress: () => deleteItem()
-                      },
-                      {
-                        text: "Cancel",
-                        style: "cancel"
-                      }
-                    ]
-                  )}
-                  color="red"/>
-              </View>
-              <Button
-                title="EDIT"
-                onPress={() => {
-                  if (type === 'project') {
-                    navigation.push('EditProjectScreen', {
-                      project: project
-                    })
-                  } else {
-                    navigation.push('EditIssueScreen', {
-                      issue: issue,
-                      issues: allIssuesOfProject,
-                      project_id: issue.project.id,
-                    })  
-                  }
-                }}/>
-            </View>
-          </View>
+          
         </>
       }
     </SafeAreaView>
@@ -753,16 +690,16 @@ export default function DetailScreen({ route, navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: myFont.white,
+    backgroundColor: myFont.blue,
   },
   header: {
-		width: "100%",
-		height: 50,
-		backgroundColor: myFont.darkColor,
+    width: "100%",
+    height: 50,
+    backgroundColor: myFont.darkColor,
     flexDirection: "row",
     justifyContent: "flex-start",
     alignItems: "center",
-	},
+  },
   menuContainer: {
     width: 50,
     height: 50,
@@ -772,7 +709,7 @@ const styles = StyleSheet.create({
   textHeader: {
     color: myFont.white,
     fontSize: myFont.fontHomeHeaderSize,
-		fontWeight: myFont.fontWeight,
+    fontWeight: myFont.fontWeight,
     flexDirection: "row",
     justifyContent: "flex-start",
     alignItems: "center",
@@ -780,7 +717,7 @@ const styles = StyleSheet.create({
   },
   nameHeader: {
     width: "100%",
-		backgroundColor: "#131924",
+    backgroundColor: "#131924",
     flexDirection: "row",
     justifyContent: "flex-start",
     alignItems: "center",
@@ -882,4 +819,4 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     paddingRight: 10
   }
-})
+});

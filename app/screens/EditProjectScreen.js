@@ -3,14 +3,11 @@ import {
   View,
   Text,
   StyleSheet,
-  SafeAreaView,
   Pressable,
   ScrollView,
   TextInput,
   KeyboardAvoidingView,
-  ActivityIndicator,
   Platform,
-  Modal,
   Alert,
   Button,
 } from 'react-native';
@@ -22,7 +19,7 @@ import myFont from '../config/myFont';
 
 export default function EditProjectScreen({ route, navigation }) {
   let project = route.params.project;
-    
+
   // General
   const [name, onChangeName] = useState(project.name);
   const [description, onChangeDescription] = useState(project.description);
@@ -41,15 +38,15 @@ export default function EditProjectScreen({ route, navigation }) {
 
   const saveData = () => {
     name != ""
-    ? updateData()
-    : Alert.alert(
-      "Name cannot be blank",
-      "",
-      [{
-        text: "OK",
-        style: "cancel"
-      }]
-    );
+      ? updateData()
+      : Alert.alert(
+        "Name cannot be blank",
+        "",
+        [{
+          text: "OK",
+          style: "cancel"
+        }]
+      );
   }
 
   const updateData = async () => {
@@ -63,28 +60,28 @@ export default function EditProjectScreen({ route, navigation }) {
       }
     });
     update_project(project.id, body)
-    .then((response) => {
-      console.log(response.status);
-      if (response.status == 204) {
-        Alert.alert(
-          "Project updated successfully",
-          "",
-          [{
-            text: 'OK',
-            style: 'cancel',
-            onPress: () => navigation.goBack(),
-          }]
-        );  
-      } else {
-        Alert.alert(
-          "Fail to edit project",
-          "",
-        );
-      }
-    })
-    .catch((error) => {
-      console.error(error);
-    });
+      .then((response) => {
+        console.log(response.status);
+        if (response.status == 204) {
+          Alert.alert(
+            "Project updated successfully",
+            "",
+            [{
+              text: 'OK',
+              style: 'cancel',
+              onPress: () => navigation.goBack(),
+            }]
+          );
+        } else {
+          Alert.alert(
+            "Fail to edit project",
+            "",
+          );
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   }
 
   return (
@@ -102,15 +99,15 @@ export default function EditProjectScreen({ route, navigation }) {
         </Pressable>
         <Text style={styles.textHeader}>Edit project</Text>
       </View>
-      <ScrollView style={{marginBottom: 50}}>
+      <ScrollView style={{ marginBottom: 50 }}>
         <View style={styles.groupRow}>
           <Pressable
-            style={({pressed}) => 
-            [{
-              backgroundColor: pressed
-                ? myFont.buttonPressedColor
-                : myFont.white
-            }]}>
+            style={({ pressed }) =>
+              [{
+                backgroundColor: pressed
+                  ? myFont.buttonPressedColor
+                  : myFont.white
+              }]}>
             <View style={styles.groupCell}>
               <View style={styles.label}>
                 <Text style={styles.text}>NAME *</Text>
@@ -129,7 +126,7 @@ export default function EditProjectScreen({ route, navigation }) {
         </View>
         <View style={styles.groupRow}>
           <Pressable
-            style={({pressed}) => 
+            style={({ pressed }) =>
               [{
                 backgroundColor: pressed
                   ? myFont.buttonPressedColor
@@ -143,24 +140,24 @@ export default function EditProjectScreen({ route, navigation }) {
             </View>
           </Pressable>
         </View>
-        <View style={[styles.groupRow, {height: 138}]}>
+        <View style={[styles.groupRow, { height: 138 }]}>
           <Pressable
-            style={({pressed}) => [
+            style={({ pressed }) => [
               {
                 backgroundColor: pressed
                   ? myFont.buttonPressedColor
                   : myFont.white
               }]}>
-            <View style={[styles.groupCell, {height: 137}]}>
+            <View style={[styles.groupCell, { height: 137 }]}>
               <View style={styles.label}>
                 <Text style={styles.text}>DESCRIPTION</Text>
               </View>
-              <TextInput 
+              <TextInput
                 style={[
                   styles.textInput,
-                  {minHeight: 100},
-                ]} 
-                multiline={true} 
+                  { minHeight: 100 },
+                ]}
+                multiline={true}
                 textAlignVertical="top"
                 value={description}
                 onChangeText={(text) => onChangeDescription(text)}
@@ -171,7 +168,7 @@ export default function EditProjectScreen({ route, navigation }) {
         {project.parent ?
           <View style={styles.groupRow}>
             <Pressable
-              style={({pressed}) => 
+              style={({ pressed }) =>
                 [{
                   backgroundColor: pressed
                     ? myFont.buttonPressedColor
@@ -187,13 +184,13 @@ export default function EditProjectScreen({ route, navigation }) {
           </View>
           : <></>
         }
-        <View 
+        <View
           style={[
             styles.groupRow,
-            {flexDirection: "row"}
+            { flexDirection: "row" }
           ]}>
           <Pressable
-            style={({pressed}) => [
+            style={({ pressed }) => [
               styles.halfCell,
               {
                 backgroundColor: pressed
@@ -207,11 +204,11 @@ export default function EditProjectScreen({ route, navigation }) {
               disabled={false}
               value={isPublic}
               onValueChange={(newValue) => setIsPublic(newValue)}
-              style={{marginLeft: 4}}
+              style={{ marginLeft: 4 }}
             />
           </Pressable>
           <Pressable
-            style={({pressed}) => [
+            style={({ pressed }) => [
               styles.halfCell,
               {
                 backgroundColor: pressed
@@ -226,7 +223,7 @@ export default function EditProjectScreen({ route, navigation }) {
               disabled={false}
               value={isInherit}
               onValueChange={(newValue) => setIsInherit(newValue)}
-              style={{marginLeft: 4}}
+              style={{ marginLeft: 4 }}
             />
           </Pressable>
         </View>
@@ -235,7 +232,7 @@ export default function EditProjectScreen({ route, navigation }) {
         <Button
           title="SAVE"
           onPress={() => saveData()}
-          color={myFont.green}/>
+          color={myFont.green} />
       </View>
     </KeyboardAvoidingView>
   );
@@ -249,13 +246,13 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   header: {
-		width: "100%",
-		height: 60,
-		backgroundColor: "#4d5360",
+    width: "100%",
+    height: 60,
+    backgroundColor: "#4d5360",
     flexDirection: "row",
     justifyContent: "flex-start",
     alignItems: "center",
-	},
+  },
   closeBtn: {
     width: 60,
     height: 60,
@@ -265,7 +262,7 @@ const styles = StyleSheet.create({
   textHeader: {
     color: myFont.white,
     fontSize: myFont.fontHomeHeaderSize,
-		fontWeight: "300",
+    fontWeight: "300",
     flexDirection: "row",
     justifyContent: "flex-start",
     alignItems: "center",
@@ -353,4 +350,4 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 50,
     borderBottomRightRadius: 50,
   },
-})
+});

@@ -1,8 +1,8 @@
 import React from 'react';
-import { 
-  View, 
-  Text, 
-  StyleSheet, 
+import {
+  View,
+  Text,
+  StyleSheet,
   Pressable
 } from 'react-native';
 import Collapsible from 'react-native-collapsible';
@@ -12,14 +12,14 @@ import myFont from '../config/myFont';
 // Phase is for root issues - issues have no parent issue
 export default function Phase(props) {
   const issues = props.issues;
-  
+
   const mylist = issues.map((issue, index) => {
     if (issue.parent == undefined) {
       return (
         <Pressable
           key={index}
           onPress={() => props.navigateToIssue(issue)}
-          style={({pressed}) => [
+          style={({ pressed }) => [
             {
               width: "100%",
               height: 74,
@@ -31,14 +31,13 @@ export default function Phase(props) {
             },
             {
               backgroundColor: pressed
-              ? myFont.buttonPressedColor
-              : myFont.white
+                ? myFont.buttonPressedColor
+                : myFont.white
             }
-          ]}
-        >
+          ]}>
           <View style={styles.statusContainer}>
             <View
-              style={[styles.status, {backgroundColor: myFont.statusColor[issue.status.id - 1]}]}
+              style={[styles.status, { backgroundColor: myFont.statusColor[issue.status.id - 1] }]}
             />
           </View>
           <View>
@@ -51,28 +50,25 @@ export default function Phase(props) {
   });
 
   return (
-    <Collapsible 
-      collapsed={props.collapseIssue}
-    >
+    <Collapsible
+      collapsed={props.collapseIssue}>
       <View
-        style={styles.addPhaseContainer}
-      >
+        style={styles.addPhaseContainer}>
         <Pressable
           onPress={() => props.addNewIssue()}
-          style={({pressed}) => [
+          style={({ pressed }) => [
             {
               backgroundColor: pressed
-              ? myFont.buttonPressedColor
-              : myFont.white
+                ? myFont.buttonPressedColor
+                : myFont.white
             },
             styles.addPhaseButton
-          ]}
-        >
+          ]}>
           <Text style={styles.addPhaseText}>New issue</Text>
         </Pressable>
       </View>
       {mylist}
-    </Collapsible>    
+    </Collapsible>
   );
 }
 
@@ -81,9 +77,10 @@ const styles = StyleSheet.create({
     width: "100%",
     paddingHorizontal: 2,
     paddingVertical: 15,
-    borderStyle: "solid",
     borderBottomWidth: 1,
-    borderBottomColor: myFont.itemBorderColor
+    borderTopWidth: 1,
+    borderColor: myFont.itemBorderColor,
+    backgroundColor: myFont.white,
   },
   addPhaseButton: {
     borderStyle: "solid",
@@ -113,4 +110,4 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 50,
     borderBottomRightRadius: 50,
   },
-})
+});

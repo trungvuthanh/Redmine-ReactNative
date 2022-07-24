@@ -1,8 +1,8 @@
 import React from 'react';
-import { 
-  View, 
-  Text, 
-  StyleSheet, 
+import {
+  View,
+  Text,
+  StyleSheet,
   Pressable
 } from 'react-native';
 import Collapsible from 'react-native-collapsible';
@@ -11,13 +11,13 @@ import myFont from '../config/myFont';
 
 export default function SubProject(props) {
   const projects = props.projects;
-  
+
   const mylist = projects.map((project, index) => {
     return (
       <Pressable
         key={index}
         onPress={() => props.navigateTo(project)}
-        style={({pressed}) => [
+        style={({ pressed }) => [
           {
             width: "100%",
             height: 74,
@@ -29,14 +29,13 @@ export default function SubProject(props) {
           },
           {
             backgroundColor: pressed
-            ? myFont.buttonPressedColor
-            : myFont.white
+              ? myFont.buttonPressedColor
+              : myFont.white
           }
-        ]}
-      >
+        ]}>
         <View style={styles.statusContainer}>
           <View
-            style={[styles.status, {backgroundColor: myFont.statusColor[project.status - 1]}]}
+            style={[styles.status, { backgroundColor: myFont.statusColor[project.status - 1] }]}
           />
         </View>
         <View>
@@ -48,28 +47,25 @@ export default function SubProject(props) {
   });
 
   return (
-    <Collapsible 
-      collapsed={props.collapseSubproject}
-    >
+    <Collapsible
+      collapsed={props.collapseSubproject}>
       <View
-        style={styles.addPhaseContainer}
-      >
+        style={styles.addPhaseContainer}>
         <Pressable
           onPress={() => props.addSubProject()}
-          style={({pressed}) => [
+          style={({ pressed }) => [
             {
               backgroundColor: pressed
-              ? myFont.buttonPressedColor
-              : myFont.white
+                ? myFont.buttonPressedColor
+                : myFont.white
             },
             styles.addPhaseButton
-          ]}
-        >
+          ]}>
           <Text style={styles.addPhaseText}>Add subproject</Text>
         </Pressable>
       </View>
       {mylist}
-    </Collapsible>    
+    </Collapsible>
   );
 }
 
@@ -78,9 +74,10 @@ const styles = StyleSheet.create({
     width: "100%",
     paddingHorizontal: 2,
     paddingVertical: 15,
-    borderStyle: "solid",
     borderBottomWidth: 1,
-    borderBottomColor: myFont.itemBorderColor
+    borderTopWidth: 1,
+    borderColor: myFont.itemBorderColor,
+    backgroundColor: myFont.white,
   },
   addPhaseButton: {
     borderStyle: "solid",
@@ -110,4 +107,4 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 50,
     borderBottomRightRadius: 50,
   },
-})
+});

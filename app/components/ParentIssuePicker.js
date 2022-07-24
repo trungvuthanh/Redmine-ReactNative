@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { 
+import {
   StyleSheet,
 } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
@@ -12,11 +12,11 @@ export default function ParentIssuePicker(props) {
       <Picker.Item
         label={'#' + issue.id + ' - ' + issue.subject}
         value={issue.id}
-        style={{fontSize: 20}}
+        style={{ fontSize: 20 }}
         key={index} />
     );
   });
-  issueList.splice(0, 0, <Picker.Item label='Select an issue' value={0} style={{fontSize: 20}} key={0} enabled={false} />)
+  issueList.splice(0, 0, <Picker.Item label='Select an issue' value={0} style={{ fontSize: 20 }} key={0} enabled={false} />)
 
   return (
     <Picker

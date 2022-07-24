@@ -1,5 +1,5 @@
 import React from 'react';
-import { 
+import {
   View,
   Text,
   StyleSheet,
@@ -7,9 +7,8 @@ import {
 } from 'react-native';
 import {
   DrawerContentScrollView,
-  DrawerItem
 } from '@react-navigation/drawer';
-import { 
+import {
   Ionicons,
   MaterialCommunityIcons,
   FontAwesome5,
@@ -34,17 +33,16 @@ export default function DrawerContent(props) {
         <Drawer.Section style={styles.drawerSection}>
           <Pressable
             onPress={() => props.navigation.navigate("Home")}
-            style={({pressed}) => [
+            style={({ pressed }) => [
               styles.drawerItem,
               {
                 backgroundColor: pressed ? myFont.gray : myFont.black,
-              },
-            ]}
-          >
-            {({pressed}) => (
+              }
+            ]}>
+            {({ pressed }) => (
               <>
                 <View style={styles.icon}>
-                  <MaterialCommunityIcons name="view-dashboard-outline" size={25} color={pressed ? myFont.white : myFont.gray}/>
+                  <MaterialCommunityIcons name="view-dashboard-outline" size={25} color={pressed ? myFont.white : myFont.gray} />
                 </View>
                 <Text style={styles.drawerItemText}>Dashboard</Text>
               </>
@@ -52,17 +50,17 @@ export default function DrawerContent(props) {
           </Pressable>
           <Pressable
             onPress={() => props.navigation.navigate("ProjectStack")}
-            style={({pressed}) => [
+            style={({ pressed }) => [
               styles.drawerItem,
               {
                 backgroundColor: pressed ? myFont.gray : myFont.black,
               },
             ]}
           >
-            {({pressed}) => (
+            {({ pressed }) => (
               <>
                 <View style={styles.icon}>
-                  <Ionicons name="briefcase-outline" size={25} color={pressed ? myFont.white : myFont.gray}/>
+                  <Ionicons name="briefcase-outline" size={25} color={pressed ? myFont.white : myFont.gray} />
                 </View>
                 <Text style={styles.drawerItemText}>Projects</Text>
               </>
@@ -70,125 +68,125 @@ export default function DrawerContent(props) {
           </Pressable>
           <Pressable
             onPress={() => props.navigation.navigate('IssueStack')}
-            style={({pressed}) => [
+            style={({ pressed }) => [
               styles.drawerItem,
               {
                 backgroundColor: pressed ? myFont.gray : myFont.black,
               },
             ]}
           >
-            {({pressed}) => (
+            {({ pressed }) => (
               <>
                 <View style={styles.icon}>
-                  <Octicons name="issue-opened" size={25} color={pressed ? myFont.white : myFont.gray}/>
+                  <Octicons name="issue-opened" size={25} color={pressed ? myFont.white : myFont.gray} />
                 </View>
                 <Text style={styles.drawerItemText}>Issues</Text>
               </>
             )}
           </Pressable>
           <Pressable
-            onPress={() => {}}
-            style={({pressed}) => [
+            onPress={() => { }}
+            style={({ pressed }) => [
               styles.drawerItem,
               {
                 backgroundColor: pressed ? myFont.gray : myFont.black,
               },
             ]}
           >
-            {({pressed}) => (
+            {({ pressed }) => (
               <>
                 <View style={styles.icon}>
-                  <Ionicons name="people-outline" size={25} color={pressed ? myFont.white : myFont.gray}/>
+                  <Ionicons name="people-outline" size={25} color={pressed ? myFont.white : myFont.gray} />
                 </View>
                 <Text style={styles.drawerItemText}>Contact</Text>
               </>
             )}
           </Pressable>
           <Pressable
-            onPress={() => {}}
-            style={({pressed}) => [
+            onPress={() => { }}
+            style={({ pressed }) => [
               styles.drawerItem,
               {
                 backgroundColor: pressed ? myFont.gray : myFont.black,
               },
             ]}
           >
-            {({pressed}) => (
+            {({ pressed }) => (
               <>
                 <View style={styles.icon}>
-                  <Ionicons name="calendar-outline" size={25} color={pressed ? myFont.white : myFont.gray}/>
+                  <Ionicons name="calendar-outline" size={25} color={pressed ? myFont.white : myFont.gray} />
                 </View>
                 <Text style={styles.drawerItemText}>Agenda</Text>
               </>
             )}
           </Pressable>
           <Pressable
-            onPress={() => {}}
-            style={({pressed}) => [
+            onPress={() => { }}
+            style={({ pressed }) => [
               styles.drawerItem,
               {
                 backgroundColor: pressed ? myFont.gray : myFont.black,
               },
             ]}
           >
-            {({pressed}) => (
+            {({ pressed }) => (
               <>
                 <View style={styles.icon}>
-                  <Ionicons name="time-outline" size={25} color={pressed ? myFont.white : myFont.gray}/>
+                  <Ionicons name="time-outline" size={25} color={pressed ? myFont.white : myFont.gray} />
                 </View>
                 <Text style={styles.drawerItemText}>Worklogs</Text>
               </>
             )}
           </Pressable>
           <Pressable
-            onPress={() => {}}
-            style={({pressed}) => [
+            onPress={() => { }}
+            style={({ pressed }) => [
               styles.drawerItem,
               {
                 backgroundColor: pressed ? myFont.gray : myFont.black,
               },
             ]}
           >
-            {({pressed}) => (
+            {({ pressed }) => (
               <>
                 <View style={styles.icon}>
-                  <Ionicons name="document-outline" size={25} color={pressed ? myFont.white : myFont.gray}/>
+                  <Ionicons name="document-outline" size={25} color={pressed ? myFont.white : myFont.gray} />
                 </View>
                 <Text style={styles.drawerItemText}>Documents</Text>
               </>
             )}
           </Pressable>
           <Pressable
-            onPress={() => {}}
-            style={({pressed}) => [
+            onPress={() => { }}
+            style={({ pressed }) => [
               styles.drawerItem,
               {
                 backgroundColor: pressed ? myFont.gray : myFont.black,
               },
             ]}
           >
-            {({pressed}) => (
+            {({ pressed }) => (
               <>
                 <View style={styles.icon}>
-                  <FontAwesome5 name="coins" size={24} color={pressed ? myFont.white : myFont.gray}/>
+                  <FontAwesome5 name="coins" size={24} color={pressed ? myFont.white : myFont.gray} />
                 </View>
                 <Text style={styles.drawerItemText}>Expenses</Text>
               </>
             )}
           </Pressable>
           <Pressable
-            onPress={() => {}}
-            style={({pressed}) => [
+            onPress={() => { }}
+            style={({ pressed }) => [
               styles.drawerItem,
               {
                 backgroundColor: pressed ? myFont.gray : myFont.black,
               },
             ]}
           >
-            {({pressed}) => (
+            {({ pressed }) => (
               <>
                 <View style={styles.icon}>
-                  <FontAwesome name="envelope-o" size={24} color={pressed ? myFont.white : myFont.gray}/>
+                  <FontAwesome name="envelope-o" size={24} color={pressed ? myFont.white : myFont.gray} />
                 </View>
                 <Text style={styles.drawerItemText}>Messages</Text>
               </>
@@ -198,8 +196,8 @@ export default function DrawerContent(props) {
       </DrawerContentScrollView>
       <Drawer.Section>
         <Pressable
-          onPress={() => {signOut()}}
-          style={({pressed}) => [
+          onPress={() => { signOut() }}
+          style={({ pressed }) => [
             styles.drawerItem,
             {
               borderTopWidth: 1,
@@ -210,13 +208,13 @@ export default function DrawerContent(props) {
             },
           ]}
         >
-          {({pressed}) => (
+          {({ pressed }) => (
             <>
               <View style={styles.icon}>
-                <FontAwesome name="sign-out" size={24} color={pressed ? myFont.white : myFont.gray}/>
+                <FontAwesome name="sign-out" size={24} color={pressed ? myFont.white : myFont.gray} />
               </View>
               <Text style={styles.drawerItemText}>Sign out</Text>
-            </>  
+            </>
           )}
         </Pressable>
       </Drawer.Section>
@@ -236,7 +234,7 @@ const styles = StyleSheet.create({
     height: 45,
     borderStyle: "solid",
     borderBottomWidth: 1,
-    borderBottomColor: "#ffffff66",  
+    borderBottomColor: "#ffffff66",
   },
   drawerItemText: {
     color: myFont.white,
@@ -268,4 +266,4 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: "#ffffff66",
   },
-})
+});

@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import {
-  ActivityIndicator, 
-  StyleSheet, 
-  Text, 
-  View, 
-  SafeAreaView, 
-  ScrollView, 
+  ActivityIndicator,
+  StyleSheet,
+  Text,
+  View,
+  SafeAreaView,
+  ScrollView,
   Pressable,
   RefreshControl,
 } from 'react-native';
@@ -31,16 +31,16 @@ export default function HomeScreen({ navigation }) {
   const syncProjectAmount = async () => {
     get_projects()
       .then((data) => {
-          let count = 0;
-          for (let project of data.projects) {
-            if (project.id != 1 && project.parent == undefined) count += 1;
-          }
-          setProjectAmount(count);
-        })
-          .catch((error) => {
-              console.error(error);
-            })
-              .finally(() => setLoading(false));
+        let count = 0;
+        for (let project of data.projects) {
+          if (project.id != 1 && project.parent == undefined) count += 1;
+        }
+        setProjectAmount(count);
+      })
+      .catch((error) => {
+        console.error(error);
+      })
+      .finally(() => setLoading(false));
   }
 
   /*
@@ -50,25 +50,25 @@ export default function HomeScreen({ navigation }) {
     let user = await get_user();
     get_issues()
       .then((data) => {
-          let assignedIssuesCount = 0, closedIssuesCount = 0;
-          for (let issue of data.issues) {
-            if (issue.assigned_to) {
-              if (issue.assigned_to.id == user.id) {
-                assignedIssuesCount += 1;
-              }
-            }
-            if (issue.status.id == 5) {
-              closedIssuesCount += 1;
+        let assignedIssuesCount = 0, closedIssuesCount = 0;
+        for (let issue of data.issues) {
+          if (issue.assigned_to) {
+            if (issue.assigned_to.id == user.id) {
+              assignedIssuesCount += 1;
             }
           }
-          setIssueAmount(data.total_count);
-          setAssignedIssueAmount(assignedIssuesCount);
-          setClosedAmount(closedIssuesCount);
-        })
-          .catch((error) => {
-              console.error(error);
-            })
-              .finally(() => setLoading(false));
+          if (issue.status.id == 5) {
+            closedIssuesCount += 1;
+          }
+        }
+        setIssueAmount(data.total_count);
+        setAssignedIssueAmount(assignedIssuesCount);
+        setClosedAmount(closedIssuesCount);
+      })
+      .catch((error) => {
+        console.error(error);
+      })
+      .finally(() => setLoading(false));
   }
 
   // pull to refresh function
@@ -77,7 +77,7 @@ export default function HomeScreen({ navigation }) {
     setRefreshing(true);
     syncProjectAmount()
       .then(syncIssueAmount())
-        .then(setRefreshing(false));
+      .then(setRefreshing(false));
   }, []);
 
   useEffect(() => {
@@ -85,9 +85,9 @@ export default function HomeScreen({ navigation }) {
       .then(syncIssueAmount());
   }, []);
 
-	return (
-		<SafeAreaView style={styles.container}>
-      {isLoading? <ActivityIndicator/> :
+  return (
+    <SafeAreaView style={styles.container}>
+      {isLoading ? <ActivityIndicator /> :
         <>
           <View style={styles.header}>
             <Pressable
@@ -160,7 +160,7 @@ export default function HomeScreen({ navigation }) {
         </>
       }
     </SafeAreaView>
-	);
+  );
 }
 
 const styles = StyleSheet.create({
@@ -171,13 +171,13 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   header: {
-		width: "100%",
-		height: 50,
-		backgroundColor: myFont.darkColor,
+    width: "100%",
+    height: 50,
+    backgroundColor: myFont.darkColor,
     flexDirection: "row",
     justifyContent: "flex-start",
     alignItems: "center",
-	},
+  },
   menuContainer: {
     width: 50,
     height: 50,
@@ -187,7 +187,7 @@ const styles = StyleSheet.create({
   textHeader: {
     color: myFont.white,
     fontSize: myFont.fontHomeHeaderSize,
-		fontWeight: myFont.fontWeight,
+    fontWeight: myFont.fontWeight,
     flexDirection: "row",
     justifyContent: "flex-start",
     alignItems: "center",

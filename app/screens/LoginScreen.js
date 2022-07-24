@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { 
-  View, 
+import {
+  View,
   Text,
   StyleSheet,
   SafeAreaView,
@@ -26,45 +26,53 @@ export default function LoginScreen({ navigation }) {
       <ScrollView showsVerticalScrollIndicator={false}>
         <Pressable
           onPress={() => Keyboard.dismiss()}
-          style={styles.loginScreenContainer}
-        >
+          style={styles.loginScreenContainer}>
           <View style={styles.headingLogo}>
             <Image style={styles.logo} source={require('../../assets/logo.png')} />
           </View>
           <View style={styles.loginBox}>
-            <Text style={{fontSize: 30, fontWeight: '300'}}>Sign in Redmine</Text>
-            <View style={{marginTop: 30}}>
+            <Text
+              style={{
+                fontSize: 30,
+                fontWeight: '300'
+              }}>
+              Sign in Redmine</Text>
+            <View style={{ marginTop: 30 }}>
               <TextInput
-                style={[styles.inputText, {marginBottom: 5}]}
+                style={[
+                  styles.inputText,
+                  { marginBottom: 5 }]}
                 placeholder='Login name'
                 onChangeText={(username) => onChangeUsername(username)}
-                value={username}
-              />
+                value={username} />
               <TextInput
                 style={styles.inputText}
                 placeholder='password'
                 secureTextEntry={isObscure}
                 onChangeText={(password) => onChangePassword(password)}
-                value={password}
-              />
+                value={password} />
               <Pressable
                 onPress={() => {
                   signIn(username, password);
                 }}
-                style={({pressed}) => [
+                style={({ pressed }) => [
                   {
                     backgroundColor: pressed
                       ? myFont.buttonPressedColor
                       : myFont.addButtonColor,
                   },
                   styles.loginButton
-                ]}
-              >
-                <Text style={{color: '#fff', fontSize: 16}}>Login</Text>
+                ]}>
+                <Text
+                  style={{
+                    color: '#fff',
+                    fontSize: 16
+                  }}>
+                  Login</Text>
               </Pressable>
             </View>
           </View>
-        </Pressable>  
+        </Pressable>
       </ScrollView>
     </SafeAreaView>
   );
@@ -111,4 +119,4 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderRadius: 3,
   },
-})
+});

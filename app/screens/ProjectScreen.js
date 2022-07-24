@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { 
+import {
   ActivityIndicator,
   StyleSheet,
   Text,
@@ -32,67 +32,84 @@ export default function ProjectScreen({ route, navigation }) {
   const syncData = async () => {
     get_projects()
       .then((data) => {
-          /*
-          Get list of project_id for creating a project
-          */
-          setProjectIdList(
-            data.projects.map((project, index) => (
-              project.parent
-              ? {name: project.name, id: project.id, parent: project.parent}
-              : {name: project.name, id: project.id}
-            ))
-          );
-          let count = 0;
+        /*
+        Get list of project_id for creating a project
+        */
+        setProjectIdList(
+          data.projects.map((project, index) => (
+            project.parent
+              ? { name: project.name, id: project.id, parent: project.parent }
+              : { name: project.name, id: project.id }
+          ))
+        );
+        let count = 0;
 
-          /*
-          Get root projects
-          */
-          setProjectList(
-            data.projects.map((project, index) => {
-              if (project.id != 1 && project.parent == undefined) {
-                count += 1;
-                return (
-                  <View style={styles.contentView} key={index}>
-                    <Pressable
-                      onPress={() => navigation.navigate("DetailScreen", { type: 'project' , project: project })}
-                      style={({pressed}) => [
-                        styles.tile,
-                        {
-                          backgroundColor: pressed
+        /*
+        Get root projects
+        */
+        setProjectList(
+          data.projects.map((project, index) => {
+            if (project.id != 1 && project.parent == undefined) {
+              count += 1;
+              return (
+                <View style={styles.contentView} key={index}>
+                  <Pressable
+                    onPress={() => {
+                      navigation.navigate("DetailScreen", {
+                        type: 'project',
+                        project: project
+                      })
+                    }}
+                    style={({ pressed }) => [
+                      styles.tile,
+                      {
+                        backgroundColor: pressed
                           ? myFont.buttonPressedColor
                           : myFont.white
-                        }
-                      ]}
-                    >
-                      <View>
-                        <Text style={{fontSize: 20, fontWeight: "700"}}>{project.name}</Text>
-                        <Text>#{project.id}</Text>
-                        <Text style={{fontSize: 16, marginTop: 2}}>Created on: {project.created_on.substring(0,10).split('-').reverse().join('/')}</Text>
-                      </View>
-                    </Pressable>
-                  </View>  
-                );
-              }
-            })
-          );
-          setAmount(count);
-        })
-          .catch((error) => {
-              console.error(error);
-            })
-            .finally(() => setLoading(false));
+                      }]}>
+                    <View>
+                      <Text
+                        style={{
+                          fontSize: 20,
+                          fontWeight: "700"
+                        }}>
+                        {project.name}</Text>
+                      <Text>#{project.id}</Text>
+                      <Text
+                        style={{
+                          fontSize: 16,
+                          marginTop: 2
+                        }}>
+                        Created on: {project.created_on.substring(0, 10).split('-').reverse().join('/')}</Text>
+                    </View>
+                  </Pressable>
+                </View>
+              );
+            }
+          })
+        );
+        setAmount(count);
+      })
+      .catch((error) => {
+        console.error(error);
+      })
+      .finally(() => setLoading(false));
   }
-  
+
   useEffect(() => {
     syncData();
   }, []);
 
-	return (
-		<SafeAreaView style={styles.container}>
-      {isLoading? <ActivityIndicator/> : 
+  return (
+    <SafeAreaView style={styles.container}>
+      {isLoading ? <ActivityIndicator /> :
         <>
           <View style={styles.header}>
-            <View style={{flexDirection: "row", alignItems: "center"}} >
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center"
+              }}>
               <Pressable
                 onPress={() => navigation.toggleDrawer()}
                 style={styles.menuContainer}
@@ -105,12 +122,18 @@ export default function ProjectScreen({ route, navigation }) {
                 Projects
               </Text>
             </View>
-            <View style={{paddingRight: 15}} >
-              <Text style={{fontSize: 18.6, letterSpacing: myFont.letterSpace, color: myFont.white}}>Total: {amount}</Text>
+            <View style={{ paddingRight: 15 }} >
+              <Text
+                style={{
+                  fontSize: 18.6,
+                  letterSpacing: myFont.letterSpace,
+                  color: myFont.white
+                }}>
+                Total: {amount}</Text>
             </View>
           </View>
-          <ScrollView 
-            style={{marginBottom: 50}}
+          <ScrollView
+            style={{ marginBottom: 50 }}
             refreshControl={
               <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
             }
@@ -120,12 +143,12 @@ export default function ProjectScreen({ route, navigation }) {
           <View style={styles.footer}>
             <Button
               title="NEW PROJECT"
-              onPress={() => navigation.push("AddScreen", { projects: projectIdList, type: 'project' })}/>
+              onPress={() => navigation.push("AddScreen", { projects: projectIdList, type: 'project' })} />
           </View>
         </>
       }
     </SafeAreaView>
-	);
+  );
 }
 
 const styles = StyleSheet.create({
@@ -139,13 +162,13 @@ const styles = StyleSheet.create({
     padding: 7,
   },
   header: {
-		width: "100%",
-		height: 50,
-		backgroundColor: myFont.darkColor,
+    width: "100%",
+    height: 50,
+    backgroundColor: myFont.darkColor,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-	},
+  },
   menuContainer: {
     width: 50,
     height: 50,
@@ -155,7 +178,7 @@ const styles = StyleSheet.create({
   textHeader: {
     color: myFont.white,
     fontSize: myFont.fontHomeHeaderSize,
-		fontWeight: myFont.fontWeight,
+    fontWeight: myFont.fontWeight,
     flexDirection: "row",
     justifyContent: "flex-start",
     alignItems: "center",

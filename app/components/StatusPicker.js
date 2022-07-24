@@ -10,7 +10,7 @@ export default function StatusPicker(props) {
     OPTIONS = ['New', 'In Progress', 'Resolved', 'Feedback', 'Closed', 'Rejected'];
     status = props.status;
   }
-  
+
   const [targetStatus, setTargetStatus] = useState(status);
 
   const options = OPTIONS.map((option, index) => {
@@ -18,7 +18,7 @@ export default function StatusPicker(props) {
       <Picker.Item
         label={option}
         value={index + 1}
-        style={{fontSize: 20}}
+        style={{ fontSize: 20 }}
         key={index} />
     );
   });

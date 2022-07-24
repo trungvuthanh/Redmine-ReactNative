@@ -8,15 +8,17 @@ export default function HomeTiles(props) {
     <>
       {props.isClosed == "yes"
         ? <View style={styles.isClosed} />
-        : <View style={[styles.isClosed, {backgroundColor: myFont.whiteMarkColor}]} />}
+        : <View style={[styles.isClosed, { backgroundColor: myFont.whiteMarkColor }]} />}
       <View style={styles.textBox}>
         <Text style={styles.text} >{props.title}</Text>
         <Text style={[
           styles.amount,
-          {color: props.isClosed == "no"
-            ? myFont.black
-            : myFont.statusColor[4]}]}>
-            {props.amount}
+          {
+            color: props.isClosed == "no"
+              ? myFont.black
+              : myFont.statusColor[4]
+          }]}>
+          {props.amount}
         </Text>
       </View>
     </>
