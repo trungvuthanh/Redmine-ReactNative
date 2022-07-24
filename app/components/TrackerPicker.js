@@ -3,9 +3,12 @@ import { StyleSheet } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 
 const OPTIONS = ['Bug', 'Feature', 'Support'];
+let tracker = 1;
 
 export default function TrackerPicker(props) {
-  const [targetTracker, setTargetTracker] = useState(1);
+  if (props.tracker) tracker = props.tracker;
+
+  const [targetTracker, setTargetTracker] = useState(tracker);
 
   const options = OPTIONS.map((option, index) => {
     return (

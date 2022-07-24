@@ -3,9 +3,12 @@ import { StyleSheet } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 
 const OPTIONS = ['Low', 'Normal', 'High', 'Urgent', 'Immediate'];
+let priority = 1;
 
 export default function PriorityPicker(props) {
-  const [targetPriority, setTargetPriority] = useState(1);
+  if (props.priority) priority = props.priority;
+
+  const [targetPriority, setTargetPriority] = useState(priority);
 
   const options = OPTIONS.map((option, index) => {
     return (

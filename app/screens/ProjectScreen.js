@@ -15,8 +15,6 @@ import { Ionicons } from '@expo/vector-icons';
 import { get_projects } from '../api/project_api';
 import myFont from '../config/myFont';
 
-import ItemTiles from "../components/ItemTiles";
-
 export default function ProjectScreen({ route, navigation }) {
   const [amount, setAmount] = useState(0)
   const [isLoading, setLoading] = useState(true);
@@ -54,23 +52,23 @@ export default function ProjectScreen({ route, navigation }) {
               if (project.id != 1 && project.parent == undefined) {
                 count += 1;
                 return (
-                  <View key={index}>
+                  <View style={styles.contentView} key={index}>
                     <Pressable
                       onPress={() => navigation.navigate("DetailScreen", { type: 'project' , project: project })}
-                      style={({pressed}) => 
-                        [{
+                      style={({pressed}) => [
+                        styles.tile,
+                        {
                           backgroundColor: pressed
-                            ? myFont.buttonPressedColor
-                            : myFont.white
-                        }]
-                      }
+                          ? myFont.buttonPressedColor
+                          : myFont.white
+                        }
+                      ]}
                     >
-                      <ItemTiles
-                        name={project.name}
-                        id={project.id}
-                        date={project.created_on.substring(0,10).split('-').reverse().join('/')}
-                        status={project.status - 1}
-                      />
+                      <View>
+                        <Text style={{fontSize: 20, fontWeight: "700"}}>{project.name}</Text>
+                        <Text>#{project.id}</Text>
+                        <Text style={{fontSize: 16, marginTop: 2}}>Created on: {project.created_on.substring(0,10).split('-').reverse().join('/')}</Text>
+                      </View>
                     </Pressable>
                   </View>  
                 );
@@ -94,18 +92,22 @@ export default function ProjectScreen({ route, navigation }) {
       {isLoading? <ActivityIndicator/> : 
         <>
           <View style={styles.header}>
-            <Pressable
-              onPress={() => navigation.toggleDrawer()}
-              style={styles.menuContainer}
-            >
-              <View>
-                <Ionicons name="ios-menu" size={myFont.menuIconSize} color="white" />
-              </View>
-            </Pressable>
-            <Text style={styles.textHeader}>
-              Projects
-              <Text style={{fontSize: 18.6, letterSpacing: myFont.letterSpace}}> ({amount})</Text>
-            </Text>
+            <View style={{flexDirection: "row", alignItems: "center"}} >
+              <Pressable
+                onPress={() => navigation.toggleDrawer()}
+                style={styles.menuContainer}
+              >
+                <View>
+                  <Ionicons name="ios-menu" size={myFont.menuIconSize} color="white" />
+                </View>
+              </Pressable>
+              <Text style={styles.textHeader}>
+                Projects
+              </Text>
+            </View>
+            <View style={{paddingRight: 15}} >
+              <Text style={{fontSize: 18.6, letterSpacing: myFont.letterSpace, color: myFont.white}}>Total: {amount}</Text>
+            </View>
           </View>
           <ScrollView 
             style={{marginBottom: 50}}
@@ -129,14 +131,19 @@ export default function ProjectScreen({ route, navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: "#ecedee",
+  },
+  contentView: {
+    alignItems: "center",
+    backgroundColor: "#ecedee",
+    padding: 7,
   },
   header: {
 		width: "100%",
 		height: 50,
 		backgroundColor: myFont.darkColor,
     flexDirection: "row",
-    justifyContent: "flex-start",
+    justifyContent: "space-between",
     alignItems: "center",
 	},
   menuContainer: {
@@ -153,6 +160,14 @@ const styles = StyleSheet.create({
     justifyContent: "flex-start",
     alignItems: "center",
     letterSpacing: myFont.letterSpace,
+  },
+  tile: {
+    width: "100%",
+    paddingVertical: 10,
+    paddingLeft: 20,
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: myFont.itemBorderColor,
   },
   footer: {
     flexDirection: "row",

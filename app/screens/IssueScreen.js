@@ -44,7 +44,7 @@ export default function IssueScreen({ route, navigation }) {
                     alignItems: "center"}}>
                   <View style={[
                     styles.statusContainer,
-                    {backgroundColor: myFont.statusColor[issue.status.id - 1]}
+                    {backgroundColor: myFont.priorityColor[issue.priority.id - 1]}
                     ]}/>
                   <View>
                     <Text
@@ -117,18 +117,22 @@ export default function IssueScreen({ route, navigation }) {
         {isLoading ? <ActivityIndicator/> :
           <>
             <View style={styles.header}>
-              <Pressable
-                onPress={() => navigation.toggleDrawer()}
-                style={styles.menuContainer}
-              >
-                <View>
-                  <Ionicons name="ios-menu" size={myFont.menuIconSize} color="white" />
-                </View>
-              </Pressable>
-              <Text style={styles.textHeader}>
-                Issues
-                <Text style={{fontSize: 18.6, letterSpacing: myFont.letterSpace}}> ({issueAmount})</Text>
-              </Text>
+              <View style={{flexDirection: "row", alignItems: "center"}} >
+                <Pressable
+                  onPress={() => navigation.toggleDrawer()}
+                  style={styles.menuContainer}
+                >
+                  <View>
+                    <Ionicons name="ios-menu" size={myFont.menuIconSize} color="white" />
+                  </View>
+                </Pressable>
+                <Text style={styles.textHeader}>
+                  Issues
+                </Text>
+              </View>
+              <View style={{paddingRight: 15}} >
+                <Text style={{fontSize: 18.6, letterSpacing: myFont.letterSpace, color: myFont.white}}>Total: {issueAmount}</Text>
+              </View>
             </View>
             <ScrollView
               refreshControl={
@@ -159,7 +163,7 @@ const styles = StyleSheet.create({
 		height: 50,
 		backgroundColor: myFont.darkColor,
     flexDirection: "row",
-    justifyContent: "flex-start",
+    justifyContent: "space-between",
     alignItems: "center",
 	},
   menuContainer: {
@@ -184,13 +188,13 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     borderRadius: 5,
+    borderWidth: 1,
+    borderColor: myFont.itemBorderColor,
   },
   statusContainer: {
     width: 10,
     height: 74,
     marginRight: 10,
-    alignItems: "center",
-    justifyContent: "center",
     borderTopLeftRadius: 5,
     borderBottomLeftRadius: 5,
   },

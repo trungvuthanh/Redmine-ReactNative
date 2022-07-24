@@ -154,7 +154,7 @@ export default function HomeScreen({ navigation }) {
                     ? myFont.buttonPressedColor
                     : myFont.white
                 }]}>
-              <HomeTiles isClosed="yes" title="Closed issues" amount={closedAmount} />
+              <HomeTiles isClosed="yes" title="Closed Issues" amount={closedAmount} />
             </Pressable>
           </ScrollView>
         </>

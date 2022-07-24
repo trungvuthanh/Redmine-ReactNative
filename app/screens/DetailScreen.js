@@ -513,10 +513,7 @@ export default function DetailScreen({ route, navigation }) {
                 </View>
               </View>
               <View 
-                style={[
-                  styles.groupRow,
-                  {flexDirection: "row"}
-                ]}
+                style={styles.groupRow}
               >
                 <View style={styles.halfCell}>
                   <View style={styles.label}>
@@ -601,32 +598,30 @@ export default function DetailScreen({ route, navigation }) {
             </>
             : <>
               <View style={styles.nameHeader}>
-                <View style={styles.statusContainer}>
-                  <View
-                    style={[styles.status, {backgroundColor: myFont.statusColor[issue.status.id - 1]}]}
-                  />
-                </View>
+                <View style={[styles.statusContainer, {backgroundColor: myFont.priorityColor[issue.priority.id - 1]}]}/>
                 <View
-                  style={{alignItems: "flex-start", paddingVertical: 10, paddingRight: 5, width: WIDTH - 50}}
-                >
+                  style={{
+                    alignItems: "flex-start",
+                    justifyContent: "center",
+                    paddingHorizontal: 10,
+                    width: WIDTH - 20,
+                    height: 74,
+                    backgroundColor: "white"}}>
                   <Text 
                     style={{
                       fontSize: 20, 
-                      color: myFont.white,
-                      fontWeight: myFont.fontWeight,  
+                      color: myFont.black,
+                      fontWeight: "700",  
                     }}
                     ellipsizeMode="clip"
                   >{issue.subject}</Text>
                   <Text
-                    style={{fontSize: 16, color: "#898c91"}}
+                    style={{fontSize: 16, color: myFont.black}}
                   >#{issue.id}</Text>
                 </View>
               </View>
               <View 
-                style={[
-                  styles.groupRow,
-                  {flexDirection: "row"}
-                ]}
+                style={styles.groupRow}
               >
                 <View style={[styles.halfCell, {minWidth: 150, width: "35%"}]}>
                   <View style={styles.label}>
@@ -655,42 +650,46 @@ export default function DetailScreen({ route, navigation }) {
                   </View>
                 </View>
               </View>
-              <Pressable
-                onPress={() => setCollapseIssue(!collapseIssue)}
-              >
-                <View
-                  style={styles.tile}
+              <View style={{borderColor: myFont.itemBorderColor, borderTopWidth: 1, borderBottomWidth: 1}} >
+                <Pressable
+                  onPress={() => setCollapseIssue(!collapseIssue)}
                 >
-                  <Text style={[
-                    styles.title,
-                    {fontWeight: collapseIssue ? "300" : "700"}
-                  ]}
-                  >Subtasks ({issueCount})</Text>
-                  {collapseIssue
-                    ? <Entypo name="chevron-down" size={myFont.menuIconSize} color="#d2d4d7" />
-                    : <Entypo name="chevron-up" size={myFont.menuIconSize} color="#d2d4d7" />
-                  }
-                </View>
-              </Pressable>
-              <SubPhase collapseIssue={collapseIssue} issues={issues.issues} addNewIssue={addNewIssue} navigateToIssue={navigateToSubIssue}/>
-              <Pressable
-                onPress={() => setCollapseDetail(!collapseDetail)}
-              >
-                <View
-                  style={styles.tile}
+                  <View
+                    style={styles.tile}
+                  >
+                    <Text style={[
+                      styles.title,
+                      {fontWeight: collapseIssue ? "300" : "700"}
+                    ]}
+                    >Subtasks ({issueCount})</Text>
+                    {collapseIssue
+                      ? <Entypo name="chevron-down" size={myFont.menuIconSize} color="#d2d4d7" />
+                      : <Entypo name="chevron-up" size={myFont.menuIconSize} color="#d2d4d7" />
+                    }
+                  </View>
+                </Pressable>
+                <SubPhase collapseIssue={collapseIssue} issues={issues.issues} addNewIssue={addNewIssue} navigateToIssue={navigateToSubIssue}/>
+              </View>
+              <View style={{borderColor: myFont.itemBorderColor, borderTopWidth: 1, borderBottomWidth: 1}} >
+                <Pressable
+                  onPress={() => setCollapseDetail(!collapseDetail)}
                 >
-                  <Text style={[
-                    styles.title,
-                    {fontWeight: collapseDetail ? "300" : "700"}
-                  ]}
-                  >Detail</Text>
-                  {collapseDetail
-                    ? <Entypo name="chevron-down" size={myFont.menuIconSize} color="#d2d4d7" />
-                    : <Entypo name="chevron-up" size={myFont.menuIconSize} color="#d2d4d7" />
-                  }
-                </View>
-              </Pressable>
-              <IssueInformation collapseDetail={collapseDetail} issue={issue} />
+                  <View
+                    style={styles.tile}
+                  >
+                    <Text style={[
+                      styles.title,
+                      {fontWeight: collapseDetail ? "300" : "700"}
+                    ]}
+                    >Detail</Text>
+                    {collapseDetail
+                      ? <Entypo name="chevron-down" size={myFont.menuIconSize} color="#d2d4d7" />
+                      : <Entypo name="chevron-up" size={myFont.menuIconSize} color="#d2d4d7" />
+                    }
+                  </View>
+                </Pressable>
+                <IssueInformation collapseDetail={collapseDetail} issue={issue} />
+              </View>
             </>
             }
           </ScrollView>
@@ -754,7 +753,7 @@ export default function DetailScreen({ route, navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: myFont.white,
   },
   header: {
 		width: "100%",
@@ -781,33 +780,33 @@ const styles = StyleSheet.create({
   },
   nameHeader: {
     width: "100%",
-		height: 74,
 		backgroundColor: "#131924",
     flexDirection: "row",
     justifyContent: "flex-start",
     alignItems: "center",
+    borderBottomWidth: 1,
+    borderBottomColor: myFont.itemBorderColor,
   },
   statusContainer: {
-    width: 50,
-    height: 50,
+    width: 20,
+    height: 74,
     alignItems: "center",
     justifyContent: "center",
-    flexDirection: "row"
+    flexDirection: "row",
   },
   status: {
-    width: 25,
-    height: 25,
-    borderTopLeftRadius: 50,
-    borderTopRightRadius: 50,
-    borderBottomLeftRadius: 50,
-    borderBottomRightRadius: 50,
+    width: 10,
+    height: 50,
   },
   groupRow: {
     width: "100%",
     height: 74,
     borderStyle: "solid",
+    borderTopWidth: 1,
     borderBottomWidth: 1,
-    borderBottomColor: myFont.itemBorderColor,
+    borderColor: myFont.itemBorderColor,
+    flexDirection: "row",
+    backgroundColor: myFont.white,
   },
   groupCell: {
     width: "100%",

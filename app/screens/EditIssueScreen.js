@@ -410,6 +410,7 @@ export default function EditIssueScreen({ route, navigation }) {
               <Text style={styles.text}>STATUS *</Text>
             </View>
             <StatusPicker
+              status={status}
               setStatus={onChangeStatus}
               editMode={true}
             />
@@ -432,6 +433,7 @@ export default function EditIssueScreen({ route, navigation }) {
               <Text style={styles.text}>TRACKER *</Text>
             </View>
             <TrackerPicker
+              tracker={tracker}
               setTracker={onChangeTracker}
             />
           </Pressable>
@@ -448,6 +450,7 @@ export default function EditIssueScreen({ route, navigation }) {
               <Text style={styles.text}>PRIORITY *</Text>
             </View>
             <PriorityPicker
+              priority={priority}
               setPriority={onChangePriority}
             />
           </Pressable>
@@ -469,6 +472,7 @@ export default function EditIssueScreen({ route, navigation }) {
               <Text style={styles.text}>% DONE</Text>
             </View>
             <DoneRatioPicker
+              doneRatio={doneRatio}
               setDoneRatio={onChangeDoneRatio}
             />
           </Pressable>

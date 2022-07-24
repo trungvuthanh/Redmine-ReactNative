@@ -3,11 +3,15 @@ import { StyleSheet } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 
 let OPTIONS = ['New'];
+let status = 1;
 
 export default function StatusPicker(props) {
-  if (props.editMode == true) OPTIONS = ['New', 'In Progress', 'Resolved', 'Feedback', 'Closed', 'Rejected'];
+  if (props.editMode == true) {
+    OPTIONS = ['New', 'In Progress', 'Resolved', 'Feedback', 'Closed', 'Rejected'];
+    status = props.status;
+  }
   
-  const [targetStatus, setTargetStatus] = useState(1);
+  const [targetStatus, setTargetStatus] = useState(status);
 
   const options = OPTIONS.map((option, index) => {
     return (

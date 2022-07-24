@@ -3,15 +3,18 @@ import { Text, View, StyleSheet, TouchableOpacity, ScrollView, Pressable, Dimens
 import { Picker } from '@react-native-picker/picker';
 
 const OPTIONS = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
+let doneRatio = 0;
 
 export default function DoneRatioPicker(props) {
-  const [targetRatio, setTargetRatio] = useState(0);
+  if (props.doneRatio) doneRatio = props.doneRatio;
+
+  const [targetRatio, setTargetRatio] = useState(doneRatio);
   
   const options = OPTIONS.map((option, index) => {
     return (
       <Picker.Item
         label={option.toString()}
-        value={index + 1}
+        value={option}
         style={{fontSize: 20}}
         key={index} />
     );
