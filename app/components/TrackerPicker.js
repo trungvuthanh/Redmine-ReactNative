@@ -1,64 +1,37 @@
-import React from 'react';
-import { Text, View, StyleSheet, TouchableOpacity, ScrollView, Pressable, Dimensions } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet } from 'react-native';
+import { Picker } from '@react-native-picker/picker';
 
-import myFont from '../config/myFont';
-
-const OPTIONS = [{name: 'Bug', id: 1}, {name: 'Feature', id: 2}, {name: 'Support', id: 3}];
-
-const WIDTH = Dimensions.get('window').width;
+const OPTIONS = ['Bug', 'Feature', 'Support'];
 
 export default function TrackerPicker(props) {
-  const onPressOption = (option) => {
-    props.changeTrackerVisibility(false);
-    props.setTracker(option);
-  }
+  const [targetTracker, setTargetTracker] = useState(1);
 
   const options = OPTIONS.map((option, index) => {
     return (
-      <Pressable
-        key={index}
-        onPress={() => onPressOption(option)}
-        style={styles.option}
-      >
-        <Text>{option.name}</Text>
-      </Pressable>
+      <Picker.Item
+        label={option}
+        value={index + 1}
+        style={{fontSize: 20}}
+        key={index} />
     );
   });
 
   return (
-    <TouchableOpacity
-      onPress={() => props.changeTrackerVisibility(false)}
-      style={styles.container}
-    >
-      <View style={styles.modal}>
-        <ScrollView>
-          {options}
-        </ScrollView>
-      </View>
-    </TouchableOpacity>
+    <Picker
+      selectedValue={targetTracker}
+      onValueChange={(itemValue, itemIndex) => {
+        setTargetTracker(itemValue);
+        props.setTracker(itemValue);
+      }}
+      style={styles.dropdownList}>
+      {options}
+    </Picker>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "flex-start",
-    justifyContent: "center",
+  dropdownList: {
+    marginLeft: 2
   },
-  modal: {
-    width: WIDTH * 0.4,
-    maxWidth: 180,
-    backgroundColor: "#f7f7f8",
-    borderStyle: "solid",
-    borderWidth: 1,
-    borderColor: "#cccccc80",
-    marginLeft: 10,
-    top: 30,
-  },
-  option: {
-    paddingVertical: 10,
-    paddingHorizontal: 5,
-    flexDirection: "row",
-    alignItems: "center",
-  },
-})
+});

@@ -85,15 +85,10 @@ export default function EditIssueScreen({ route, navigation }) {
     : ''
   );
   const [status, onChangeStatus] = useState(issue.status.id);
-  const [isStatusVisible, setIsStatusVisible] = useState(false);
-  const [tracker, onChangeTracker] = useState({name: issue.tracker.name, id: issue.tracker.id});
-  const [isTrackerVisible, setIsTrackerVisible] = useState(false);
-  const [priority, onChangePriority] = useState({name: issue.priority.name, id: issue.priority.id});
-  const [isPriorityVisible, setIsPriorityVisible] = useState(false);
+  const [tracker, onChangeTracker] = useState(issue.tracker.id);
+  const [priority, onChangePriority] = useState(issue.priority.id);
   const [doneRatio, onChangeDoneRatio] = useState(issue.done_ratio);
-  const [isDoneRatioVisible, setIsDoneRatioVisible] = useState(false);
   const [isPrivate, setIsPrivate] = useState(issue.is_private);
-  const statusLabels = ['New', 'In Progress', 'Resolved', 'Feedback', 'Closed', 'Rejected'];
   const [assignee, setAssignee] = useState();
   // members of this project
   const [members, setMembers] = useState([]);
@@ -107,18 +102,6 @@ export default function EditIssueScreen({ route, navigation }) {
   }
   const onChangeEnd = (event, selectedDate) => {
     endDate.onChange(event, selectedDate);
-  }
-  const changeStatusVisibility = (bool) => {
-    setIsStatusVisible(bool);
-  }
-  const changeTrackerVisibility = (bool) => {
-    setIsTrackerVisible(bool);
-  }
-  const changePriorityVisibility = (bool) => {
-    setIsPriorityVisible(bool);
-  }
-  const changeDoneRatioVisibility = (bool) => {
-    setIsDoneRatioVisible(bool);
   }
 
   const standardDate = (rawDate) => {
@@ -183,9 +166,9 @@ export default function EditIssueScreen({ route, navigation }) {
     let body = JSON.stringify({
       issue: {
         project_id: issue.project.id,
-        tracker_id: tracker.id,
+        tracker_id: tracker,
         status_id: status,
-        priority_id: priority.id,
+        priority_id: priority,
         subject: name,
         description: description,
         parent_issue_id: subproject.subject == '' ? null : subproject.id,
@@ -426,26 +409,10 @@ export default function EditIssueScreen({ route, navigation }) {
             <View style={styles.label}>
               <Text style={styles.text}>STATUS *</Text>
             </View>
-            <View style={{flexDirection: 'row'}}>
-              <Pressable
-                onPress={() => changeStatusVisibility(true)}
-                style={[styles.statusTouch, {backgroundColor: myFont.statusColor[status - 1]}]}
-              />
-              <Text style={styles.textInput}>{statusLabels[status - 1]}</Text>
-            </View>
-            
-            <View>
-              <Modal
-                transparent={true}
-                visible={isStatusVisible}
-                onRequestClose={() => changeStatusVisibility(false)}>
-                <StatusPicker
-                  changeStatusVisibility={changeStatusVisibility}
-                  setStatus={onChangeStatus}
-                  editMode={true}
-                />
-              </Modal>
-            </View>
+            <StatusPicker
+              setStatus={onChangeStatus}
+              editMode={true}
+            />
           </Pressable>
         </View>
         <View
@@ -464,21 +431,9 @@ export default function EditIssueScreen({ route, navigation }) {
             <View style={styles.label}>
               <Text style={styles.text}>TRACKER *</Text>
             </View>
-            <Pressable
-              onPress={() => changeTrackerVisibility(true)}>
-              <Text style={styles.textInput}>{tracker.name}</Text>
-            </Pressable>
-            <View>
-              <Modal
-                transparent={true}
-                visible={isTrackerVisible}
-                onRequestClose={() => changeTrackerVisibility(false)}>
-                <TrackerPicker
-                  changeTrackerVisibility={changeTrackerVisibility}
-                  setTracker={onChangeTracker}
-                />
-              </Modal>
-            </View>
+            <TrackerPicker
+              setTracker={onChangeTracker}
+            />
           </Pressable>
           <Pressable
             style={({pressed}) => [
@@ -492,21 +447,9 @@ export default function EditIssueScreen({ route, navigation }) {
             <View style={styles.label}>
               <Text style={styles.text}>PRIORITY *</Text>
             </View>
-            <Pressable
-              onPress={() => changePriorityVisibility(true)}>
-              <Text style={styles.textInput}>{priority.name}</Text>
-            </Pressable>
-            <View>
-              <Modal
-                transparent={true}
-                visible={isPriorityVisible}
-                onRequestClose={() => changePriorityVisibility(false)}>
-                <PriorityPicker
-                  changePriorityVisibility={changePriorityVisibility}
-                  setPriority={onChangePriority}
-                />
-              </Modal>
-            </View>
+            <PriorityPicker
+              setPriority={onChangePriority}
+            />
           </Pressable>
         </View>
         <View
@@ -525,21 +468,9 @@ export default function EditIssueScreen({ route, navigation }) {
             <View style={styles.label}>
               <Text style={styles.text}>% DONE</Text>
             </View>
-            <Pressable
-              onPress={() => changeDoneRatioVisibility(true)}>
-              <Text style={styles.textInput}>{doneRatio.toString()} %</Text>
-            </Pressable>
-            <View>
-              <Modal
-                transparent={true}
-                visible={isDoneRatioVisible}
-                onRequestClose={() => changeDoneRatioVisibility(false)}>
-                <DoneRatioPicker
-                  changeDoneRatioVisibility={changeDoneRatioVisibility}
-                  setDoneRatio={onChangeDoneRatio}
-                />
-              </Modal>
-            </View>
+            <DoneRatioPicker
+              setDoneRatio={onChangeDoneRatio}
+            />
           </Pressable>
           <Pressable
             style={({pressed}) => [
@@ -704,4 +635,4 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 50,
     borderBottomRightRadius: 50,
   },
-})
+});

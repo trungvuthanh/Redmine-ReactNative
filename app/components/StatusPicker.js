@@ -1,76 +1,39 @@
-import React from 'react';
-import { Text, View, StyleSheet, TouchableOpacity, ScrollView, Pressable, Dimensions } from 'react-native';
-
-import myFont from '../config/myFont';
+import React, { useState } from 'react';
+import { StyleSheet } from 'react-native';
+import { Picker } from '@react-native-picker/picker';
 
 let OPTIONS = ['New'];
 
-const WIDTH = Dimensions.get('window').width;
-
 export default function StatusPicker(props) {
   if (props.editMode == true) OPTIONS = ['New', 'In Progress', 'Resolved', 'Feedback', 'Closed', 'Rejected'];
-
-  const onPressOption = (option) => {
-    props.changeStatusVisibility(false);
-    props.setStatus(option);
-  }
+  
+  const [targetStatus, setTargetStatus] = useState(1);
 
   const options = OPTIONS.map((option, index) => {
     return (
-      <Pressable
-        key={index}
-        onPress={() => onPressOption(index + 1)}
-        style={styles.option}
-      >
-        <View style={[styles.icon, {backgroundColor: myFont.statusColor[index],}]}/>
-        <Text>{option}</Text>
-      </Pressable>
+      <Picker.Item
+        label={option}
+        value={index + 1}
+        style={{fontSize: 20}}
+        key={index} />
     );
   });
 
   return (
-    <TouchableOpacity
-      onPress={() => props.changeStatusVisibility(false)}
-      style={styles.container}
-    >
-      <View style={styles.modal}>
-        <ScrollView>
-          {options}
-        </ScrollView>
-      </View>
-    </TouchableOpacity>
+    <Picker
+      selectedValue={targetStatus}
+      onValueChange={(itemValue, itemIndex) => {
+        setTargetStatus(itemValue);
+        props.setStatus(itemValue);
+      }}
+      style={styles.dropdownList}>
+      {options}
+    </Picker>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
+  dropdownList: {
+    marginLeft: 2
   },
-  icon: {
-    width: 25,
-    height: 25,
-    marginHorizontal: 5,
-    borderTopLeftRadius: 50,
-    borderTopRightRadius: 50,
-    borderBottomLeftRadius: 50,
-    borderBottomRightRadius: 50,
-  },
-  modal: {
-    width: WIDTH * 0.4,
-    maxWidth: 180,
-    backgroundColor: "#f7f7f8",
-    borderStyle: "solid",
-    borderWidth: 1,
-    borderColor: "#cccccc80",
-    marginLeft: "40%",
-    marginBottom: 10,
-  },
-  option: {
-    paddingVertical: 10,
-    paddingHorizontal: 5,
-    flexDirection: "row",
-    alignItems: "center",
-  },
-})
+});

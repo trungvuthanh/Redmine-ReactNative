@@ -25,15 +25,15 @@ export default function ParentIssuePicker(props) {
         setTargetIssue(itemValue);
         props.setSub(props.issueList.find(issue => issue.id === itemValue))
       }}
-      style={styles.issueDropdownList}>
+      style={styles.dropdownList}>
       {issueList}
     </Picker>
   );
 }
 
 const styles = StyleSheet.create({
-  issueDropdownList: {
+  dropdownList: {
     height: 30,
     marginLeft: 2
   },
-})
+});

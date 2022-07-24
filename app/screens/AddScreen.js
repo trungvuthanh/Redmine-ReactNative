@@ -3,14 +3,11 @@ import {
   View,
   Text,
   StyleSheet,
-  SafeAreaView,
   Pressable,
   ScrollView,
   TextInput,
   KeyboardAvoidingView,
-  ActivityIndicator,
   Platform,
-  Modal,
   Alert,
   Button,
 } from 'react-native';
@@ -113,13 +110,9 @@ export default function AddScreen({ route, navigation }) {
   const endDate = dateInput();
   const [duration, onChangeDuration] = useState(null);
   const [status, onChangeStatus] = useState(1);
-  const [isStatusVisible, setIsStatusVisible] = useState(false);
-  const [tracker, onChangeTracker] = useState({name: 'Bug', id: 1});
-  const [isTrackerVisible, setIsTrackerVisible] = useState(false);
-  const [priority, onChangePriority] = useState({name: 'Normal', id: 2});
-  const [isPriorityVisible, setIsPriorityVisible] = useState(false);
+  const [tracker, onChangeTracker] = useState(1);
+  const [priority, onChangePriority] = useState(2);
   const [doneRatio, onChangeDoneRatio] = useState(0);
-  const [isDoneRatioVisible, setIsDoneRatioVisible] = useState(false);
   const [isPrivate, setIsPrivate] = useState(false);
   const [assignee, setAssignee] = useState();
   // members of this project
@@ -134,18 +127,6 @@ export default function AddScreen({ route, navigation }) {
   }
   const onChangeEnd = (event, selectedDate) => {
     endDate.onChange(event, selectedDate);
-  }
-  const changeStatusVisibility = (bool) => {
-    setIsStatusVisible(bool);
-  }
-  const changeTrackerVisibility = (bool) => {
-    setIsTrackerVisible(bool);
-  }
-  const changePriorityVisibility = (bool) => {
-    setIsPriorityVisible(bool);
-  }
-  const changeDoneRatioVisibility = (bool) => {
-    setIsDoneRatioVisible(bool);
   }
 
   const standardDate = (rawDate) => {
@@ -286,7 +267,7 @@ export default function AddScreen({ route, navigation }) {
       ? body = JSON.stringify({
         issue: {
           project_id: parent_id,
-          tracker_id: tracker.id,
+          tracker_id: tracker,
           status_id: status,
           priority_id: priority.id,
           subject: name,
@@ -302,7 +283,7 @@ export default function AddScreen({ route, navigation }) {
       : body = JSON.stringify({
         issue: {
           project_id: parent_id,
-          tracker_id: tracker.id,
+          tracker_id: tracker,
           status_id: status,
           priority_id: priority.id,
           subject: name,
@@ -713,27 +694,10 @@ export default function AddScreen({ route, navigation }) {
                 <View style={styles.label}>
                   <Text style={styles.text}>STATUS *</Text>
                 </View>
-                <View style={{flexDirection: 'row'}}>
-                  <Pressable
-                    onPress={() => changeStatusVisibility(true)}
-                    style={[styles.statusTouch, {backgroundColor: myFont.statusColor[status - 1]}]}
-                  />
-                  <Text style={styles.textInput}>New</Text>
-                </View>
-                
-                <View>
-                  <Modal
-                    transparent={true}
-                    visible={isStatusVisible}
-                    onRequestClose={() => changeStatusVisibility(false)}
-                  >
-                    <StatusPicker
-                      changeStatusVisibility={changeStatusVisibility}
-                      setStatus={onChangeStatus}
-                      editMode={false}
-                    />
-                  </Modal>
-                </View>
+                <StatusPicker
+                  setStatus={onChangeStatus}
+                  editMode={false}
+                />
               </Pressable>
             </View>
             <View
@@ -756,23 +720,9 @@ export default function AddScreen({ route, navigation }) {
                 <View style={styles.label}>
                   <Text style={styles.text}>TRACKER *</Text>
                 </View>
-                <Pressable
-                  onPress={() => changeTrackerVisibility(true)}
-                >
-                  <Text style={styles.textInput}>{tracker.name}</Text>
-                </Pressable>
-                <View>
-                  <Modal
-                    transparent={true}
-                    visible={isTrackerVisible}
-                    onRequestClose={() => changeTrackerVisibility(false)}
-                  >
-                    <TrackerPicker
-                      changeTrackerVisibility={changeTrackerVisibility}
-                      setTracker={onChangeTracker}
-                    />
-                  </Modal>
-                </View>
+                <TrackerPicker
+                  setTracker={onChangeTracker}
+                />
               </Pressable>
               <Pressable
                 style={({pressed}) => [
@@ -788,23 +738,9 @@ export default function AddScreen({ route, navigation }) {
                 <View style={styles.label}>
                   <Text style={styles.text}>PRIORITY *</Text>
                 </View>
-                <Pressable
-                  onPress={() => changePriorityVisibility(true)}
-                >
-                  <Text style={styles.textInput}>{priority.name}</Text>
-                </Pressable>
-                <View>
-                  <Modal
-                    transparent={true}
-                    visible={isPriorityVisible}
-                    onRequestClose={() => changePriorityVisibility(false)}
-                  >
-                    <PriorityPicker
-                      changePriorityVisibility={changePriorityVisibility}
-                      setPriority={onChangePriority}
-                    />
-                  </Modal>
-                </View>
+                <PriorityPicker
+                  setPriority={onChangePriority}
+                />
               </Pressable>
             </View>
             <View
@@ -827,23 +763,9 @@ export default function AddScreen({ route, navigation }) {
                 <View style={styles.label}>
                   <Text style={styles.text}>% DONE</Text>
                 </View>
-                <Pressable
-                  onPress={() => changeDoneRatioVisibility(true)}
-                >
-                  <Text style={styles.textInput}>{doneRatio.toString()} %</Text>
-                </Pressable>
-                <View>
-                  <Modal
-                    transparent={true}
-                    visible={isDoneRatioVisible}
-                    onRequestClose={() => changeDoneRatioVisibility(false)}
-                  >
-                    <DoneRatioPicker
-                      changeDoneRatioVisibility={changeDoneRatioVisibility}
-                      setDoneRatio={onChangeDoneRatio}
-                    />
-                  </Modal>
-                </View>
+                <DoneRatioPicker
+                  setDoneRatio={onChangeDoneRatio}
+                />
               </Pressable>
               <Pressable
                 style={({pressed}) => [
@@ -1012,4 +934,4 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 50,
     borderBottomRightRadius: 50,
   },
-})
+});
