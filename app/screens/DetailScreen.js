@@ -10,6 +10,7 @@ import {
   RefreshControl,
   Dimensions,
   Alert,
+  Button
 } from 'react-native';
 import { Ionicons, Entypo } from '@expo/vector-icons';
 
@@ -541,7 +542,7 @@ export default function DetailScreen({ route, navigation }) {
                     </View>
                   </Pressable>
                   <SubProject collapseSubproject={collapseSubproject} projects={projects.projects} addSubProject={addSubProject} navigateTo={navigateToSubProject} />
-                </View>  
+                </View>
                 <View style={{ borderColor: myFont.itemBorderColor, borderTopWidth: 1, borderBottomWidth: 1 }} >
                   <Pressable
                     onPress={() => setCollapseIssue(!collapseIssue)}>
@@ -558,7 +559,7 @@ export default function DetailScreen({ route, navigation }) {
                     </View>
                   </Pressable>
                   <Phase collapseIssue={collapseIssue} issues={issues.issues} addNewIssue={addNewIssue} navigateToIssue={navigateToSubIssue} />
-                </View>  
+                </View>
                 <View style={{ borderColor: myFont.itemBorderColor, borderTopWidth: 1, borderBottomWidth: 1 }} >
                   <Pressable
                     onPress={() => setCollapseDetail(!collapseDetail)}>
@@ -675,12 +676,64 @@ export default function DetailScreen({ route, navigation }) {
                         : <Entypo name="chevron-up" size={myFont.menuIconSize} color="#d2d4d7" />}
                     </View>
                   </Pressable>
-                  <IssueInformation collapseDetail={collapseDetail} issue={issue} />
+                  <IssueInformation
+                    collapseDetail={collapseDetail}
+                    issue={issue} />
                 </View>
               </>
             }
           </ScrollView>
-          
+          <View style={styles.footer}>
+            <Pressable
+              onPress={() => navigation.goBack()}
+              style={({pressed}) => [
+                {
+                  backgroundColor: pressed
+                  ? myFont.buttonPressedColor
+                  : myFont.footerBackgroundColor
+                },
+                styles.backButton
+              ]}
+            >
+              <Ionicons name="chevron-back" size={30} color={myFont.blue} />
+            </Pressable>
+            <View style={styles.footerGroupBtn}>
+              <Button
+                title="DELETE"
+                onPress={() => Alert.alert(
+                  "Are you sure you want to remove this item?",
+                  "",
+                  [
+                    {
+                      text: "Delete",
+                      onPress: () => deleteItem()
+                    },
+                    {
+                      text: "Cancel",
+                      style: "cancel"
+                    }
+                  ]
+                )}
+                color="red"/>
+              <View style={{marginHorizontal: 10}}>
+                <Button
+                  title="EDIT"
+                  onPress={() => {
+                    if (type === 'project') {
+                      navigation.push('EditProjectScreen', {
+                        project: project
+                      })
+                    } else {
+                      navigation.push('EditIssueScreen', {
+                        issue: issue,
+                        issues: allIssuesOfProject,
+                        project_id: issue.project.id,
+                      })  
+                    }
+                  }}/>
+              </View>
+            </View>
+          </View>
         </>
       }
     </SafeAreaView>
@@ -806,9 +859,7 @@ const styles = StyleSheet.create({
   },
   footer: {
     backgroundColor: myFont.footerBackgroundColor,
-    borderTopColor: myFont.footerBorderColor,
     width: "100%",
-    height: 50,
     flexDirection: "row",
     justifyContent: "space-between",
     position: "absolute",
@@ -817,6 +868,5 @@ const styles = StyleSheet.create({
   footerGroupBtn: {
     alignItems: "center",
     flexDirection: "row",
-    paddingRight: 10
   }
 });

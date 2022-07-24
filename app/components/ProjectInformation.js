@@ -269,6 +269,7 @@ export default function ProjectInformation(props) {
           />
         </Pressable>
       </View>
+      <View style={{height: 64}} />
     </Collapsible>
   );
 }
