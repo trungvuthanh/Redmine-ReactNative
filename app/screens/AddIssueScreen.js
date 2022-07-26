@@ -328,7 +328,7 @@ export default function AddScreen({ route, navigation }) {
     /*
     Get memberships of this project
     */
-    get_memberships(parent_id)
+    get_memberships(parent_id.id)
     .then((data) => {
       setMembers(data.memberships);
     })
