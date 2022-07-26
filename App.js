@@ -238,36 +238,27 @@ export default function App() {
   const authContext = React.useMemo(
     () => ({
       signIn: async (username, password) => {
-        let apiKey = null;
-        sign_in(username, password)
-          .then((response) => {
-            if (response.status == 401) {
-              Alert.alert(
-                "username or password is incorrect",
-                "",
-              );
-            } else {
-              response.json()
-                .then(async (data) => {
-                  try {
-                    apiKey = data.user.api_key;
-                    await AsyncStorage.setItem("apiKey", apiKey);
-                  } catch (e) {
-                    console.error(e);
-                  }
-                  dispatch({
-                    type: "LOGIN",
-                    id: username,
-                    fullname: data.user.firstname.concat(' ', data.user.lastname).trim(),
-                    token: apiKey
-                  });
-                  console.log("Signed in successfully");
-                })
-                .catch((error) => {
-                  console.error(error);
-                });
-            }
+        let user = authenticate(username, password);
+        if (user) {
+          let apiKey = user.api_key;
+          try {
+            await AsyncStorage.setItem("user", JSON.stringify(user));
+          } catch (e) {
+            console.error(e);
+          }
+          dispatch({
+            type: "LOGIN",
+            id: username,
+            fullname: user.firstname + ' ' + user.lastname,
+            token: apiKey
           });
+          console.log("Signed in successfully");
+        } else {
+          Alert.alert(
+            "username or password is incorrect",
+            "",
+          );
+        }
       },
       signOut: async () => {
         try {

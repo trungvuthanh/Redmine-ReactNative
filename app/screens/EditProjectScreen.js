@@ -268,18 +268,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     letterSpacing: myFont.letterSpace,
   },
-  saveButton: {
-    height: 50,
-    paddingHorizontal: 15,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  backButton: {
-    width: 50,
-    height: 50,
-    alignItems: "center",
-    justifyContent: "center",
-  },
   footer: {
     borderTopColor: myFont.footerBorderColor,
     alignSelf: "flex-end",
@@ -296,11 +284,6 @@ const styles = StyleSheet.create({
     borderRightWidth: 1,
     borderRightColor: myFont.itemBorderColor,
     paddingRight: 5,
-  },
-  dateIcon: {
-    position: "absolute",
-    top: 2,
-    right: 10,
   },
   groupCell: {
     width: "100%",
@@ -333,21 +316,5 @@ const styles = StyleSheet.create({
     paddingVertical: 1,
     paddingLeft: 10,
     paddingRight: 2,
-  },
-  textDate: {
-    position: "relative",
-    paddingVertical: 1,
-    paddingLeft: 10,
-    paddingRight: 2,
-  },
-  statusTouch: {
-    width: 25,
-    height: 25,
-    marginTop: 4,
-    marginLeft: 10,
-    borderTopLeftRadius: 50,
-    borderTopRightRadius: 50,
-    borderBottomLeftRadius: 50,
-    borderBottomRightRadius: 50,
   },
 });

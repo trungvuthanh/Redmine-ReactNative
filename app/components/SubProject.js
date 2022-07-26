@@ -12,7 +12,7 @@ import myFont from '../config/myFont';
 export default function SubProject(props) {
   const projects = props.projects;
 
-  const mylist = projects.map((project, index) => {
+  const projectList = projects.map((project, index) => {
     return (
       <Pressable
         key={index}
@@ -48,7 +48,7 @@ export default function SubProject(props) {
 
   return (
     <Collapsible
-      collapsed={props.collapseSubproject}>
+      collapsed={props.collapseSubProject}>
       <View
         style={styles.addPhaseContainer}>
         <Pressable
@@ -64,7 +64,7 @@ export default function SubProject(props) {
           <Text style={styles.addPhaseText}>Add subproject</Text>
         </Pressable>
       </View>
-      {mylist}
+      {projectList}
     </Collapsible>
   );
 }

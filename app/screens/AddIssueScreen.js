@@ -51,7 +51,7 @@ function dateInput() {
   }
 }
 
-export default function AddScreen({ route, navigation }) {
+export default function AddIssueScreen({ route, navigation }) {
   const type = route.params.type;
   let projects = [], issues = [];
   let parent_id; // parent project

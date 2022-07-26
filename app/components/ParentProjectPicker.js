@@ -23,7 +23,7 @@ export default function ParentProjectPicker(props) {
       selectedValue={targetProject}
       onValueChange={(itemValue, itemIndex) => {
         setTargetProject(itemValue);
-        props.setSub(props.projectList.find(project => project.id === itemValue))
+        props.setParentProject(props.projectList.find(project => project.id === itemValue))
       }}
       style={styles.projectDropdownList}>
       {projectList}

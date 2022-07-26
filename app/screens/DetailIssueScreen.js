@@ -41,7 +41,7 @@ import ProjectInformation from '../components/ProjectInformation';
 
 const WIDTH = Dimensions.get('window').width;
 
-export default function DetailScreen({ route, navigation }) {
+export default function DetailIssueScreen({ route, navigation }) {
   const type = route.params.type;
   let project, issue;
   if (type === 'project') {

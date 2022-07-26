@@ -55,10 +55,7 @@ export default function ProjectScreen({ route, navigation }) {
                 <View style={styles.contentView} key={index}>
                   <Pressable
                     onPress={() => {
-                      navigation.navigate("DetailScreen", {
-                        type: 'project',
-                        project: project
-                      })
+                      navigation.navigate("DetailProjectScreen", { project: project })
                     }}
                     style={({ pressed }) => [
                       styles.tile,
@@ -143,7 +140,12 @@ export default function ProjectScreen({ route, navigation }) {
           <View style={styles.footer}>
             <Button
               title="NEW PROJECT"
-              onPress={() => navigation.push("AddScreen", { projects: projectIdList, type: 'project' })} />
+              onPress={() => {
+                navigation.push("AddProjectScreen", {
+                  projects: projectIdList,
+                  project_parent: null
+                })
+              }} />
           </View>
         </>
       }
