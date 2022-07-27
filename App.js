@@ -20,7 +20,11 @@ import IssueScreen from './app/screens/IssueScreen';
 import MyIssueScreen from './app/screens/MyIssueScreen';
 import ProjectScreen from './app/screens/ProjectScreen';
 import AddScreen from './app/screens/AddScreen';
+import AddIssueScreen from './app/screens/AddIssueScreen';
+import AddProjectScreen from './app/screens/AddProjectScreen';
 import DetailScreen from './app/screens/DetailScreen';
+import DetailIssueScreen from './app/screens/DetailIssueScreen';
+import DetailProjectScreen from './app/screens/DetailProjectScreen';
 import EditIssueScreen from './app/screens/EditIssueScreen';
 import EditProjectScreen from './app/screens/EditProjectScreen';
 
@@ -101,6 +105,16 @@ const ClosedStackScreen = () => (
       options={{ headerShown: false }}
     />
     <ClosedStack.Screen
+      name="DetailIssueScreen"
+      component={DetailIssueScreen}
+      options={{ headerShown: false }}
+    />
+    <ClosedStack.Screen
+      name="AddIssueScreen"
+      component={AddIssueScreen}
+      options={{ headerShown: false }}
+    />
+    <ClosedStack.Screen
       name="EditIssueScreen"
       component={EditIssueScreen}
       options={{ headerShown: false }}
@@ -123,6 +137,16 @@ const IssueStackScreen = () => (
     <IssueStack.Screen
       name="AddScreen"
       component={AddScreen}
+      options={{ headerShown: false }}
+    />
+    <ClosedStack.Screen
+      name="DetailIssueScreen"
+      component={DetailIssueScreen}
+      options={{ headerShown: false }}
+    />
+    <ClosedStack.Screen
+      name="AddIssueScreen"
+      component={AddIssueScreen}
       options={{ headerShown: false }}
     />
     <IssueStack.Screen
@@ -150,6 +174,16 @@ const MyIssueStackScreen = () => (
       component={AddScreen}
       options={{ headerShown: false }}
     />
+    <ClosedStack.Screen
+      name="DetailIssueScreen"
+      component={DetailIssueScreen}
+      options={{ headerShown: false }}
+    />
+    <ClosedStack.Screen
+      name="AddIssueScreen"
+      component={AddIssueScreen}
+      options={{ headerShown: false }}
+    />
     <MyIssueStack.Screen
       name="EditIssueScreen"
       component={EditIssueScreen}
@@ -173,6 +207,26 @@ const ProjectStackScreen = () => (
     <ProjectStack.Screen
       name="DetailScreen"
       component={DetailScreen}
+      options={{ headerShown: false }}
+    />
+    <ProjectStack.Screen
+      name="AddProjectScreen"
+      component={AddProjectScreen}
+      options={{ headerShown: false }}
+    />
+    <ProjectStack.Screen
+      name="DetailProjectScreen"
+      component={DetailProjectScreen}
+      options={{ headerShown: false }}
+    />
+    <ClosedStack.Screen
+      name="AddIssueScreen"
+      component={DetailIssueScreen}
+      options={{ headerShown: false }}
+    />
+    <ClosedStack.Screen
+      name="DetailIssueScreen"
+      component={AddIssueScreen}
       options={{ headerShown: false }}
     />
     <ProjectStack.Screen
@@ -238,27 +292,36 @@ export default function App() {
   const authContext = React.useMemo(
     () => ({
       signIn: async (username, password) => {
-        let user = authenticate(username, password);
-        if (user) {
-          let apiKey = user.api_key;
-          try {
-            await AsyncStorage.setItem("user", JSON.stringify(user));
-          } catch (e) {
-            console.error(e);
-          }
-          dispatch({
-            type: "LOGIN",
-            id: username,
-            fullname: user.firstname + ' ' + user.lastname,
-            token: apiKey
+        let apiKey = null;
+        sign_in(username, password)
+          .then((response) => {
+            if (response.status == 401) {
+              Alert.alert(
+                "username or password is incorrect",
+                "",
+              );
+            } else {
+              response.json()
+                .then(async (data) => {
+                  try {
+                    apiKey = data.user.api_key;
+                    await AsyncStorage.setItem("apiKey", apiKey);
+                  } catch (e) {
+                    console.error(e);
+                  }
+                  dispatch({
+                    type: "LOGIN",
+                    id: username,
+                    fullname: data.user.firstname.concat(' ', data.user.lastname).trim(),
+                    token: apiKey
+                  });
+                  console.log("Signed in successfully");
+                })
+                .catch((error) => {
+                  console.error(error);
+                });
+            }
           });
-          console.log("Signed in successfully");
-        } else {
-          Alert.alert(
-            "username or password is incorrect",
-            "",
-          );
-        }
       },
       signOut: async () => {
         try {
