@@ -276,8 +276,6 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: 0,
     padding: 10,
-    borderTopWidth: 1,
-    borderColor: myFont.itemBorderColor,
   },
   halfCell: {
     width: "50%",
