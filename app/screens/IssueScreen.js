@@ -28,7 +28,7 @@ export default function IssueScreen({ route, navigation }) {
             return (
               <View style={styles.contentView} key={index}>
                 <Pressable
-                  onPress={() => navigation.navigate("DetailScreen", { type: 'issue', issue: issue })}
+                  onPress={() => navigation.push("DetailIssueScreen", { issue: issue })}
                   style={({ pressed }) => [
                     styles.tile,
                     {

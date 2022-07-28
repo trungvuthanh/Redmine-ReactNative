@@ -37,10 +37,8 @@ export default function ClosedScreen({ route, navigation }) {
               <View style={styles.contentView} key={index}>
                 <Pressable
                   onPress={() => {
-                    navigation.navigate("DetailScreen", {
-                      type: 'issue',
-                      issue: issue
-                    })}}
+                    navigation.navigate("DetailIssueScreen", { issue: issue })
+                  }}
                   style={({ pressed }) => [
                     styles.tile,
                     {

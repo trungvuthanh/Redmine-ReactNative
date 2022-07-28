@@ -18,29 +18,16 @@ export default function SubProject(props) {
         key={index}
         onPress={() => props.navigateTo(project)}
         style={({ pressed }) => [
-          {
-            width: "100%",
-            height: 74,
-            borderStyle: "solid",
-            borderBottomWidth: 1,
-            borderBottomColor: myFont.itemBorderColor,
-            alignItems: "center",
-            flexDirection: "row",
-          },
+          styles.tile,
           {
             backgroundColor: pressed
               ? myFont.buttonPressedColor
               : myFont.white
           }
         ]}>
-        <View style={styles.statusContainer}>
-          <View
-            style={[styles.status, { backgroundColor: myFont.statusColor[project.status - 1] }]}
-          />
-        </View>
         <View>
-          <Text>{project.name}</Text>
-          <Text>(#{project.id})</Text>
+          <Text style={{ fontWeight: "700", fontSize: 20 }} >{project.name}</Text>
+          <Text style={{ fontSize: 16 }}>#{project.id}</Text>
         </View>
       </Pressable>
     );
@@ -93,18 +80,14 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "700"
   },
-  statusContainer: {
-    width: 50,
-    height: 50,
+  tile: {
+    width: "100%",
+    height: 74,
+    borderStyle: "solid",
+    borderBottomWidth: 1,
+    borderBottomColor: myFont.itemBorderColor,
     alignItems: "center",
-    justifyContent: "center",
-  },
-  status: {
-    width: 25,
-    height: 25,
-    borderTopLeftRadius: 50,
-    borderTopRightRadius: 50,
-    borderBottomLeftRadius: 50,
-    borderBottomRightRadius: 50,
-  },
+    flexDirection: "row",
+    paddingHorizontal: 20,
+  }
 });

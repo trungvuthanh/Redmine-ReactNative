@@ -50,16 +50,17 @@ function dateInput(dateStr) {
 }
 
 export default function EditIssueScreen({ route, navigation }) {
-  let issue = route.params.issue
-  let issues = route.params.issues; // issues of parent project
+  let issue = route.params.issue;
   let project_id = route.params.project_id;
-  let parentIssue = { subject: "", id: 0 };
+  let parentIssueList = route.params.parent_issue_list;
+
+  let parentTask = { subject: '', id: 0 };
 
   if (issue.parent) {
-    for (let iss of issues) {
+    for (let iss of parentIssueList) {
       if (iss.id == issue.parent.id) {
-        parentIssue.subject = iss.subject;
-        parentIssue.id = iss.id;
+        parentTask.subject = iss.subject;
+        parentTask.id = iss.id;
         break;
       }
     }
@@ -68,9 +69,9 @@ export default function EditIssueScreen({ route, navigation }) {
   // General
   const [name, onChangeName] = useState(issue.subject);
   const [description, onChangeDescription] = useState(issue.description);
-  const [subproject, onChangeSubProject] = useState(parentIssue);
-  const setSubProject = (option) => {
-    onChangeSubProject(option);
+  const [parentIssue, onChangeParentIssue] = useState(parentTask);
+  const setParentIssue = (option) => {
+    onChangeParentIssue(option);
   }
 
   // Issue
@@ -168,7 +169,7 @@ export default function EditIssueScreen({ route, navigation }) {
         priority_id: priority,
         subject: name,
         description: description,
-        parent_issue_id: subproject.subject == '' ? null : subproject.id,
+        parent_issue_id: parentIssue.subject == '' ? null : parentIssue.id,
         assigned_to_id: author_id,
         is_private: isPrivate,
         estimated_hours: duration == null ? null : parseInt(duration),
@@ -303,8 +304,8 @@ export default function EditIssueScreen({ route, navigation }) {
                 <Text style={styles.text}>PARENT TASK</Text>
               </View>
               <ParentIssuePicker
-                setSub={setSubProject}
-                issueList={issues}
+                setParentIssue={setParentIssue}
+                issueList={parentIssueList}
               />
             </View>
           </Pressable>
@@ -558,18 +559,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     letterSpacing: myFont.letterSpace,
   },
-  saveButton: {
-    height: 50,
-    paddingHorizontal: 15,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  backButton: {
-    width: 50,
-    height: 50,
-    alignItems: "center",
-    justifyContent: "center",
-  },
   footer: {
     borderTopColor: myFont.footerBorderColor,
     alignSelf: "flex-end",
@@ -578,6 +567,8 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: 0,
     padding: 10,
+    borderTopWidth: 1,
+    borderColor: myFont.itemBorderColor,
   },
   halfCell: {
     width: "50%",
@@ -629,15 +620,5 @@ const styles = StyleSheet.create({
     paddingVertical: 1,
     paddingLeft: 10,
     paddingRight: 2,
-  },
-  statusTouch: {
-    width: 25,
-    height: 25,
-    marginTop: 4,
-    marginLeft: 10,
-    borderTopLeftRadius: 50,
-    borderTopRightRadius: 50,
-    borderBottomLeftRadius: 50,
-    borderBottomRightRadius: 50,
   },
 });

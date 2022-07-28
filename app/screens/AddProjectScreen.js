@@ -41,7 +41,6 @@ function dateInput() {
 }
 
 export default function AddProjectScreen({ route, navigation }) {
-  const type = route.params.type;
   let projects = route.params.projects;
   let project_parent = route.params.project_parent;
 
@@ -50,11 +49,11 @@ export default function AddProjectScreen({ route, navigation }) {
   const [description, onChangeDescription] = useState("");
   const [parentProject, onChangeParentProject] = useState(
     project_parent
-    ? {
+      ? {
         name: project_parent.name,
         id: project_parent.id
       }
-    : {
+      : {
         name: "",
         id: 0
       }
@@ -77,8 +76,8 @@ export default function AddProjectScreen({ route, navigation }) {
 
   const saveData = () => {
     name != ""
-    ?  createData()
-    :  Alert.alert(
+      ? createData()
+      : Alert.alert(
         "Name cannot be blank",
         "",
         [{
@@ -92,25 +91,25 @@ export default function AddProjectScreen({ route, navigation }) {
     let body;
     if (project_parent == null) {
       parentProject.name == ""
-      ? body = JSON.stringify({
-        project: {
-          name: name,
-          identifier: identifier,
-          description: description,
-          is_public: isPublic,
-          inherit_members: isInherit,
-        }
-      })
-      : body = JSON.stringify({
-        project: {
-          name: name,
-          identifier: identifier,
-          description: description,
-          is_public: isPublic,
-          parent_id: parentProject.id,
-          inherit_members: isInherit,
-        }
-      });  
+        ? body = JSON.stringify({
+          project: {
+            name: name,
+            identifier: identifier,
+            description: description,
+            is_public: isPublic,
+            inherit_members: isInherit,
+          }
+        })
+        : body = JSON.stringify({
+          project: {
+            name: name,
+            identifier: identifier,
+            description: description,
+            is_public: isPublic,
+            parent_id: parentProject.id,
+            inherit_members: isInherit,
+          }
+        });
     } else {
       body = JSON.stringify({
         project: {
@@ -121,31 +120,31 @@ export default function AddProjectScreen({ route, navigation }) {
           parent_id: project_parent.id,
           inherit_members: isInherit,
         }
-      });  
+      });
     }
     create_project(body)
-    .then((response) => {
-      console.log(response.status);
-      if (response.status == 201) {
-        Alert.alert(
-          "Project was created",
-          "",
-          [{
-            text: 'OK',
-            style: 'cancel',
-            onPress: () => navigation.goBack(),
-          }]
-        );  
-      } else {
-        Alert.alert(
-          "Fail to create project",
-          "",
-        );
-      }
-    })
-    .catch((error) => {
-      console.error(error);
-    });
+      .then((response) => {
+        console.log(response.status);
+        if (response.status == 201) {
+          Alert.alert(
+            "Project was created",
+            "",
+            [{
+              text: 'OK',
+              style: 'cancel',
+              onPress: () => navigation.goBack(),
+            }]
+          );
+        } else {
+          Alert.alert(
+            "Fail to create project",
+            "",
+          );
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   }
 
   return (
@@ -161,19 +160,17 @@ export default function AddProjectScreen({ route, navigation }) {
             <Ionicons name="close-sharp" size={myFont.menuIconSize} color="white" />
           </View>
         </Pressable>
-          {type === 'project' 
-          ? <Text style={styles.textHeader}>Add project</Text> 
-          : <Text style={styles.textHeader}>Add issue</Text>}
+        <Text style={styles.textHeader}>Add project</Text>
       </View>
-      <ScrollView style={{marginBottom: 50}}>
+      <ScrollView style={{ marginBottom: 50 }}>
         <View style={styles.groupRow}>
           <Pressable
-            style={({pressed}) => 
-            [{
-              backgroundColor: pressed
-                ? myFont.buttonPressedColor
-                : myFont.white
-            }]}>
+            style={({ pressed }) =>
+              [{
+                backgroundColor: pressed
+                  ? myFont.buttonPressedColor
+                  : myFont.white
+              }]}>
             <View style={styles.groupCell}>
               <View style={styles.label}>
                 <Text style={styles.text}>NAME *</Text>
@@ -192,7 +189,7 @@ export default function AddProjectScreen({ route, navigation }) {
         </View>
         <View style={styles.groupRow}>
           <Pressable
-            style={({pressed}) => 
+            style={({ pressed }) =>
               [{
                 backgroundColor: pressed
                   ? myFont.buttonPressedColor
@@ -206,24 +203,24 @@ export default function AddProjectScreen({ route, navigation }) {
             </View>
           </Pressable>
         </View>
-        <View style={[styles.groupRow, {height: 138}]}>
+        <View style={[styles.groupRow, { height: 138 }]}>
           <Pressable
-            style={({pressed}) => [
+            style={({ pressed }) => [
               {
                 backgroundColor: pressed
                   ? myFont.buttonPressedColor
                   : myFont.white
               }]}>
-            <View style={[styles.groupCell, {height: 137}]}>
+            <View style={[styles.groupCell, { height: 137 }]}>
               <View style={styles.label}>
                 <Text style={styles.text}>DESCRIPTION</Text>
               </View>
-              <TextInput 
+              <TextInput
                 style={[
                   styles.textInput,
-                  {minHeight: 100},
-                ]} 
-                multiline={true} 
+                  { minHeight: 100 },
+                ]}
+                multiline={true}
                 textAlignVertical="top"
                 value={description}
                 onChangeText={(text) => onChangeDescription(text)}
@@ -233,32 +230,32 @@ export default function AddProjectScreen({ route, navigation }) {
         </View>
         <View style={styles.groupRow}>
           <Pressable
-            style={({pressed}) => 
-            [{
-              backgroundColor: pressed
-                ? myFont.buttonPressedColor
-                : myFont.white
-            }]}>
+            style={({ pressed }) =>
+              [{
+                backgroundColor: pressed
+                  ? myFont.buttonPressedColor
+                  : myFont.white
+              }]}>
             <View style={styles.groupCell}>
-              <View style={[styles.label, {justifyContent: "space-between"}]}>
+              <View style={[styles.label, { justifyContent: "space-between" }]}>
                 <Text style={styles.text}>SUBPROJECT OF</Text>
               </View>
               {project_parent != null ?
                 <Text style={styles.textInput}>{project_parent.name}</Text>
                 : <ParentProjectPicker
-                    setParentProject={setParentProject}
-                    projectList={projects}
-                  />}
+                  setParentProject={setParentProject}
+                  projectList={projects}
+                />}
             </View>
           </Pressable>
         </View>
-        <View 
+        <View
           style={[
             styles.groupRow,
-            {flexDirection: "row"}
+            { flexDirection: "row" }
           ]}>
           <Pressable
-            style={({pressed}) => [
+            style={({ pressed }) => [
               styles.halfCell,
               {
                 backgroundColor: pressed
@@ -271,11 +268,11 @@ export default function AddProjectScreen({ route, navigation }) {
             <CheckBox
               value={isPublic}
               onValueChange={(newValue) => setIsPublic(newValue)}
-              style={{marginLeft: 4}}
+              style={{ marginLeft: 4 }}
             />
           </Pressable>
           <Pressable
-            style={({pressed}) => [
+            style={({ pressed }) => [
               styles.halfCell,
               {
                 backgroundColor: pressed
@@ -289,7 +286,7 @@ export default function AddProjectScreen({ route, navigation }) {
             <CheckBox
               value={isInherit}
               onValueChange={(newValue) => setIsInherit(newValue)}
-              style={{marginLeft: 4}}
+              style={{ marginLeft: 4 }}
             />
           </Pressable>
         </View>
@@ -298,7 +295,7 @@ export default function AddProjectScreen({ route, navigation }) {
         <Button
           title="SAVE"
           onPress={() => saveData()}
-          color={myFont.green}/>
+          color={myFont.green} />
       </View>
     </KeyboardAvoidingView>
   );
@@ -312,13 +309,13 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   header: {
-		width: "100%",
-		height: 60,
-		backgroundColor: "#4d5360",
+    width: "100%",
+    height: 60,
+    backgroundColor: "#4d5360",
     flexDirection: "row",
     justifyContent: "flex-start",
     alignItems: "center",
-	},
+  },
   closeBtn: {
     width: 60,
     height: 60,
@@ -328,7 +325,7 @@ const styles = StyleSheet.create({
   textHeader: {
     color: myFont.white,
     fontSize: myFont.fontHomeHeaderSize,
-		fontWeight: "300",
+    fontWeight: "300",
     flexDirection: "row",
     justifyContent: "flex-start",
     alignItems: "center",
@@ -354,6 +351,8 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: 0,
     padding: 10,
+    borderTopWidth: 1,
+    borderColor: myFont.itemBorderColor,
   },
   halfCell: {
     width: "50%",

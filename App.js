@@ -19,10 +19,8 @@ import ClosedScreen from './app/screens/ClosedScreen';
 import IssueScreen from './app/screens/IssueScreen';
 import MyIssueScreen from './app/screens/MyIssueScreen';
 import ProjectScreen from './app/screens/ProjectScreen';
-import AddScreen from './app/screens/AddScreen';
 import AddIssueScreen from './app/screens/AddIssueScreen';
 import AddProjectScreen from './app/screens/AddProjectScreen';
-import DetailScreen from './app/screens/DetailScreen';
 import DetailIssueScreen from './app/screens/DetailIssueScreen';
 import DetailProjectScreen from './app/screens/DetailProjectScreen';
 import EditIssueScreen from './app/screens/EditIssueScreen';
@@ -95,16 +93,6 @@ const ClosedStackScreen = () => (
       options={{ headerShown: false }}
     />
     <ClosedStack.Screen
-      name="DetailScreen"
-      component={DetailScreen}
-      options={{ headerShown: false }}
-    />
-    <ClosedStack.Screen
-      name="AddScreen"
-      component={AddScreen}
-      options={{ headerShown: false }}
-    />
-    <ClosedStack.Screen
       name="DetailIssueScreen"
       component={DetailIssueScreen}
       options={{ headerShown: false }}
@@ -127,16 +115,6 @@ const IssueStackScreen = () => (
     <IssueStack.Screen
       name="Issue"
       component={IssueScreen}
-      options={{ headerShown: false }}
-    />
-    <IssueStack.Screen
-      name="DetailScreen"
-      component={DetailScreen}
-      options={{ headerShown: false }}
-    />
-    <IssueStack.Screen
-      name="AddScreen"
-      component={AddScreen}
       options={{ headerShown: false }}
     />
     <ClosedStack.Screen
@@ -162,16 +140,6 @@ const MyIssueStackScreen = () => (
     <MyIssueStack.Screen
       name="MyIssue"
       component={MyIssueScreen}
-      options={{ headerShown: false }}
-    />
-    <MyIssueStack.Screen
-      name="DetailScreen"
-      component={DetailScreen}
-      options={{ headerShown: false }}
-    />
-    <MyIssueStack.Screen
-      name="AddScreen"
-      component={AddScreen}
       options={{ headerShown: false }}
     />
     <ClosedStack.Screen
@@ -200,16 +168,6 @@ const ProjectStackScreen = () => (
       options={{ headerShown: false }}
     />
     <ProjectStack.Screen
-      name="AddScreen"
-      component={AddScreen}
-      options={{ headerShown: false }}
-    />
-    <ProjectStack.Screen
-      name="DetailScreen"
-      component={DetailScreen}
-      options={{ headerShown: false }}
-    />
-    <ProjectStack.Screen
       name="AddProjectScreen"
       component={AddProjectScreen}
       options={{ headerShown: false }}
@@ -219,14 +177,19 @@ const ProjectStackScreen = () => (
       component={DetailProjectScreen}
       options={{ headerShown: false }}
     />
+    <ProjectStack.Screen
+      name="EditProjectScreen"
+      component={EditProjectScreen}
+      options={{ headerShown: false }}
+    />
     <ClosedStack.Screen
       name="AddIssueScreen"
-      component={DetailIssueScreen}
+      component={AddIssueScreen}
       options={{ headerShown: false }}
     />
     <ClosedStack.Screen
       name="DetailIssueScreen"
-      component={AddIssueScreen}
+      component={DetailIssueScreen}
       options={{ headerShown: false }}
     />
     <ProjectStack.Screen
@@ -234,24 +197,10 @@ const ProjectStackScreen = () => (
       component={EditIssueScreen}
       options={{ headerShown: false }}
     />
-    <ProjectStack.Screen
-      name="EditProjectScreen"
-      component={EditProjectScreen}
-      options={{ headerShown: false }}
-    />
   </ProjectStack.Navigator>
 );
 
 export default function App() {
-
-  const authenticate = (username, password) => {
-    for (let user of users) {
-      if (user.username === username && user.password === password) {
-        return user;
-      }
-    }
-    return null;
-  }
 
   const initialLoginState = {
     isLoading: true,

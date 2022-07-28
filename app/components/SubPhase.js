@@ -19,29 +19,19 @@ export default function SubPhase(props) {
         key={index}
         onPress={() => props.navigateToIssue(issue)}
         style={({ pressed }) => [
-          {
-            width: "100%",
-            height: 74,
-            borderStyle: "solid",
-            borderBottomWidth: 1,
-            borderBottomColor: myFont.itemBorderColor,
-            alignItems: "center",
-            flexDirection: "row",
-          },
+          styles.tile,
           {
             backgroundColor: pressed
               ? myFont.buttonPressedColor
               : myFont.white
           }
         ]}>
-        <View style={styles.statusContainer}>
-          <View
-            style={[styles.status, { backgroundColor: myFont.statusColor[issue.status.id - 1] }]}
-          />
-        </View>
-        <View>
-          <Text>{issue.subject}</Text>
-          <Text>#{issue.id}</Text>
+        <View
+          style={[styles.status, { backgroundColor: myFont.priorityColor[issue.priority.id - 1] }]}
+        />
+        <View style={styles.contentContainer}>
+          <Text style={{ fontWeight: "700", fontSize: 20 }}>{issue.subject}</Text>
+          <Text style={{ fontSize: 16 }}>#{issue.id}</Text>
         </View>
       </Pressable>
     );
@@ -94,18 +84,21 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "700"
   },
-  statusContainer: {
-    width: 50,
-    height: 50,
-    alignItems: "center",
+  contentContainer: {
     justifyContent: "center",
+    padding: 10,
   },
   status: {
-    width: 25,
-    height: 25,
-    borderTopLeftRadius: 50,
-    borderTopRightRadius: 50,
-    borderBottomLeftRadius: 50,
-    borderBottomRightRadius: 50,
+    width: 20,
+    height: 74,
   },
+  tile: {
+    width: "100%",
+    height: 74,
+    borderStyle: "solid",
+    borderBottomWidth: 1,
+    borderBottomColor: myFont.itemBorderColor,
+    alignItems: "center",
+    flexDirection: "row",
+  }
 });

@@ -185,21 +185,18 @@ export default function DetailProjectScreen({ route, navigation }) {
 
   const addNewIssue = () => {
     navigation.push('AddIssueScreen', {
-      issues: issues,
-      parent_id: project.id
+      project_id: project.id,
+      parent_issue_list: issues,
+      parent_issue: null
     });
   }
 
   const navigateToSubProject = (project) => {
-    navigation.push('DetailProjectScreen', {
-      project: project
-    });
+    navigation.push('DetailProjectScreen', { project: project });
   }
 
   const navigateToSubIssue = (issue) => {
-    navigation.push('DetailIssueScreen', {
-      issue: issue
-    });
+    navigation.push('DetailIssueScreen', { issue: issue });
   }
 
   const selectUser = (user) => {
@@ -459,11 +456,11 @@ export default function DetailProjectScreen({ route, navigation }) {
           <View style={styles.footer}>
             <Pressable
               onPress={() => navigation.goBack()}
-              style={({pressed}) => [
+              style={({ pressed }) => [
                 {
                   backgroundColor: pressed
-                  ? myFont.buttonPressedColor
-                  : myFont.footerBackgroundColor
+                    ? myFont.buttonPressedColor
+                    : myFont.footerBackgroundColor
                 },
                 styles.backButton
               ]}
@@ -487,15 +484,15 @@ export default function DetailProjectScreen({ route, navigation }) {
                     }
                   ]
                 )}
-                color="red"/>
-              <View style={{marginHorizontal: 10}}>
+                color="red" />
+              <View style={{ marginHorizontal: 10 }}>
                 <Button
                   title="EDIT"
                   onPress={() => {
                     navigation.push('EditProjectScreen', {
                       project: project
                     })
-                  }}/>
+                  }} />
               </View>
             </View>
           </View>
@@ -508,7 +505,7 @@ export default function DetailProjectScreen({ route, navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: myFont.blue,
+    backgroundColor: myFont.white,
   },
   header: {
     width: "100%",
@@ -599,6 +596,8 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     position: "absolute",
     bottom: 0,
+    borderTopWidth: 1,
+    borderColor: myFont.itemBorderColor,
   },
   footerGroupBtn: {
     alignItems: "center",
