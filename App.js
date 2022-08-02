@@ -1,0 +1,308 @@
+import React, { useReducer } from 'react';
+import {
+  StyleSheet,
+  StatusBar,
+  Alert,
+} from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import { createDrawerNavigator } from '@react-navigation/drawer';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+import { sign_in } from './app/api/user_api';
+import users from './app/config/configurations';
+
+import LoginScreen from './app/screens/LoginScreen';
+import DrawerContent from './app/screens/DrawerContent';
+import HomeScreen from './app/screens/HomeScreen';
+import ClosedScreen from './app/screens/ClosedScreen';
+import IssueScreen from './app/screens/IssueScreen';
+import MyIssueScreen from './app/screens/MyIssueScreen';
+import ProjectScreen from './app/screens/ProjectScreen';
+import AddIssueScreen from './app/screens/AddIssueScreen';
+import AddProjectScreen from './app/screens/AddProjectScreen';
+import DetailIssueScreen from './app/screens/DetailIssueScreen';
+import DetailProjectScreen from './app/screens/DetailProjectScreen';
+import EditIssueScreen from './app/screens/EditIssueScreen';
+import EditProjectScreen from './app/screens/EditProjectScreen';
+
+import { AuthContext } from "./app/components/Context";
+
+const Drawer = createDrawerNavigator();
+const HomeStack = createStackNavigator();
+const ClosedStack = createStackNavigator();
+const IssueStack = createStackNavigator();
+const MyIssueStack = createStackNavigator();
+const ProjectStack = createStackNavigator();
+
+const DrawerScreen = ({ fullname }) => (
+  <Drawer.Navigator
+    initialRouteName="Dashboard"
+    drawerContent={props => <DrawerContent {...props} {...fullname} />}
+  >
+    <Drawer.Screen
+      name="Dashboard"
+      component={HomeStackScreen}
+      options={{ headerShown: false }} />
+    <Drawer.Screen
+      name="ProjectStack"
+      component={ProjectStackScreen}
+      options={{ headerShown: false }} />
+    <Drawer.Screen
+      name="IssueStack"
+      component={IssueStackScreen}
+      options={{ headerShown: false }} />
+  </Drawer.Navigator>
+);
+
+const HomeStackScreen = () => (
+  <HomeStack.Navigator initialRouteName="Home">
+    <HomeStack.Screen
+      name="Home"
+      component={HomeScreen}
+      options={{ headerShown: false }}
+    />
+    <HomeStack.Screen
+      name="ClosedStack"
+      component={ClosedStackScreen}
+      options={{ headerShown: false }}
+    />
+    <HomeStack.Screen
+      name="IssueStack"
+      component={IssueStackScreen}
+      options={{ headerShown: false }}
+    />
+    <HomeStack.Screen
+      name="MyIssueStack"
+      component={MyIssueStackScreen}
+      options={{ headerShown: false }}
+    />
+    <HomeStack.Screen
+      name="ProjectStack"
+      component={ProjectStackScreen}
+      options={{ headerShown: false }}
+    />
+  </HomeStack.Navigator>
+);
+
+const ClosedStackScreen = () => (
+  <ClosedStack.Navigator initialRouteName='ClosedScreen'>
+    <ClosedStack.Screen
+      name="ClosedScreen"
+      component={ClosedScreen}
+      options={{ headerShown: false }}
+    />
+    <ClosedStack.Screen
+      name="DetailIssueScreen"
+      component={DetailIssueScreen}
+      options={{ headerShown: false }}
+    />
+    <ClosedStack.Screen
+      name="AddIssueScreen"
+      component={AddIssueScreen}
+      options={{ headerShown: false }}
+    />
+    <ClosedStack.Screen
+      name="EditIssueScreen"
+      component={EditIssueScreen}
+      options={{ headerShown: false }}
+    />
+  </ClosedStack.Navigator>
+)
+
+const IssueStackScreen = () => (
+  <IssueStack.Navigator initialRouteName='Issue'>
+    <IssueStack.Screen
+      name="Issue"
+      component={IssueScreen}
+      options={{ headerShown: false }}
+    />
+    <ClosedStack.Screen
+      name="DetailIssueScreen"
+      component={DetailIssueScreen}
+      options={{ headerShown: false }}
+    />
+    <ClosedStack.Screen
+      name="AddIssueScreen"
+      component={AddIssueScreen}
+      options={{ headerShown: false }}
+    />
+    <IssueStack.Screen
+      name="EditIssueScreen"
+      component={EditIssueScreen}
+      options={{ headerShown: false }}
+    />
+  </IssueStack.Navigator>
+)
+
+const MyIssueStackScreen = () => (
+  <MyIssueStack.Navigator initialRouteName='MyIssue'>
+    <MyIssueStack.Screen
+      name="MyIssue"
+      component={MyIssueScreen}
+      options={{ headerShown: false }}
+    />
+    <ClosedStack.Screen
+      name="DetailIssueScreen"
+      component={DetailIssueScreen}
+      options={{ headerShown: false }}
+    />
+    <ClosedStack.Screen
+      name="AddIssueScreen"
+      component={AddIssueScreen}
+      options={{ headerShown: false }}
+    />
+    <MyIssueStack.Screen
+      name="EditIssueScreen"
+      component={EditIssueScreen}
+      options={{ headerShown: false }}
+    />
+  </MyIssueStack.Navigator>
+)
+
+const ProjectStackScreen = () => (
+  <ProjectStack.Navigator initialRouteName="Project">
+    <ProjectStack.Screen
+      name="Project"
+      component={ProjectScreen}
+      options={{ headerShown: false }}
+    />
+    <ProjectStack.Screen
+      name="AddProjectScreen"
+      component={AddProjectScreen}
+      options={{ headerShown: false }}
+    />
+    <ProjectStack.Screen
+      name="DetailProjectScreen"
+      component={DetailProjectScreen}
+      options={{ headerShown: false }}
+    />
+    <ProjectStack.Screen
+      name="EditProjectScreen"
+      component={EditProjectScreen}
+      options={{ headerShown: false }}
+    />
+    <ClosedStack.Screen
+      name="AddIssueScreen"
+      component={AddIssueScreen}
+      options={{ headerShown: false }}
+    />
+    <ClosedStack.Screen
+      name="DetailIssueScreen"
+      component={DetailIssueScreen}
+      options={{ headerShown: false }}
+    />
+    <ProjectStack.Screen
+      name="EditIssueScreen"
+      component={EditIssueScreen}
+      options={{ headerShown: false }}
+    />
+  </ProjectStack.Navigator>
+);
+
+export default function App() {
+
+  const initialLoginState = {
+    isLoading: true,
+    username: null,
+    fullname: null,
+    apiKey: null,
+  };
+
+  const loginReducer = (prevState, action) => {
+    switch (action.type) {
+      case "RETRIEVE_TOKEN":
+        return {
+          ...prevState,
+          apiKey: action.token,
+          isLoading: false,
+        };
+      case "LOGIN":
+        return {
+          ...prevState,
+          username: action.id,
+          fullname: action.fullname,
+          apiKey: action.token,
+          isLoading: false,
+        };
+      case "LOGOUT":
+        return {
+          ...prevState,
+          username: null,
+          fullname: null,
+          apiKey: null,
+          isLoading: false,
+        };
+    }
+  };
+
+  const [loginState, dispatch] = useReducer(loginReducer, initialLoginState);
+
+  const authContext = React.useMemo(
+    () => ({
+      signIn: async (username, password) => {
+        let apiKey = null;
+        sign_in(username, password)
+          .then((response) => {
+            if (response.status == 401) {
+              Alert.alert(
+                "username or password is incorrect",
+                "",
+              );
+            } else {
+              response.json()
+                .then(async (data) => {
+                  try {
+                    apiKey = data.user.api_key;
+                    await AsyncStorage.setItem("apiKey", apiKey);
+                  } catch (e) {
+                    console.error(e);
+                  }
+                  dispatch({
+                    type: "LOGIN",
+                    id: username,
+                    fullname: data.user.firstname.concat(' ', data.user.lastname).trim(),
+                    token: apiKey
+                  });
+                  console.log("Signed in successfully");
+                })
+                .catch((error) => {
+                  console.error(error);
+                });
+            }
+          });
+      },
+      signOut: async () => {
+        try {
+          await AsyncStorage.removeItem("apiKey");
+        } catch (e) {
+          console.error(e);
+        }
+        dispatch({ type: "LOGOUT" });
+        console.log("Signed out successfully");
+      },
+    }),
+    []
+  );
+
+  return (
+    <>
+      <StatusBar
+        backgroundColor={"#fff"}
+        barStyle={"dark-content"}
+        hidden={false}
+      />
+      <AuthContext.Provider value={authContext}>
+        <NavigationContainer>
+          {loginState.apiKey ? <DrawerScreen fullname={{ fullname: loginState.fullname }} /> : <LoginScreen />}
+        </NavigationContainer>
+      </AuthContext.Provider>
+    </>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+});
