@@ -158,6 +158,8 @@ export default function EditIssueScreen({ route, navigation }) {
     if (assignee == -1) {
       let user = await get_user();
       author_id = user.id;
+    } else if (assignee == 0) {
+      author_id = null
     } else {
       author_id = assignee;
     }
@@ -203,7 +205,6 @@ export default function EditIssueScreen({ route, navigation }) {
       });
   }
 
-  // type === 'project'
   const syncMemberships = async () => {
     /*
     Get memberships of this project

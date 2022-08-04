@@ -150,20 +150,22 @@ export default function AddIssueScreen({ route, navigation }) {
   const createData = async () => {
     let estimated_hours = duration == null ? null : parseInt(duration);
     let author_id;
+    let body;
     if (assignee == -1) {
       let user = await get_user();
       author_id = user.id;
+    } else if (assignee == 0) {
+      author_id = null
     } else {
       author_id = assignee;
     }
-    let body;
     parentIssue.subject == ""
       ? body = JSON.stringify({
         issue: {
           project_id: project_id,
           tracker_id: tracker,
           status_id: status,
-          priority_id: priority.id,
+          priority_id: priority,
           subject: name,
           description: description,
           assigned_to_id: author_id,
@@ -179,7 +181,7 @@ export default function AddIssueScreen({ route, navigation }) {
           project_id: project_id,
           tracker_id: tracker,
           status_id: status,
-          priority_id: priority.id,
+          priority_id: priority,
           subject: name,
           description: description,
           parent_issue_id: parentIssue.id,

@@ -46,6 +46,7 @@ export default function ProjectInformation(props) {
         style={{
           width: "100%",
           flexDirection: "row",
+          marginBottom: 5
         }}>
         <View
           style={[
