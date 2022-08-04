@@ -4,7 +4,7 @@ export default users = [
     username: 'admin',
     password: '1',
     api_key: '34dafb931f5817ecf25be180ceaf87029142915e',
-    firstname: '',
+    firstname: 'RM',
     lastname: 'Admin'
   },
   {

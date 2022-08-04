@@ -16,7 +16,7 @@ export default function AssignUserPicker(props) {
       return (
         <Picker.Item
           label={fullname}
-          value={user.id}
+          value={user.user.id}
           style={{ fontSize: 20 }}
           key={index} />
       );

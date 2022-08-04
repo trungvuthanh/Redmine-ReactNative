@@ -135,30 +135,16 @@ export default function AddIssueScreen({ route, navigation }) {
   }
 
   const saveData = () => {
-    if (type === 'project') {
-      name != ""
-        ? createData()
-        : Alert.alert(
-          "Name cannot be blank",
-          "",
-          [{
-            text: "OK",
-            style: "cancel"
-          }]
-        );
-    } else if (type === 'issue') {
-      name != ""
-        ? createData()
-        : Alert.alert(
-          "Name cannot be blank",
-          "",
-          [{
-            text: "OK",
-            style: "cancel",
-          }]
-        );
-    }
-
+    name != ""
+      ? createData()
+      : Alert.alert(
+        "Name cannot be blank",
+        "",
+        [{
+          text: "OK",
+          style: "cancel",
+        }]
+      );
   }
 
   const createData = async () => {
@@ -230,7 +216,6 @@ export default function AddIssueScreen({ route, navigation }) {
       });
   }
 
-  // type === 'project'
   const syncMemberships = async () => {
     /*
     Get memberships of this project
